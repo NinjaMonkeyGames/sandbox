@@ -35,4 +35,4 @@ jobs:
     # LINT ALL MARKDOWNFILES WITH EXTENSION '*.MD' LOCATED ANYWHERE IN THE PROJECT FOLDER
         
       - name: Run markdownlint-cli2
-        run: markdownlint-cli2 '**/*.md' -config .markdownlint-cli2.yaml
+        run: markdownlint-cli2 '**/*.md' --config .markdownlint-cli2.yaml
