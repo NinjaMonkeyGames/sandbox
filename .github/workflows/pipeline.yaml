@@ -30,8 +30,8 @@ jobs:
         run: cp /app/.markdownlint-cli2.yaml $GITHUB_WORKSPACE
 
       - name: misc tests
-        run: ls-a
-        
+        run: ls -a
+
     # LINT ALL MARKDOWNFILES WITH EXTENSION '*.MD' LOCATED ANYWHERE IN THE PROJECT FOLDER
         
       - name: Run markdownlint-cli2
