@@ -33,3 +33,6 @@ jobs:
         
       - name: Run markdownlint-cli2
         run: markdownlint-cli2 '**/*.md'
+
+      - name: misc tests
+        run: ls-a
