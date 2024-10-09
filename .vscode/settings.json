@@ -10,7 +10,7 @@
 
     "markdownlint.config": 
     {
-        "extends": ".config/.markdownlint-cli2.yaml"
+        "extends": ".config/.markdownlint.yaml"
     },
 
 }

@@ -8,7 +8,7 @@ WORKDIR /app
 
 # INCLUDE .markdownlint.yml IN DOCKER BUILD
 
-COPY .config/.markdownlint-cli2.yaml ./.markdownlint-cli2.yaml
+COPY .config/.markdownlint.yaml ./.markdownlint.yaml
 
 # Install markdownlint-cli2 globally
 
