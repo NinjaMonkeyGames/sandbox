@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     
     container:
-      image: monkeyknuckles/sandbox
+      image: monkeyknuckles/markdownlint-cli2
 
     # STEPS REQUIRED IN ORDER TO LINT MARKDOWN FILES
 
