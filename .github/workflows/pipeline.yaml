@@ -26,11 +26,11 @@ jobs:
 
     # COPY CONFIGURATION FILE CONTAINING MARKDOWN LINTING RULES FROM THE CONTAINER TO THE WORKSPACE
         
-      - name: Copy markdownlint config
-        run: cp /app/.markdownlint.yaml $GITHUB_WORKSPACE
-
       - name: misc tests
         run: ls -a
+
+      - name: Copy markdownlint config
+        run: cp /app/.markdownlint.yaml $GITHUB_WORKSPACE
 
     # LINT ALL MARKDOWNFILES WITH EXTENSION '*.MD' LOCATED ANYWHERE IN THE PROJECT FOLDER
         
