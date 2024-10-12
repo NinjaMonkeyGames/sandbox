@@ -89,8 +89,8 @@ This project uses a sequential versioning system.
 
 Author: Daniel Mallett (Monkey Knuckles)
 
-![Ninja Monkey Games](logo.png "Logo")
-![Monkey Knuckles](avatar.png "Avatar")
+![Ninja Monkey Games](https://ninjamonkeygames.com/external/logo.png "Logo")
+![Monkey Knuckles](https://ninjamonkeygames.com/external/avatar.png "Avatar")
 
 If you have any problems with the repository or have any suggestions please contact us at <info@ninjamonkeygames.com>.
 
