@@ -25,9 +25,6 @@ jobs:
         uses: actions/checkout@v3
 
     # COPY CONFIGURATION FILE CONTAINING MARKDOWN LINTING RULES FROM THE CONTAINER TO THE WORKSPACE
-        
-      #- name: misc tests
-      #  run: ls -a && node-v && npm -v && markdownlint-cli2 --version
 
       - name: Copy markdownlint config
         run: cp /app/.markdownlint.yaml $GITHUB_WORKSPACE

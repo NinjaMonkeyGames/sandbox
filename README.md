@@ -29,11 +29,29 @@ See links below for more information about Markdownlint-cli2 and Alpine Linux.
 
 ## Build docker instructions ##
 
-  - docker build -t markdownlint-cli2 .
-  - docker tag markdownlint-cli2 monkeyknuckles/markdownlint-cli2:latest
-  - docker push monkeyknuckles/markdownlint-cli2:latest
+Build container
 
-  To check the container is working execute: docker run -it markdownlint-cli2
+```shell
+docker build -t markdownlint-cli2 .
+```
+
+Tag container
+
+```shell
+docker tag markdownlint-cli2 monkeyknuckles/markdownlint-cli2:latest
+```
+
+Push container
+
+```shell
+docker push monkeyknuckles/markdownlint-cli2:latest
+```
+
+Connect to container directly
+
+```shell
+docker run -it markdownlint-cli2
+```
 
 ## Useful links ##
   
@@ -48,9 +66,8 @@ See links below for more information about Markdownlint-cli2 and Alpine Linux.
 
   - **3rd Party links:**
 
-    - **Alpine source pull address:**   docker pull alpine:3.20.0
+    - **Node source pull address:**     docker pull node:22.9.0
 
-    - **Alpine source landing page:**   <https://hub.docker.com/_/alpine>
     - **Markdownlint-cli2:**            <https://github.com/DavidAnson/markdownlint-cli2.git>
     - **Markdownlint:**                 <https://github.com/DavidAnson/markdownlint>
     - **NPM:**                          <https://www.npmjs.com/package/markdownlint-cli2>
@@ -70,10 +87,25 @@ See links below for more information about Markdownlint-cli2 and Alpine Linux.
 
 ## Files ##
 
-| File Or Folder Name:                  | Files | Description Of File Or Folder Contents                               |
-|---------------------------------------|-------|----------------------------------------------------------------------|
-
----
+| Folder / File Name                           | Description Of File Or Folder Contents                                |
+|----------------------------------------------|-----------------------------------------------------------------------|
+| .artifacts                                   | Stores data that may be needed throughout the CD/CI pipeline.         |
+| .artifacts/avatar.png                        | Monkey Knuckles (Daniel Mallett) Avatar.                              |
+| .artifacts/logo.png                          | Ninja Monkey Games  Avatar.                                           |
+| .config                                      | Stores environment configurations files.                              |
+| .config/.markdownlint.yaml                   | Contains rules for markdownlint-cli2.                                 |
+| .github                                      | Stores GitHub CD/CI workflow files.                                   |
+| .github/workflows                            | Stores GitHub CD/CI pipeline YAML files.                              |
+| .github/workflows                            | pipeline-markdownlint-cli2.yaml.                                      |
+| .vscode                                      | Stores VSC IDE settings.                                              |
+| .vscode/extensions.json                      | List of plugins to install.                                           |
+| .vscode/settings.json                        | Stores VSC IDE settings. (This is actually a jsonc file).             |
+| markdown-fail                                | Contains a file to test each markdownlint-cli2 rule.                  |
+| markdown-fail/md0001 - md0056                | Markdown rule test files. Excludes md:2, 6, 8, 14, 15, 16 and 17.     |
+| markdownlint-cli2.dockerfile                 | Contains a script to build markdownlint-cli2 docker file.             |
+| README.md                                    | This file contains various pieces of information about the project.   |
+|                                              |                                                                       |
+| **TOTAL OF 76 FILES**                        |                                                                       |
 
 ## Version history ##
 
@@ -81,7 +113,7 @@ This project uses a sequential versioning system.
 
 | Version No:    | Description Of Update                                                                               |
 |----------------|-----------------------------------------------------------------------------------------------------|
-| 0.0.0.0        | Base files included.                                                                                |
+| 0.0.0.0        | Base files included. (markdownlint-cli2 setup with config file).                                    |
 
 ---
 
@@ -89,14 +121,11 @@ This project uses a sequential versioning system.
 
 Author: Daniel Mallett (Monkey Knuckles)
 
-![Ninja Monkey Games](.artifacts/logo.png "Logo")
-![Monkey Knuckles](.artifacts/avatar.png "Avatar")
-
 If you have any problems with the repository or have any suggestions please contact us at <info@ninjamonkeygames.com>.
 
 You may also contact us via our [website](https://ninjamonkeygames.com).
 
-Any bugs should be raised as an [issue](https://github.com/NinjaMonkeyGames/markdownlint-cli2-docker/issues) on GitHub.
+Any bugs should be raised as an [issue](https://github.com/NinjaMonkeyGames/markdownlint-cli2/issues) on GitHub.
 
 ---
 

@@ -1,0 +1,6 @@
+{
+    "recommendations": 
+    [
+        "DavidAnson.vscode-markdownlint" // Prompt install for markdownlint plugin
+    ]
+}
