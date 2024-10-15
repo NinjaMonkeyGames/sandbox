@@ -37,25 +37,15 @@ projects and allows for smoother development and CD/CI integration.
 | .vscode/settings.json                        | Stores VSC IDE settings. (This is actually a jsonc file).             |
 | markdown-fail                                | Contains a file to test each markdownlint-cli2 rule.                  |
 | markdown-fail/md0001 - md0056                | Markdown rule test files. Excludes md:2, 6, 8, 14, 15, 16 and 17.     |
-| .gitignore                                   | List of files and folders that should be excluded the repository.     |
-| package-lock.json                            | Locks node package versions.                                          |
-| package.json                                 | List of packages to be included. (Run npm install).                   |
 | README.md                                    | This file contains various pieces of information about the project.   |
 |                                              |                                                                       |
 | **TOTAL OF 75 FILES**                        |                                                                       |
 
-## Commit and workflow information ##
+## Commit instructions ##
 
 ### Golden rules ###
 
   - Commit subject line must be no longer than 72 characters
-  - There should be a changelog entry for every single version
-  - The latest version comes first
-  - All commits must be prefixed with a type feat, fix, etc.
-
-### Commit instructions ###
-
-  - one
 
 ## Version history ##
 
