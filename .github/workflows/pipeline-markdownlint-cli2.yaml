@@ -1,6 +1,6 @@
 # LINT MARKDOWN FILES WITH MARKDOWNLINT-CLI2 LINTER
 
-name: Markdown Lint
+name: Commit Lint
 
 # PERFORMS ACTIONS ON SUCCESSFUL PULL OR PUSH
 
@@ -27,9 +27,9 @@ jobs:
     # COPY CONFIGURATION FILE CONTAINING MARKDOWN LINTING RULES FROM THE CONTAINER TO THE WORKSPACE
 
       - name: Copy markdownlint config
-        run: cp /app/.markdownlint.yaml $GITHUB_WORKSPACE
+        run: cp /app/commitlint.config.js $GITHUB_WORKSPACE
 
     # LINT ALL MARKDOWNFILES WITH EXTENSION '*.MD' LOCATED ANYWHERE IN THE PROJECT FOLDER
         
-      - name: Run markdownlint-cli2
-        run: markdownlint-cli2 '**/*.md'
+      - name: Run commitlint
+        run: commitlint --config commitlint.config.js --edit

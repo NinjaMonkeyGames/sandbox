@@ -1,38 +1,16 @@
 {
-    // VISUAL STUDION CODE IDE PROJECT AND WOEKSPACE SETTINGS
-
     "files.eol": "\n",                          // Force all new files to be in LF format opposed to CRLF 
     "files.autoSave": "afterDelay",             // All file changes will be saved periodically
-    "files.autoSaveDelay": 1000,                // Set autosave delay for 1000 milliseconds
+    "files.autoSaveDelay": 1000,                // Set autosave dekay for 1000 miliseconds
     "editor.wordWrap": "wordWrapColumn",        // Automatically wrap lines of text
     "editor.wordWrapColumn": 120,               // Set the wrap column to 120 characters
     "editor.rulers": [120],                     // Add a vertical ruler at 120 characters as a visual aid
-    "editor.formatOnSave": true,                // Automatically format files when saving
-    "editor.formatOnType": true,                // Automatically format code as you type
-    "editor.wrappingIndent": "same",            // Keep indentation level of wrapped lines
-    "explorer.confirmDelete": false,            // Prevents prompt when deleting files
+    "explorer.confirmDelete": false,            // Prevents prompt when deleteing files
     "explorer.confirmDragAndDrop": false,       // Prevents prompt when moving files
-
-    // INCLUDE OTHERWISE HIDDEN FOLDERS IN THE FILE TREE VIEW
-
-    "files.exclude": 
-    {
-        "**/.git": false,           // Show .git folder
-        "**/node_modules": false,   // Show node_modules
-    },
-
-    // INCLUDE OTHERWISE EXCLUDED FILES IN PROJECT FILE SEARCH
-
-    "search.exclude": 
-    {
-        "**/.git": false,           // Include .git folder
-        "**/node_modules": false,   // Include node-modules folder
-    },
-
-    // MARKDOWNLINT-CLI2 CONFIGURATION OPTIONS
 
     "markdownlint.config": 
     {
         "extends": ".config/.markdownlint.yaml" // Prompt install markdownlint plugin
     },
+
 }
