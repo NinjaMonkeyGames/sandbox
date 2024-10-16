@@ -35,5 +35,5 @@ jobs:
         run: git config --global --add safe.directory '*'
 
       - name: Run commitlint
-        run: commitlint --from=HEAD~1 --to=HEAD -c
+        run: commitlint --from=HEAD~1 --to=HEAD -c --config commitlint.config.js
 
