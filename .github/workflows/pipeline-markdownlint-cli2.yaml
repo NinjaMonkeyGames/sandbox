@@ -19,6 +19,10 @@ jobs:
 
     steps:
 
+    #other
+      - name: test
+        run: ls -a
+
     # CHECKOUT CODE
       - name: Checkout code
         uses: actions/checkout@v3
