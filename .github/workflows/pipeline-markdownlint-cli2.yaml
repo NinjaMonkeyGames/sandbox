@@ -34,8 +34,10 @@ jobs:
       - name: Run lsa
         run: ls -a
 
+    # MARK DIRECTORY AS SAFE TO AVOID SECURITY ERROR
+
       - name: mark directory as safe to avoid error
-        run: git config --global --add safe.directory '*'
+        run: git config --global --add safe.directory $GITHUB_WORKSPACE
 
       - name: Run commitlint
         run: commitlint --last -c -s
