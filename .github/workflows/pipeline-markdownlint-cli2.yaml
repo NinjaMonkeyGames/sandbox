@@ -31,5 +31,8 @@ jobs:
 
     # LINT ALL MARKDOWNFILES WITH EXTENSION '*.MD' LOCATED ANYWHERE IN THE PROJECT FOLDER
         
+      - name: lsa
+        run: ls -a
+        
       - name: Run commitlint
         run: commitlint --config commitlint.config.js --edit
