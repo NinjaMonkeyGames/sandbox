@@ -37,7 +37,7 @@ jobs:
     # MARK DIRECTORY AS SAFE TO AVOID SECURITY ERROR
 
       - name: mark directory as safe to avoid error
-        run: git config --global --add safe.directory $GITHUB_WORKSPACE
+        run: git config --global --add safe.directory $GITHUB_WORKSPACE/.git
 
       - name: Run commitlint
         run: commitlint --last -c -s
