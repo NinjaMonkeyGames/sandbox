@@ -32,6 +32,9 @@ jobs:
       - name: Copy commitlint config
         run: cp /app/commitlint.config.js $GITHUB_WORKSPACE
 
+      - name: Set Git safe directory
+        run: git config --global --add safe.directory /__w/sandbox/sandbox
+
     # LINT ALL MARKDOWNFILES WITH EXTENSION '*.MD' LOCATED ANYWHERE IN THE PROJECT FOLDER
         
       - name: Run commitlint
