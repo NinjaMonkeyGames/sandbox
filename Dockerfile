@@ -1,19 +1,14 @@
-# Use the official Node.js image
-
+# Use Node.js version 22.9.0
 FROM node:22.9.0
 
-# Set the working directory to app
-
+# Set the working directory
 WORKDIR /app
 
-# INCLUDE .markdownlint.yml IN DOCKER BUILD
+# Copy the CommitLint configuration file into the working directory
+COPY .config/commitlint.config.js ./
 
-COPY .config/commitlint.config.js ./commitlint.config.js
+# Install CommitLint globally
+RUN npm install -g @commitlint/{config-conventional,cli} --save-dev
 
-# Install markdownlint-cli2 globally
-
-RUN npm install -g commitlint@19.5.0
-
-# Command to run markdownlint-cli2 (adjust as needed)
-
-CMD ["bash"]
+# Default command to run CommitLint
+CMD ["commitlint", "--from=HEAD~1", "--to=HEAD"]
