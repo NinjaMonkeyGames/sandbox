@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     
     container:
-      image: monkeyknuckles/markdownlint-cli2
+      image: monkeyknuckles/commitlint
 
     # STEPS REQUIRED IN ORDER TO LINT MARKDOWN FILES
 
@@ -29,10 +29,16 @@ jobs:
 
     # COPY CONFIGURATION FILE CONTAINING MARKDOWN LINTING RULES FROM THE CONTAINER TO THE WORKSPACE
 
-     # - name: Copy markdownlint config
-     #   run: cp /app/commitlint.config.js $GITHUB_WORKSPACE
+      - name: Copy commitlint config
+        run: cp /app/commitlint.config.js $GITHUB_WORKSPACE
 
     # LINT ALL MARKDOWNFILES WITH EXTENSION '*.MD' LOCATED ANYWHERE IN THE PROJECT FOLDER
         
       - name: Run commitlint
         run: commitlint --config commitlint.config.js --edit
+
+
+
+
+
+
