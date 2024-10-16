@@ -10,7 +10,7 @@ jobs:
     
     # USES MONKEYKNUCKLES/COMMITLINT DOCKER IMAGE AS THE CONTAINER
     container:
-      image: monkeyknuckles/commitlin
+      image: monkeyknuckles/commitlint
 
     # STEPS REQUIRED IN ORDER TO LINT COMMIT MESSAGES
     steps:
@@ -19,14 +19,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # MARK GITHUB WORKSPACE AS A SAFE DIRECTORY FOR GIT
-      - name: Set Git safe directory
-        run: git config --global --add safe.directory /__w
-
-      # COPY COMMITLINT CONFIGURATION FILE FROM THE WORKSPACE
-      - name: Copy commitlint config
-        run: cp /app/commitlint.config.js $GITHUB_WORKSPACE
-
-      # RUN COMMITLINT TO LINT THE COMMIT MESSAGES IN THE REPOSITORY
+      # RUN COMMITLINT TO LINT THE COMMIT MESSAGES IN THE REPOSITORY, IGNORING LOCKS
       - name: Run commitlint
-        run: commitlint --config /app/commitlint.config.js --from HEAD~1 --to HEAD
+        run: |
+          GIT_OPTIONAL_LOCKS=0 commitlint --config /app/commitlint.config.js --from HEAD~1 --to HEAD
