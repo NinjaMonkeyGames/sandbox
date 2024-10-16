@@ -1,34 +1,23 @@
-name: CommitLint
+name: CommitLint Check
 
-# PERFORMS ACTIONS ON SUCCESSFUL PULL OR PUSH
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
 
-# SETS DISTRIBUTION TO USE AND INITIALIZES LINTING JOB
 jobs:
-  lint:
+  commitlint:
     runs-on: ubuntu-latest
 
-    # Use a container for running CommitLint
-    container:
-      image: node:22.9.0  # Using the Node.js container
-
-    # STEPS REQUIRED IN ORDER TO LINT COMMIT MESSAGES
     steps:
-
-      # CHECKOUT CODE
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v3
 
-      # Set Git safe directory to avoid dubious ownership issues
-      - name: Set Git safe directory
-        run: git config --global --add safe.directory /__w/sandbox/sandbox
-
-      # SETUP NODE.JS
-      - name: Set up Node.js
-        run: npm install -g @commitlint/cli@19.5.0 @commitlint/config-conventional@19.5.0
-
-      # RUN COMMITLINT
-      - name: Run CommitLint
+      - name: Build Docker Image
         run: |
-          echo "Running CommitLint..."
-          commitlint --from=HEAD~1 --to=HEAD
+          docker build -t monkeyknuckles/commitlint .
+
+      - name: Run CommitLint in Container
+        run: |
+          docker run --rm monkeyknuckles/commitlint /bin/bash -c "commitlint --config /app/commitlint.config.js --from HEAD~1 --to HEAD"

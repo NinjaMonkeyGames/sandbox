@@ -1,14 +1,14 @@
-# Use Node.js version 22.9.0
+# Use official Node.js 22.9.0 image as the base image
 FROM node:22.9.0
 
-# Set the working directory
+# Set the working directory inside the container
 WORKDIR /app
 
-# Copy the CommitLint configuration file into the working directory
-COPY .config/commitlint.config.js ./
+# Copy the commitlint configuration file to the working directory
+COPY .config/commitlint.config.js /app/
 
-# Install CommitLint and its conventional config separately
-RUN npm install -g @commitlint/cli@19.5.0 @commitlint/config-conventional@19.5.0 --save-dev
+# Install commitlint version 19.5.0 globally
+RUN npm install -g @commitlint/cli@19.5.0
 
-# Default command to run CommitLint
-CMD ["commitlint", "--from=HEAD~1", "--to=HEAD"]
+# Default command (if needed) - This can be customized if you want the container to execute specific commands
+CMD ["tail", "-f", "/dev/null"]
