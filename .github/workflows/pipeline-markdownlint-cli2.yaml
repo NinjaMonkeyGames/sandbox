@@ -1,30 +1,29 @@
 name: CommitLint
 
-on:
-  push:
-    branches:
-      - main  # Change this to your default branch if necessary
-  pull_request:
-    branches:
-      - main  # Change this to your default branch if necessary
+# PERFORMS ACTIONS ON SUCCESSFUL PULL OR PUSH
+on: [push, pull_request]
 
+# SETS DISTRIBUTION TO USE AND INITIALIZES LINTING JOB
 jobs:
   lint:
     runs-on: ubuntu-latest
 
+    # Use a container for running CommitLint
+    container:
+      image: node:22.9.0  # Using the Node.js container
+
+    # STEPS REQUIRED IN ORDER TO LINT COMMIT MESSAGES
     steps:
+
+      # CHECKOUT CODE
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
+      # SETUP NODE.JS
       - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '22.9.0'
+        run: npm install -g @commitlint/cli@19.5.0 @commitlint/config-conventional@19.5.0
 
-      - name: Install CommitLint
-        run: |
-          npm install -g @commitlint/cli@19.5.0 @commitlint/config-conventional@19.5.0
-
+      # RUN COMMITLINT
       - name: Run CommitLint
         run: |
           echo "Running CommitLint..."
