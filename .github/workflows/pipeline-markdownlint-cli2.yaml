@@ -24,15 +24,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: lsa
+        run: ls -a
+        
     # COPY CONFIGURATION FILE CONTAINING MARKDOWN LINTING RULES FROM THE CONTAINER TO THE WORKSPACE
 
       - name: Copy markdownlint config
         run: cp /app/commitlint.config.js $GITHUB_WORKSPACE
 
     # LINT ALL MARKDOWNFILES WITH EXTENSION '*.MD' LOCATED ANYWHERE IN THE PROJECT FOLDER
-        
-      - name: lsa
-        run: ls -a
         
       - name: Run commitlint
         run: commitlint --config commitlint.config.js --edit
