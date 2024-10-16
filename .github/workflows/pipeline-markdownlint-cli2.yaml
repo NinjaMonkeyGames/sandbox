@@ -19,7 +19,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # RUN COMMITLINT TO LINT THE COMMIT MESSAGES IN THE REPOSITORY, IGNORING LOCKS
+      # DYNAMICALLY SET THE SAFE GIT DIRECTORY TO AVOID THE DUBIOUS OWNERSHIP ERROR
+      - name: Set Git Safe Directory
+        run: git config --global --add safe.directory /__w/${{ github.repository_owner }}/${{ github.repository }}
+
+      # RUN COMMITLINT TO LINT THE COMMIT MESSAGES IN THE REPOSITORY
       - name: Run commitlint
-        run: |
-          GIT_OPTIONAL_LOCKS=0 commitlint --config /app/commitlint.config.js --from HEAD~1 --to HEAD
+        run: commitlint --config /app/commitlint.config.js --from HEAD~1 --to HEAD
