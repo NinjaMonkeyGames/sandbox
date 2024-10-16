@@ -29,4 +29,3 @@ jobs:
         run: |
           echo "Running CommitLint..."
           commitlint --from=HEAD~1 --to=HEAD
-``
