@@ -31,9 +31,12 @@ jobs:
 
     # LINT ALL MARKDOWNFILES WITH EXTENSION '*.MD' LOCATED ANYWHERE IN THE PROJECT FOLDER
 
-      #- name: Run lsa
-      #  run: git config --global --add safe.directory '*'
+      - name: Run lsa
+        run: ls -a
+
+      - name: mark directory as safe to avoid error
+        run: git config --global --add safe.directory '*'
 
       - name: Run commitlint
-        run: commitlint --last -c
+        run: commitlint --last -c -s
 
