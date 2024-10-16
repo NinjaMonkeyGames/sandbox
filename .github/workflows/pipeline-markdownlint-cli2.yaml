@@ -1,6 +1,6 @@
-# LINT MARKDOWN FILES WITH MARKDOWNLINT-CLI2 LINTER
+# LINT COMMIT TEXT WITH COMMITLINT
 
-name: Markdown Lint
+name: Commit Lint
 
 # PERFORMS ACTIONS ON SUCCESSFUL PULL OR PUSH
 
@@ -15,7 +15,7 @@ jobs:
     container:
       image: monkeyknuckles/commitlint
 
-    # STEPS REQUIRED IN ORDER TO LINT MARKDOWN FILES
+    # STEPS REQUIRED IN ORDER TO LINT COMMIT MESSAGE
 
     steps:
 
@@ -24,21 +24,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-    # COPY CONFIGURATION FILE CONTAINING MARKDOWN LINTING RULES FROM THE CONTAINER TO THE WORKSPACE
+    # COPY CONFIGURATION FILE CONTAINING COMMITLINT LINTING RULES FROM THE CONTAINER TO THE WORKSPACE
 
       - name: Copy commitlint config
         run: cp /app/commitlint.config.js $GITHUB_WORKSPACE
 
-    # LINT ALL MARKDOWNFILES WITH EXTENSION '*.MD' LOCATED ANYWHERE IN THE PROJECT FOLDER
-
-      - name: Run lsa
-        run: ls -a
-
     # MARK DIRECTORY AS SAFE TO AVOID SECURITY ERROR
 
-      - name: mark directory as safe to avoid error
-        run: git config --global --add safe.directory $GITHUB_WORKSPACE/.git
+      - name: Mark directory as safe to avoid error
+        run: git config --global --add safe.directory $GITHUB_WORKSPACE
+
+    # LINT LAST COMMIT
 
       - name: Run commitlint
-        run: commitlint --last -c -s
+        run: commitlint --from=origin/${{ github.event.repository.default_branch }} --to=$GITHUB_SHA
 
