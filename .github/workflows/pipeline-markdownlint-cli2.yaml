@@ -37,5 +37,5 @@ jobs:
     # LINT LAST COMMIT
 
       - name: Run commitlint
-        run: commitlint --from=origin/${{ github.event.repository.default_branch }} --to=$GITHUB_SHA
-
+        run: commitlint --last -c -s
+s
