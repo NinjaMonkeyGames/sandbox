@@ -1,19 +1,31 @@
-version: '1.0'
+name: CommitLint
+
+on:
+  push:
+    branches:
+      - main  # or your default branch
+  pull_request:
+    branches:
+      - main  # or your default branch
 
 jobs:
   lint:
-    docker:
-      - image: monkeyknuckles/commitlint:19.5.0
-    steps:
-      - checkout
-      - run:
-          name: Run CommitLint
-          command: |
-            echo "Running CommitLint..."
-            commitlint --from=HEAD~1 --to=HEAD
+    runs-on: ubuntu-latest
 
-workflows:
-  version: 1
-  lint:
-    jobs:
-      - lint
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '22.9.0'
+
+      - name: Install CommitLint
+        run: |
+          npm install -g @commitlint/{cli,config-conventional}
+
+      - name: Run CommitLint
+        run: |
+          echo "Running CommitLint..."
+          commitlint --from=HEAD~1 --to=HEAD

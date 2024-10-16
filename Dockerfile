@@ -7,8 +7,8 @@ WORKDIR /app
 # Copy the CommitLint configuration file into the working directory
 COPY .config/commitlint.config.js ./
 
-# Install CommitLint globally
-RUN npm install -g @commitlint/{config-conventional,cli} --save-dev
+# Install CommitLint and its conventional config separately
+RUN npm install -g @commitlint/cli@19.5.0 @commitlint/config-conventional@19.5.0 --save-dev
 
 # Default command to run CommitLint
 CMD ["commitlint", "--from=HEAD~1", "--to=HEAD"]
