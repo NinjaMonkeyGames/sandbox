@@ -1,14 +1,14 @@
-# Use official Node.js 22.9.0 image as the base image
+# Use the official Node.js image
 FROM node:22.9.0
 
-# Set the working directory inside the container
+# Set the working directory to app
 WORKDIR /app
 
-# Copy the commitlint configuration file to the working directory
-COPY .config/commitlint.config.js /app/
+# INCLUDE .commitlintrc.js IN DOCKER BUILD
+COPY .config/commitlint.config.js ./commitlint.config.js
 
-# Install commitlint version 19.5.0 globally
-RUN npm install -g @commitlint/cli@19.5.0
+# Install commitlint and husky globally
+RUN npm install -g @commitlint/config-conventional @commitlint/cli husky
 
-# Default command (if needed) - This can be customized if you want the container to execute specific commands
-CMD ["tail", "-f", "/dev/null"]
+# Command to run commitlint (adjust as needed)
+CMD ["bash"]

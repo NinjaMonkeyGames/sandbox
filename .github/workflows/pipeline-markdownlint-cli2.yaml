@@ -1,25 +1,28 @@
-name: CommitLint Check
+# LINT COMMIT MESSAGES WITH COMMITLINT
 
-# Trigger on push or pull request
+name: Commit Lint
+
+# PERFORMS ACTIONS ON SUCCESSFUL PULL OR PUSH
+
 on: [push, pull_request]
+
+# SETS DISTRIBUTION TO USE AND INITIALIZES LINTING JOB
 
 jobs:
   lint:
     runs-on: ubuntu-latest
-    
-    # Use monkeyknuckles/commitlint Docker image
+
     container:
       image: monkeyknuckles/commitlint
 
+    # STEPS REQUIRED IN ORDER TO LINT COMMIT MESSAGES
+
     steps:
-      # Checkout code from the repository
+
+    # CHECKOUT CODE
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Dynamically set Git safe directory to avoid ownership errors
-      - name: Set Git Safe Directory
-        run: git config --global --add safe.directory /__w/${{ github.event.repository.name }}/${{ github.event.repository.name }}
-
-      # Run CommitLint to lint the last commit message
+    # LINT COMMIT MESSAGES
       - name: Run commitlint
-        run: commitlint --config /app/commitlint.config.js --from HEAD~0 --to HEAD
+        run: commitlint --from=HEAD~1 --to=HEAD
