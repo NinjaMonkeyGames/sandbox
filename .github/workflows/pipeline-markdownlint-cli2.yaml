@@ -28,8 +28,8 @@ jobs:
       # Run CommitLint
       - name: Run commitlint
         run: |
-          if [ "${{ steps.commit_count.outputs.count }}" -gt 1 ]; then
-            commitlint --config /app/commitlint.config.js --from HEAD~1 --to HEAD
+          if [ "${{ steps.commit_count.outputs.count }}" -ge 1 ]; then
+            commitlint --config /app/commitlint.config.js --from HEAD~1 --to HEAD || commitlint --config /app/commitlint.config.js --from HEAD~0 --to HEAD
           else
             echo "Not enough commits to run commitlint."
           fi
