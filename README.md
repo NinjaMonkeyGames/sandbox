@@ -10,20 +10,20 @@ projects and allows for smoother development and CD/CI integration.
 
 ## Pipeline YAML configuration information ##
 
-There is a 'commitlint.config.js' file containing the markdown configuration located in the .config folder of the project
-directory. You can use the following YAML line to copy this into your project directory.
+There is a 'commitlint.config.js' file containing the commitlint configuration located in the .config folder of the
+project directory. You can use the following YAML line to copy this into your project directory.
 
 ```shell
-cp /app/.commitlint.yaml $GITHUB_WORKSPACE
+cp /app/commitlint.config.js $GITHUB_WORKSPACE
 ```
 
 Alternately you can use the following command to use your own configuration file.
 
 ```shell
-markdownlint-cli2 '**/*.md' --config .\.commitlint.config.js
+commitlint --last -c -s
 ```
 
-See links below for more information about Markdownlint-cli2 and Debian Linux.
+See links below for more information about commitlint and Debian Linux.
 
 ---
 
@@ -57,21 +57,20 @@ docker run -it commitlint
   
 - **Project links:**
   
-  - **Project Docker pull address:**  docker pull monkeyknuckles/markdownlint-cli2
+  - **Project Docker pull address:**  docker pull monkeyknuckles/commitlint
 
-  - **Project Docker landing page:**  <https://hub.docker.com/r/monkeyknuckles/markdownlint-cli2>
-  - **Project clone address:**        <https://github.com/NinjaMonkeyGames/markdownlint-cli2-docker.git>
-  - **Project landing page:**         <https://github.com/NinjaMonkeyGames/markdownlint-cli2-docker>
-  - **Project wiki page:**            <https://github.com/NinjaMonkeyGames/markdownlint-cli2-docker/wiki>
+  - **Project Docker landing page:**  <https://hub.docker.com/r/monkeyknuckles/commitlint>
+  - **Project clone address:**        <https://github.com/NinjaMonkeyGames/commitlint.git>
+  - **Project landing page:**         <https://github.com/NinjaMonkeyGames/commitlint>
+  - **Project wiki page:**            <https://github.com/NinjaMonkeyGames/commitlint/wiki>
 
 - **3rd Party links:**
 
   - **Node source pull address:**     docker pull node:22.9.0
 
-  - **Markdownlint-cli2:**            <https://github.com/DavidAnson/markdownlint-cli2.git>
-  - **Markdownlint:**                 <https://github.com/DavidAnson/markdownlint>
-  - **NPM:**                          <https://www.npmjs.com/package/markdownlint-cli2>
-  - **VSC Plugin:**                   <https://github.com/DavidAnson/vscode-markdownlint>
+  - **commitlint:**                   <https://github.com/conventional-changelog/commitlint>
+  - **NPM:**                          <https://www.npmjs.com/package/commitlint>
+  - **VSC Plugin:**                   <>
 
 ---
 
@@ -144,4 +143,3 @@ Any bugs should be raised as an [issue](https://github.com/NinjaMonkeyGames/mark
 ## Copyright ##
 
 *Ninja Monkey Games Copyright © 2024 All rights reserved.*
-
