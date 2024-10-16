@@ -20,16 +20,6 @@ jobs:
       - name: Set Git Safe Directory
         run: git config --global --add safe.directory /__w/${{ github.event.repository.name }}/${{ github.event.repository.name }}
 
-      # Get the commit count
-      - name: Check Commit Count
-        id: commit_count
-        run: echo "::set-output name=count::$(git rev-list --count HEAD)"
-
-      # Run CommitLint
+      # Run CommitLint to lint the last commit message
       - name: Run commitlint
-        run: |
-          if [ "${{ steps.commit_count.outputs.count }}" -ge 1 ]; then
-            commitlint --config /app/commitlint.config.js --from HEAD~1 --to HEAD || commitlint --config /app/commitlint.config.js --from HEAD~0 --to HEAD
-          else
-            echo "Not enough commits to run commitlint."
-          fi
+        run: commitlint --config /app/commitlint.config.js --from HEAD~0 --to HEAD
