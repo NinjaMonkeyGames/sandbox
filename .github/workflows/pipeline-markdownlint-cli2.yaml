@@ -19,6 +19,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Set Git safe directory to avoid dubious ownership issues
+      - name: Set Git safe directory
+        run: git config --global --add safe.directory /__w/sandbox/sandbox
+
       # SETUP NODE.JS
       - name: Set up Node.js
         run: npm install -g @commitlint/cli@19.5.0 @commitlint/config-conventional@19.5.0
