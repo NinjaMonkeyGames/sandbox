@@ -1,23 +1,28 @@
 name: CommitLint Check
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
+# PERFORMS ACTIONS ON SUCCESSFUL PULL OR PUSH
+on: [push, pull_request]
 
+# SETS DISTRIBUTION TO USE AND INITIALIZES COMMITLINT JOB
 jobs:
-  commitlint:
+  lint:
     runs-on: ubuntu-latest
+    
+    # USES MONKEYKNUCKLES/COMMITLINT DOCKER IMAGE AS THE CONTAINER
+    container:
+      image: monkeyknuckles/commitlint
 
+    # STEPS REQUIRED IN ORDER TO LINT COMMIT MESSAGES
     steps:
-      - name: Checkout Code
+
+      # CHECKOUT CODE
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Build Docker Image
-        run: |
-          docker build -t monkeyknuckles/commitlint .
+      # COPY COMMITLINT CONFIGURATION FILE FROM THE WORKSPACE
+      - name: Copy commitlint config
+        run: cp /app/commitlint.config.js $GITHUB_WORKSPACE
 
-      - name: Run CommitLint in Container
-        run: |
-          docker run --rm monkeyknuckles/commitlint /bin/bash -c "commitlint --config /app/commitlint.config.js --from HEAD~1 --to HEAD"
+      # RUN COMMITLINT TO LINT THE COMMIT MESSAGES IN THE REPOSITORY
+      - name: Run commitlint
+        run: commitlint --config /app/commitlint.config.js --from HEAD~1 --to HEAD
