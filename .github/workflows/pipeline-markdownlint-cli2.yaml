@@ -3,10 +3,10 @@ name: CommitLint
 on:
   push:
     branches:
-      - main  # or your default branch
+      - main  # Change this to your default branch if necessary
   pull_request:
     branches:
-      - main  # or your default branch
+      - main  # Change this to your default branch if necessary
 
 jobs:
   lint:
@@ -23,9 +23,10 @@ jobs:
 
       - name: Install CommitLint
         run: |
-          npm install -g @commitlint/{cli,config-conventional}
+          npm install -g @commitlint/cli@19.5.0 @commitlint/config-conventional@19.5.0
 
       - name: Run CommitLint
         run: |
           echo "Running CommitLint..."
           commitlint --from=HEAD~1 --to=HEAD
+``
