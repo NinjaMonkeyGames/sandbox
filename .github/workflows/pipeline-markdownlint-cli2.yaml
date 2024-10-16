@@ -30,9 +30,10 @@ jobs:
         run: cp /app/commitlint.config.js $GITHUB_WORKSPACE
 
     # LINT ALL MARKDOWNFILES WITH EXTENSION '*.MD' LOCATED ANYWHERE IN THE PROJECT FOLDER
-        
-      #- name: Run markdownlint-cli2
-      #  run: markdownlint-cli2 '**/*.md'
 
       - name: Run lsa
         run: ls -a
+
+      - name: Run commitlint
+        run: commitlint --from=HEAD~1 --to=HEAD
+
