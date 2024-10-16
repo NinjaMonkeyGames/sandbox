@@ -10,7 +10,7 @@ jobs:
     
     # USES MONKEYKNUCKLES/COMMITLINT DOCKER IMAGE AS THE CONTAINER
     container:
-      image: commitlint/commitlint
+      image: monkeyknuckles/commitlint
 
     # STEPS REQUIRED IN ORDER TO LINT COMMIT MESSAGES
     steps:
