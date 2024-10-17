@@ -32,7 +32,7 @@ See links below for more information about Markdownlint-cli2 and Debian Linux.
 Build container
 
 ```shell
-docker build -t markdownlint-cli2 .
+docker build -t "package_name" -f "name of docker file" .
 ```
 
 Tag container
@@ -60,9 +60,9 @@ docker run -it markdownlint-cli2
     - **Project Docker pull address:**  docker pull monkeyknuckles/markdownlint-cli2
 
     - **Project Docker landing page:**  <https://hub.docker.com/r/monkeyknuckles/markdownlint-cli2>
-    - **Project clone address:**        <https://github.com/NinjaMonkeyGames/markdownlint-cli2-docker.git>
+    - **Project clone address:**        <https://github.com/NinjaMonkeyGames/markdownlint-cli2.git>
     - **Project landing page:**         <https://github.com/NinjaMonkeyGames/markdownlint-cli2-docker>
-    - **Project wiki page:**            <https://github.com/NinjaMonkeyGames/markdownlint-cli2-docker/wiki>
+    - **Project wiki page:**            [coming soon...]
 
   - **3rd Party links:**
 
@@ -78,7 +78,6 @@ docker run -it markdownlint-cli2
 ## Includes ##
 
   - Debian Linux        v12.4+deb12u7
-  - Node                v22.9.0
   - NPM                 v10.8.3
   - Markdownlint-cli2   v0.14.0
   - Markdownlint        v0.35.0
