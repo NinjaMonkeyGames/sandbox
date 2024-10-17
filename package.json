@@ -1,5 +1,15 @@
 {
+  "name": "markdownlint-cli2",
+  "version": "1.0.0",
+  "description": "## What is this repository for? ##",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "devDependencies": {
-    "commitlint": "^19.5.0"
+    "markdownlint-cli2": "^0.14.0"
   }
 }

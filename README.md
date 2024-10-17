@@ -10,20 +10,20 @@ projects and allows for smoother development and CD/CI integration.
 
 ## Pipeline YAML configuration information ##
 
-There is a 'commitlint.config.js' file containing the commitlint configuration located in the .config folder of the
-project directory. You can use the following YAML line to copy this into your project directory.
+There is a '.markdownlint.yaml' file containing the markdown configuration located in the .config folder of the project
+directory. You can use the following YAML line to copy this into your project directory.
 
 ```shell
-cp /app/commitlint.config.js $GITHUB_WORKSPACE
+cp /app/.markdownlint-cli2.yaml $GITHUB_WORKSPACE
 ```
 
 Alternately you can use the following command to use your own configuration file.
 
 ```shell
-commitlint --last -c -s
+markdownlint-cli2 '**/*.md' --config .\.markdownlint-cli2.yaml
 ```
 
-See links below for more information about commitlint and Debian Linux.
+See links below for more information about Markdownlint-cli2 and Debian Linux.
 
 ---
 
@@ -32,55 +32,56 @@ See links below for more information about commitlint and Debian Linux.
 Build container
 
 ```shell
-docker build -t commitlint .
+docker build -t markdownlint-cli2 .
 ```
 
 Tag container
 
 ```shell
-docker tag commitlint monkeyknuckles/commitlint:latest
+docker tag markdownlint-cli2 monkeyknuckles/markdownlint-cli2:latest
 ```
 
 Push container
 
 ```shell
-docker push monkeyknuckles/commitlint:latest
+docker push monkeyknuckles/markdownlint-cli2:latest
 ```
 
 Connect to container directly
 
 ```shell
-docker run -it commitlint
+docker run -it markdownlint-cli2
 ```
 
 ## Useful links ##
   
-- **Project links:**
+  - **Project links:**
   
-  - **Project Docker pull address:**  docker pull monkeyknuckles/commitlint
+    - **Project Docker pull address:**  docker pull monkeyknuckles/markdownlint-cli2
 
-  - **Project Docker landing page:**  <https://hub.docker.com/r/monkeyknuckles/commitlint>
-  - **Project clone address:**        <https://github.com/NinjaMonkeyGames/commitlint.git>
-  - **Project landing page:**         <https://github.com/NinjaMonkeyGames/commitlint>
-  - **Project wiki page:**            <https://github.com/NinjaMonkeyGames/commitlint/wiki>
+    - **Project Docker landing page:**  <https://hub.docker.com/r/monkeyknuckles/markdownlint-cli2>
+    - **Project clone address:**        <https://github.com/NinjaMonkeyGames/markdownlint-cli2-docker.git>
+    - **Project landing page:**         <https://github.com/NinjaMonkeyGames/markdownlint-cli2-docker>
+    - **Project wiki page:**            <https://github.com/NinjaMonkeyGames/markdownlint-cli2-docker/wiki>
 
-- **3rd Party links:**
+  - **3rd Party links:**
 
-  - **Node source pull address:**     docker pull node:22.9.0
+    - **Node source pull address:**     docker pull node:22.9.0
 
-  - **commitlint:**                   <https://github.com/conventional-changelog/commitlint>
-  - **NPM:**                          <https://www.npmjs.com/package/commitlint>
-  - **VSC Plugin:**                   <>
+    - **Markdownlint-cli2:**            <https://github.com/DavidAnson/markdownlint-cli2.git>
+    - **Markdownlint:**                 <https://github.com/DavidAnson/markdownlint>
+    - **NPM:**                          <https://www.npmjs.com/package/markdownlint-cli2>
+    - **VSC Plugin:**                   <https://github.com/DavidAnson/vscode-markdownlint>
 
 ---
 
 ## Includes ##
 
-- Debian Linux        v12.4+deb12u7
-- Node                v22.9.0
-- NPM                 v10.8.3
-- Markdownlint-cli2   v0.14.0
-- Markdownlint        v0.35.0
+  - Debian Linux        v12.4+deb12u7
+  - Node                v22.9.0
+  - NPM                 v10.8.3
+  - Markdownlint-cli2   v0.14.0
+  - Markdownlint        v0.35.0
 
 ---
 
@@ -122,9 +123,9 @@ docker run -it commitlint
 
 You must install all of the plugins in extensions.json. You must all install the following on your system:
   
-- NodeJS (22.9.0)
-- Microsoft Visual Studio Code (1.94.2)
-- Microsoft Windows 11
+  - NodeJS (22.9.0)
+  - Microsoft Visual Studio Code (1.94.2)
+  - Microsoft Windows 11
 
 ---
 
