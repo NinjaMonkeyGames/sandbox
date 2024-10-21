@@ -1,12 +1,14 @@
 # LINT MARKDOWN FILES WITH MARKDOWNLINT-CLI2 LINTER
 
-# 
-
 name: Markdown Lint
 
 # PERFORMS ACTIONS ON SUCCESSFUL PULL OR PUSH
 
 on: [push, pull_request]
+
+concurrency:
+  group: 'workflow1-${{ github.ref }}'  # Unique group for this workflow
+  cancel-in-progress: false  # Set to true to cancel previous runs if a new one starts
   
 # SETS DISTRIBUTION TO USE AND INITIALIZES LINTING JOB
 
