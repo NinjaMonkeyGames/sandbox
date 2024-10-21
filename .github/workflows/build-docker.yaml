@@ -1,3 +1,5 @@
+# BUILD DOCKER CONTAINER FROM FILES IN THE PROJECT
+
 name: Build and Push Docker Image
 
 # Trigger on push to main branch and pull requests

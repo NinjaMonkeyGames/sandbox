@@ -1,0 +1,37 @@
+# LINT MARKDOWN FILES WITH MARKDOWNLINT-CLI2 LINTER
+
+# 
+
+name: Markdown Lint
+
+# PERFORMS ACTIONS ON SUCCESSFUL PULL OR PUSH
+
+on: [push, pull_request]
+  
+# SETS DISTRIBUTION TO USE AND INITIALIZES LINTING JOB
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    
+    container:
+      image: monkeyknuckles/markdownlint-cli2
+
+    # STEPS REQUIRED IN ORDER TO LINT MARKDOWN FILES
+
+    steps:
+
+    # CHECKOUT CODE
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+    # COPY CONFIGURATION FILE CONTAINING MARKDOWN LINTING RULES FROM THE CONTAINER TO THE WORKSPACE
+
+      - name: Copy markdownlint config
+        run: cp /app/.markdownlint.yaml $GITHUB_WORKSPACE
+
+    # LINT ALL MARKDOWNFILES WITH EXTENSION '*.MD' LOCATED ANYWHERE IN THE PROJECT FOLDER
+        
+      - name: Run markdownlint-cli2
+        run: markdownlint-cli2 "**/*.md" "#node_modules"
