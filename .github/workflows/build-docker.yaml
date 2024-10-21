@@ -1,15 +1,9 @@
 # BUILD DOCKER CONTAINER FROM FILES IN THE PROJECT
 
-name: Build and Push Docker Image
+name: Build and push Docker Image # Label that will appear on GitHub actions as the workflow name
 
-# Trigger on push to main branch and pull requests
-on: 
-  [push, pull_request]  # This line allows the workflow to run on both events
-
-# Allow concurrent runs and manage them by branch reference
-concurrency:
-  group: 'docker-build-${{ github.ref }}'  # Unique group for this workflow
-  cancel-in-progress: false  # Set to true to cancel previous runs if a new one starts
+on: # Trigger on push to main branch
+  [push]  # This line allows the workflow to run push event
 
 jobs:
   build:
@@ -22,7 +16,7 @@ jobs:
 
     # SET UP DOCKER BUILDX
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
+      uses: docker/setup-buildx-action@v3
 
     # LOG IN TO DOCKERHUB
     - name: Log in to DockerHub
