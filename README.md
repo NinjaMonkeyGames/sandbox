@@ -7,7 +7,14 @@
     - [IDE setup instructions](#ide-setup-instructions)
     - [Configuration files](#configuration-files)
   - [Testing](#testing)
+    - [Configuration file validation test](#configuration-file-validation-test)
     - [Build and test docker instructions](#build-and-test-docker-instructions)
+      - [Build container](#build-container)
+      - [Tag container](#tag-container)
+      - [Push container](#push-container)
+      - [Push container with credentials](#push-container-with-credentials)
+      - [Connect to container directly](#connect-to-container-directly)
+    - [Check file count](#check-file-count)
   - [Useful links](#useful-links)
   - [Includes](#includes)
   - [System Requirements](#system-requirements)
@@ -52,6 +59,8 @@ the environment.
 
 ## Testing ##
 
+### Configuration file validation test ###
+
 The markdown-fail folder contains every single possible markdownlint-cli2 linting error. This serves as a reference for
 testing. Note that 'md0013.md' can be used to check the configuration file is being respected. The default rule is
 a maximum of 80 characters per line. The config modifies this to 120 characters.
@@ -61,7 +70,9 @@ and the problems pane in the VSC terminal should display "MD013/line-length: Lin
 If the configuration file is not working it will either say "MD013/line-length: Line length [Expected: 80; Actual: 121]"
 or it will say nothing at all.
 
-You can also run the following line to ensure that both the configuration file is correct and that the version of
+### Check file count ###
+
+You can also run the command listed below to ensure that both the configuration file is correct and that the version of
 markdownlint is also correct. The results should show:
 
 Linting: 50 file(s)  
@@ -71,35 +82,43 @@ Summary: 100 error(s)
 npx markdownlint-cli2 "**/*.md" "#node_modules" --config .config/.markdownlint.yaml
 ```
 
+
+
 Please remember to check the output tab also. This should be free from errors.
 
 'markdownlint-cli2.dockerfile' contains a script with instructions on how to build the docker container. The build
 instructions can be seen below.
 
-## Build and test docker instructions ##
+### Build and test docker instructions ###
 
 These are list of commands you can execute in order to build, tag, upload/push and test the project directly from the
 terminal.
 
-Build container
+#### Build container ####
 
 ```shell
 docker build -t "package_name" -f "name of docker file" .
 ```
 
-Tag container
+#### Tag container ####
 
 ```shell
 docker tag markdownlint-cli2 monkeyknuckles/markdownlint-cli2:latest
 ```
 
-Push container
+#### Push container ####
 
 ```shell
 docker push monkeyknuckles/markdownlint-cli2:latest
 ```
 
-Connect to container directly
+#### Push container with credentials ####
+
+```shell
+docker buildx build --sbom=true --provenance=true --tag monkeyknuckles/'markdownlint-cli2' --push .
+```
+
+#### Connect to container directly ####
 
 ```shell
 docker run -it markdownlint-cli2
