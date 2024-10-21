@@ -1,10 +1,8 @@
 name: Build and Push Docker Image
 
-# Trigger on push to main branch
-on:
-  push:
-    branches:
-      - main
+# Trigger on push to main branch and pull requests
+on: 
+  [push, pull_request]  # This line allows the workflow to run on both events
 
 # Allow concurrent runs and manage them by branch reference
 concurrency:
