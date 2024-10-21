@@ -1,4 +1,6 @@
 {
+    // PROMPTS USER TO INSTALLED REQUIRED PROJECT PLUGINS
+    
     "recommendations": 
     [
         "DavidAnson.vscode-markdownlint" // Prompt install for markdownlint plugin

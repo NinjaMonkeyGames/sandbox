@@ -1,5 +1,5 @@
 {
-    // VISUAL STUDION CODE IDE PROJECT AND WOEKSPACE SETTINGS
+    // VISUAL STUDIO CODE IDE PROJECT AND WORKSPACE SETTINGS
 
     "files.eol": "\n",                          // Force all new files to be in LF format opposed to CRLF 
     "files.autoSave": "afterDelay",             // All file changes will be saved periodically
@@ -26,7 +26,7 @@
     "search.exclude": 
     {
         "**/.git": false,           // Include .git folder
-        "**/node_modules": false,   // Include node-modules folder
+        "**/node_modules": false,   // Include node_modules folder
     },
 
     // MARKDOWNLINT-CLI2 CONFIGURATION OPTIONS

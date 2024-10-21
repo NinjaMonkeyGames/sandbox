@@ -6,6 +6,10 @@ name: Markdown Lint
 
 on: [push, pull_request]
 
+concurrency:
+  group: 'workflow1-${{ github.ref }}'  # Unique group for this workflow
+  cancel-in-progress: false  # Set to true to cancel previous runs if a new one starts
+  
 # SETS DISTRIBUTION TO USE AND INITIALIZES LINTING JOB
 
 jobs:
@@ -32,4 +36,4 @@ jobs:
     # LINT ALL MARKDOWNFILES WITH EXTENSION '*.MD' LOCATED ANYWHERE IN THE PROJECT FOLDER
         
       - name: Run markdownlint-cli2
-        run: npx markdownlint-cli2 "**/*.md" "#node_modules"
+        run: markdownlint-cli2 "**/*.md" "#node_modules"
