@@ -83,7 +83,8 @@ terminal.
 
 Build container
 
-```shelldocker build -t "package_name" -f "name of docker file" .
+```shell
+docker build -t "package_name" -f "name of docker file" .
 ```
 
 Tag container
