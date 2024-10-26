@@ -1,0 +1,9 @@
+// STORES KEY BINDINGS
+
+{
+    // CONVERTS SELECTED TEXT TO TITLE CASE
+
+    "key": "ctrl+shift+t",                              // Set keybinding to CTRL + SHIFT + T
+    "command": "editor.action.transformToTitlecase",    // Transform text to title case
+    "when": "editorTextFocus"                           // Transform selected text only
+}

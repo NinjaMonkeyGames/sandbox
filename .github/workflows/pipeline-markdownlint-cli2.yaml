@@ -2,15 +2,11 @@
 
 name: Markdown Lint
 
-# PERFORMS ACTIONS ON SUCCESSFUL PULL OR PUSH
+# Performs actions on successful pull or push 
 
 on: [push, pull_request]
-
-concurrency:
-  group: 'workflow1-${{ github.ref }}'  # Unique group for this workflow
-  cancel-in-progress: false  # Set to true to cancel previous runs if a new one starts
   
-# SETS DISTRIBUTION TO USE AND INITIALIZES LINTING JOB
+# Sets Distribution To Use And Initializes Linting Job
 
 jobs:
   lint:
@@ -19,21 +15,21 @@ jobs:
     container:
       image: monkeyknuckles/markdownlint-cli2
 
-    # STEPS REQUIRED IN ORDER TO LINT MARKDOWN FILES
+    # Steps Required In Order To Lint Markdown Files
 
     steps:
 
-    # CHECKOUT CODE
+    # Checkout Code
 
       - name: Checkout code
         uses: actions/checkout@v3
 
-    # COPY CONFIGURATION FILE CONTAINING MARKDOWN LINTING RULES FROM THE CONTAINER TO THE WORKSPACE
+    # Copy Configuration File Containing Markdown Linting Rules From The Container To The Workspace
 
       - name: Copy markdownlint config
         run: cp /app/.markdownlint.yaml $GITHUB_WORKSPACE
 
-    # LINT ALL MARKDOWNFILES WITH EXTENSION '*.MD' LOCATED ANYWHERE IN THE PROJECT FOLDER
+    # Lint All Markdownfiles With Extension '*.Md' Located Anywhere In The Project Folder
         
       - name: Run markdownlint-cli2
         run: markdownlint-cli2 "**/*.md" "#node_modules"

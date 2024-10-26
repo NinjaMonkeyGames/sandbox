@@ -7,7 +7,7 @@
     - [IDE setup instructions](#ide-setup-instructions)
     - [Configuration files](#configuration-files)
   - [Testing](#testing)
-    - [Configuration file validation test](#configuration-file-validation-test)
+    - [Configuration file validation test](#configuration-file-validation-test)A
     - [Build and test docker instructions](#build-and-test-docker-instructions)
       - [Build container](#build-container)
       - [Tag container](#tag-container)
@@ -82,8 +82,6 @@ Summary: 100 error(s)
 npx markdownlint-cli2 "**/*.md" "#node_modules" --config .config/.markdownlint.yaml
 ```
 
-
-
 Please remember to check the output tab also. This should be free from errors.
 
 'markdownlint-cli2.dockerfile' contains a script with instructions on how to build the docker container. The build
@@ -97,7 +95,7 @@ terminal.
 #### Build container ####
 
 ```shell
-docker build -t "package_name" -f "name of docker file" .
+docker build -t "markdownlint-cli2" -f "name of docker file" .
 ```
 
 #### Tag container ####
@@ -179,15 +177,16 @@ Update this section every single time a file has either moved, renamed, deleted 
 | .artifacts/avatar.png                        | Monkey Knuckles (Daniel Mallett) Avatar.                              |
 | .artifacts/logo.png                          | Ninja Monkey Games  Avatar.                                           |
 | .config                                      | Stores environment configuration files.                               |
-| .config/.markdownlint.yaml                   | Contains rules for markdownlint-cli2.                                 |
-| .config/build-docker.yaml                    | Build and push Docker image with SBOM and Provenance.                 |
+| ~~.config/.markdownlint.yaml~~               | ~~Contains rules for markdownlint-cli2.~~                             |
 | .github                                      | Stores GitHub CD/CI workflow files.                                   |
 | .github/workflows                            | Stores GitHub CD/CI pipeline YAML files.                              |
-| .github/workflows                            | pipeline-markdownlint-cli2.yaml.                                      |
+| .github/workflows/build-docker.yaml          | Build and push Docker image with SBOM and Provenance.                 |
+| .github/workflows/pipeline-markdownlint.yaml | pipeline-markdownlint-cli2.yaml.                                      |
 | .vscode                                      | Stores VSC IDE settings.                                              |
 | .vscode/extensions.json                      | List of plugins to install.                                           |
+| .vscode/keybindings.json                     | Stores a list of key bindings for common IDE actions.                 |
 | .vscode/settings.json                        | Stores VSC IDE settings. (This is actually a jsonc file).             |
-| .vscode/tasks.json                           | his file will setup the workspace with required plugins and packages. |
+| .vscode/tasks.json                           | This file will setup node_modules folder with required npm packages.  |
 | markdown-fail                                | Contains a file to test each markdownlint-cli2 rule.                  |
 | .gitignore                                   | List of files, folders and patterns to ignore.                        |
 | markdown-fail/md0001 - md0056                | Markdown rule test files. Excludes md:2, 6, 8, 14, 15, 16 and 17.     |
@@ -221,6 +220,14 @@ This project uses a sequential versioning system. Please update this with every 
 | 0.0.1.5        | Added 'build-docker.yaml'. Build and push Docker image with SBOM and Provenance.                    |
 | 0.0.1.6        | Moved 'build-docker.yaml' to it's proper location '.config/'. Was not moved in last commit.         |
 | 0.0.1.7        | Added concurrency to all YAML files so they are run independently.                                  |
+| 0.0.1.8        | Testing without 'build-docker.yaml'.                                                                |
+| 0.0.1.9        | Fixed issue with '.markdownlint.yaml' not being copied.                                             |
+| 0.0.2.0        | Test with 'build-docker.yaml'.                                                                      |
+| 0.0.2.1        | Uploading to test for provenance.                                                                   |
+| 0.0.2.2        | Testing PAT.                                                                                        |
+| 0.0.2.3        | Added 'keybindings.json'. Removed '.markdownlint.yaml'.                                             |
+| 0.0.2.4        | Fixed 'build-docker.yaml'.                                                                          |
+| 0.0.2.5        | Amended 'build-docker.yaml' so that it will only run when Docker file has been modified.            |
 
 ## Contact information ##
 
