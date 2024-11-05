@@ -39,7 +39,7 @@ jobs:
         username: ${{ secrets.DOCKER_HUB_USERNAME }}
         password: ${{ secrets.DOCKER_HUB_PAT }}
 
-    # BUILD AND PUSH DOCKER IMAGE WITH SBOM AND PROVENANCE 
+    # BUILD AND PUSH DOCKER IMAGE WITH SBOM AND PROVENANCE
 
     - name: Build and push Docker image with SBOM and Provenance
       run: |
