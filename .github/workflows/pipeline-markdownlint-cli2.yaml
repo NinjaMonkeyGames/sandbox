@@ -1,3 +1,7 @@
+########################################################################################################################
+#                                           LINT ALL MARKDOWN FILES IN PROJECT                                         #
+########################################################################################################################
+
 # LINT MARKDOWN FILES WITH MARKDOWNLINT-CLI2 LINTER
 
 name: Markdown Lint
@@ -10,7 +14,7 @@ on: [push, pull_request]
 
 jobs:
   lint:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-3.20.3
     
     container:
       image: monkeyknuckles/markdownlint-cli2
@@ -29,7 +33,7 @@ jobs:
       - name: Copy markdownlint config
         run: cp /app/.markdownlint.yaml $GITHUB_WORKSPACE
 
-    # Lint All Markdownfiles With Extension '*.Md' Located Anywhere In The Project Folder
+    # Lint All Markdownfiles With Extension '*.md' Located Anywhere In The Project Folder
         
       - name: Run markdownlint-cli2
         run: markdownlint-cli2 "**/*.md" "#node_modules"

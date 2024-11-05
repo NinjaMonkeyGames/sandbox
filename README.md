@@ -1,8 +1,9 @@
-# README #
+# README
 
-## Contents ##
+## Contents
 
   - [What is this repository for?](#what-is-this-repository-for)
+  - [Who is this repository for?](#who-is-this-repository-for)
   - [Environment configuration information](#environment-configuration-information)
     - [IDE setup instructions](#ide-setup-instructions)
     - [Configuration files](#configuration-files)
@@ -24,18 +25,22 @@
   - [Contact information](#contact-information)
   - [Copyright](#copyright)
 
-## What is this repository for? ##
+## What is this repository for?
 
 The purpose of this repository is to provide a markdownlint-cli2 container with the purpose of linting markdown files as
 part of a CD/CI implementation.
 
+## Who is this repository for?
+
+This document and repository is for use by NinjaMonkeyGames staff and contractors.
+
 ---
 
-## Environment configuration information ##
+## Environment configuration information
 
-### IDE setup instructions ###
+### IDE setup instructions
 
-Press:
+**Press:**
 
 ```shell
 CTRL + SHIFT + B
@@ -44,7 +49,7 @@ CTRL + SHIFT + B
 This will install any plugins needed for the project by executing the contents of tasks.json located in the .vscode
 folder.
 
-### Configuration files ###
+### Configuration files
 
 There is a '.markdownlint.yaml' file containing the markdown configuration located in the .config folder of the project
 directory. This file stores rules as to how lint markdown files.
@@ -57,9 +62,9 @@ automatically. If not you can download and install it manually.
 Please also keep the '.vscode' folder and the .git folder in tact as these contain crucial settings for the project and
 the environment.
 
-## Testing ##
+## Testing
 
-### Configuration file validation test ###
+### Configuration file validation test
 
 The markdown-fail folder contains every single possible markdownlint-cli2 linting error. This serves as a reference for
 testing. Note that 'md0013.md' can be used to check the configuration file is being respected. The default rule is
@@ -70,7 +75,7 @@ and the problems pane in the VSC terminal should display "MD013/line-length: Lin
 If the configuration file is not working it will either say "MD013/line-length: Line length [Expected: 80; Actual: 121]"
 or it will say nothing at all.
 
-### Check file count ###
+### Check file count
 
 You can also run the command listed below to ensure that both the configuration file is correct and that the version of
 markdownlint is also correct. The results should show:
@@ -87,45 +92,45 @@ Please remember to check the output tab also. This should be free from errors.
 'markdownlint-cli2.dockerfile' contains a script with instructions on how to build the docker container. The build
 instructions can be seen below.
 
-### Build and test docker instructions ###
+### Build and test docker instructions
 
 These are list of commands you can execute in order to build, tag, upload/push and test the project directly from the
 terminal.
 
-#### Build container ####
+#### Build container
 
 ```shell
 docker build -t "markdownlint-cli2" -f "name of docker file" .
 ```
 
-#### Tag container ####
+#### Tag container
 
 ```shell
 docker tag markdownlint-cli2 monkeyknuckles/markdownlint-cli2:latest
 ```
 
-#### Push container ####
+#### Push container
 
 ```shell
 docker push monkeyknuckles/markdownlint-cli2:latest
 ```
 
-#### Push container with credentials ####
+#### Push container with credentials
 
 ```shell
 docker buildx build --sbom=true --provenance=true --tag monkeyknuckles/'markdownlint-cli2' --push .
 ```
 
-#### Connect to container directly ####
+#### Connect to container directly
 
 ```shell
 docker run -it markdownlint-cli2
 ```
 
-## Useful links ##
-  
+## Useful links
+
   - **Project links:**
-  
+
     - **Project Docker pull address:**  docker pull **monkeyknuckles/markdownlint-cli2**
 
     - **Project Docker landing page:**  <https://hub.docker.com/r/monkeyknuckles/markdownlint-cli2>
@@ -141,40 +146,41 @@ docker run -it markdownlint-cli2
     - **Markdownlint:**                 <https://github.com/DavidAnson/markdownlint>
     - **NPM:**                          <https://www.npmjs.com/package/markdownlint-cli2>
     - **VSC plugin:**                   <https://github.com/DavidAnson/vscode-markdownlint>
-    - **Commonmark standard**           <https://commonmark.org/>
+    - **CommonMark standard**           <https://commonmark.org/>
 
 ---
 
-## Includes ##
+## Includes
 
   - Alpine Linux        Alpine Linux v3.20.3
+  - NodeJS              v20.18.0 (LTS)
   - NPM                 v10.8.3
   - Markdownlint-cli2   v0.14.0
   - Markdownlint        v0.35.0
 
 ---
 
-## System Requirements ##
+## System Requirements
 
 You must install all of the plugins in extensions.json. You must all install the following on your system:
-  
-  - NodeJS (22.9.0)
+
+  - NodeJS (20.18.0)
   - Microsoft Visual Studio Code (1.94.2)
   - Dockerhub Desktop (4.34.3 (170107))
   - Microsoft Windows 11
 
 ---
 
-## Document management ##
+## Document management
 
-Update this section every single time a file has either moved, renamed, deleted or created.
+Update this section every single time a file has either moved, renamed, deleted, created or modified.
 
-### Files ###
+### Files
 
 | Folder / File Name                           | Description Of File Or Folder Contents                                |
 |----------------------------------------------|-----------------------------------------------------------------------|
 | .artifacts                                   | Stores data that may be needed throughout the CD/CI pipeline.         |
-| .artifacts/avatar.png                        | Monkey Knuckles (Daniel Mallett) Avatar.                              |
+| .artifacts/monkey-knuckles-avatar.png        | Monkey Knuckles (Daniel Mallett) Avatar.                              |
 | .artifacts/logo.png                          | Ninja Monkey Games  Avatar.                                           |
 | .config                                      | Stores environment configuration files.                               |
 | ~~.config/.markdownlint.yaml~~               | ~~Contains rules for markdownlint-cli2.~~                             |
@@ -189,14 +195,15 @@ Update this section every single time a file has either moved, renamed, deleted 
 | .vscode/tasks.json                           | This file will setup node_modules folder with required npm packages.  |
 | markdown-fail                                | Contains a file to test each markdownlint-cli2 rule.                  |
 | .gitignore                                   | List of files, folders and patterns to ignore.                        |
+| CONTRIBUTING.md                              | Information for developers regarding the proper use of the repository.|
+| DEVELOPER.md                                 | Detailed developers manual descrbing the entire project.              |
 | markdown-fail/md0001 - md0056                | Markdown rule test files. Excludes md:2, 6, 8, 14, 15, 16 and 17.     |
 | Dockerfile                                   | Contains a script to build markdownlint-cli2 docker file.             |
-| package-lock.json                            | Locks package versions.                                               |
 | package.json                                 | List of NPM packages to be installed as part of the project.          |
 | README.md                                    | This file contains various pieces of information about the project.   |
 | ~~sbom.json~~                                | ~~Software bill of materials.~~                                       |
 
-### Version history ###
+### Version history
 
 This project uses a sequential versioning system. Please update this with every single commit.
 
@@ -228,8 +235,11 @@ This project uses a sequential versioning system. Please update this with every 
 | 0.0.2.3        | Added 'keybindings.json'. Removed '.markdownlint.yaml'.                                             |
 | 0.0.2.4        | Fixed 'build-docker.yaml'.                                                                          |
 | 0.0.2.5        | Amended 'build-docker.yaml' so that it will only run when Docker file has been modified.            |
+| 0.0.2.6        | Final commit before moving on to next stage of the project.                                         |
+| 0.0.2.7        | Renamed 'avatar.png' to 'monkey-knuckles-avatar.png'. Started to word on 'DEVELOPER.md'.            |
+| 0.0.2.8        | Rolling test.                                                                                       |
 
-## Contact information ##
+## Contact information
 
 Author: Daniel Mallett (Monkey Knuckles)
 
@@ -241,6 +251,6 @@ Any bugs should be raised as an [issue](https://github.com/NinjaMonkeyGames/mark
 
 ---
 
-## Copyright ##
+## Copyright
 
 *Ninja Monkey Games Copyright © 2024 All rights reserved.*

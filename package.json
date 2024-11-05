@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "cspell": "^8.15.4",
     "markdownlint-cli2": "^0.14.0"
   }
 }

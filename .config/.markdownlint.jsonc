@@ -1,4 +1,6 @@
-// CONFIGURATION FILE CONTAINING THE LINTING RULES FOR MARKDOWNLINT
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//                         CONFIGURATION FILE CONTAINING THE LINTING RULES FOR MARKDOWNLINT                           //
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 {
     // BASE SETUP
@@ -49,7 +51,7 @@
     {
       "br_spaces": 2,                   // Spaces before line break.
       "list_item_empty_lines": false,   // Disallow spaces on empty lines.  
-      "strict": false                   // Disable unnecciseery line breaks.
+      "strict": true                    // Disable unnecciseery line breaks.
     },
 
     // MD010 - Hard tabs
