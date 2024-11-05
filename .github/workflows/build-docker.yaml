@@ -36,7 +36,7 @@ jobs:
     - name: Log in to DockerHub
       uses: docker/login-action@v3
       with:
-        username: ${{ secrets.DOCKER_USERNAME }}
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
         password: ${{ secrets.DOCKER_HUB_PAT }}
 
     # BUILD AND PUSH DOCKER IMAGE WITH SBOM AND PROVENANCE
