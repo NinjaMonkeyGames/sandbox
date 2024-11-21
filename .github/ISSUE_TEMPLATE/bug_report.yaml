@@ -2,24 +2,24 @@ name: Bug Report
 description: File a bug report
 title: "[Bug]: "
 labels: ["bug", "triage"]
-projects: ["example-org/project1", "example-org/project2"]
+projects: ["octo-org/project1", "octo-org/project2"]
 assignees:
   - octocat
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to file this bug report!
-        Please make sure you've upgraded to the latest version before submitting a bug.
+        Thanks for taking the time to report this issue!
+        Please fill out the form below to provide detailed information about the bug.
 
   - type: input
-    id: contact
+    id: contact-email
     attributes:
-      label: Contact Details
-      description: How can we get in touch with you if we need more info?
+      label: Contact Email
+      description: Please provide an email where we can reach you if more information is needed.
       placeholder: ex. email@example.com
     validations:
-      required: false  # Optional field
+      required: true  # Email is required
 
   - type: dropdown
     id: os
@@ -32,16 +32,42 @@ body:
         - Linux
         - Other
     validations:
-      required: true  # This should show the asterisk and make the submit button gray until filled
+      required: true  # OS selection is required
+
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Browser
+      description: What browser are you using?
+      options:
+        - Chrome
+        - Firefox
+        - Safari
+        - Microsoft Edge
+        - Opera
+        - Other
+    validations:
+      required: true  # Browser selection is required
+
+  - type: dropdown
+    id: bug-type
+    attributes:
+      label: Bug Type
+      description: Select the type of issue you are reporting.
+      options:
+        - Application Bug
+        - Documentation Problem
+    validations:
+      required: true  # Bug type selection is required
 
   - type: textarea
-    id: what-happened
+    id: problem-summary
     attributes:
-      label: What happened?
-      description: Please describe the issue in detail.
-      placeholder: Tell us what you see.
+      label: Problem Summary
+      description: Please describe the issue in a few sentences.
+      placeholder: A brief summary of the issue.
     validations:
-      required: true  # Required, should show red asterisk
+      required: true  # Summary is required
 
   - type: textarea
     id: expected-behavior
@@ -49,21 +75,21 @@ body:
       label: Expected Behavior
       description: What did you expect to happen?
     validations:
-      required: true  # Required, should show red asterisk
+      required: true  # Expected behavior is required
 
   - type: textarea
     id: actual-behavior
     attributes:
       label: Actual Behavior
-      description: What actually happened?
+      description: What actually happened? 
     validations:
-      required: true  # Required, should show red asterisk
+      required: true  # Actual behavior is required
 
   - type: checkboxes
     id: terms
     attributes:
       label: Code of Conduct
-      description: By submitting this issue, you agree to follow our [Code of Conduct](https://example.com).
+      description: By submitting this bug report, you agree to follow our [Code of Conduct](https://example.com).
       options:
         - label: I agree to follow this project's Code of Conduct
-          required: true  # Checkbox must be checked to submit
+          required: true  # Checkbox is required to submit the issue
