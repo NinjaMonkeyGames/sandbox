@@ -7,6 +7,7 @@
 name: Bug Report
 description: File a bug report
 title: "Type problem title here!"
+placeholder: email@example.com
 labels: ["bug", "triage"]
 projects: ["NinjaMonkeyGames/sandbox"]
 assignees:
