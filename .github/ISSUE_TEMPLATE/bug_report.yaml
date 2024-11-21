@@ -1,123 +1,20 @@
-name: Bug Report
-description: File a bug report
-title: "[Bug]: "
-labels: ["bug", "triage"]
-projects: ["NinjaMonkeyGames/sandbox"]
-assignees:
-  - monkey-knuckles
-body:
-  - type: markdown
-    attributes:
-      value: |
-        Thanks for taking the time to report this issue!
-        Please fill out the form below to provide detailed information about the bug.
-
-  - type: input
-    id: contact-email
-    attributes:
-      label: Contact Email
-      description: Please provide an email where we can reach you if more information is needed.
-      placeholder: email@example.com
-    validations:
-      required: true  # Email is required
-
-  - type: dropdown
-    id: os
-    attributes:
-      label: Operating System
-      description: What operating system are you using?
-      options:
-        - Windows
-        - macOS
-        - Linux
-        - Other
-    validations:
-      required: true  # OS selection is required
-
-  - type: dropdown
-    id: browser
-    attributes:
-      label: Browser
-      description: What browser are you using?
-      options:
-        - Chrome
-        - Firefox
-        - Safari
-        - Microsoft Edge
-        - Opera
-        - Other
-    validations:
-      required: true  # Browser selection is required
-
-  - type: dropdown
-    id: bug-type
-    attributes:
-      label: Bug Type
-      description: Select the type of issue you are reporting.
-      options:
-        - Application Bug
-        - Documentation Problem
-    validations:
-      required: true  # Bug type selection is required
-
-  - type: textarea
-    id: problem-summary
-    attributes:
-      label: Problem Summary
-      description: Please describe the issue in a few sentences.
-      placeholder: A brief summary of the issue.
-    validations:
-      required: true  # Summary is required
-
-  - type: textarea
-    id: expected-behavior
-    attributes:
-      label: Expected Behavior
-      description: What did you expect to happen?
-    validations:
-      required: true  # Expected behavior is required
-
-  - type: textarea
-    id: steps-to-reproduce
-    attributes:
-      label: Steps to Reproduce
-      description: Please list the steps to reproduce the issue.
-      placeholder: "1. \n2. \n3."
-    validations:
-      required: true  # Steps to reproduce are required
-
-  - type: textarea
-    id: actual-behavior
-    attributes:
-      label: Actual Behavior
-      description: What actually happened? 
-    validations:
-      required: true  # Actual behavior is required
-
-  - type: textarea
-    id: other-information
-    attributes:
-      label: Other Information
-      description: Provide any additional information or context that might help us resolve the issue.
-      placeholder: Additional context, error messages, or anything else that may be helpful.
-    validations:
-      required: false  # This field is optional
-
-  - type: input
-    id: attachment-link
-    attributes:
-      label: Attachment Link
-      description: If you have any relevant files, screenshots, or logs, please provide a link to them (e.g., from cloud storage or image hosting).
-      placeholder: ex. https://example.com/file.png
-    validations:
-      required: false  # Link is optional
-
-  - type: checkboxes
-    id: terms
-    attributes:
-      label: Code of Conduct
-      description: By submitting this bug report, you agree to follow our [Code of Conduct](https://example.com).
-      options:
-        - label: I agree to follow this project's Code of Conduct
-    validations:
-      required: true  # Checkbox is required to submit the issue
+bug_report:
+  summary: "Provide a brief summary of the issue."
+  description: "Describe the issue in detail. Include steps to reproduce the problem, expected results, and actual results."
+  severity: "How severe is the issue? (e.g., Low, Medium, High, Critical)"
+  environment:
+    operating_system: "Specify the operating system (e.g., Windows 10, macOS Monterey, Ubuntu 22.04)."
+    browser: "Specify the browser (e.g., Chrome 117, Firefox 118, Safari 16) and version."
+    application_version: "Specify the version of the application where the issue occurs."
+    hardware: "Include any relevant hardware details (e.g., CPU, GPU, RAM)."
+  steps_to_reproduce:
+    - "Step 1: ..."
+    - "Step 2: ..."
+    - "Step 3: ..."
+  expected_behavior: "Describe what you expected to happen."
+  actual_behavior: "Describe what actually happened."
+  logs_and_screenshots:
+    logs: "Attach or include any relevant logs."
+    screenshots: "Attach or describe screenshots if available."
+  additional_info: "Add any other information that may help diagnose the issue."
+  contact_information: "Provide your email or other contact details for follow-up (optional)."
