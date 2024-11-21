@@ -1,20 +1,21 @@
-bug_report:
+report:
+  type: "bug"
   summary: "Provide a brief summary of the issue."
-  description: "Describe the issue in detail. Include steps to reproduce the problem, expected results, and actual results."
-  severity: "How severe is the issue? (e.g., Low, Medium, High, Critical)"
+  description: "Describe the issue in detail, including steps to reproduce, expected results, and actual results."
+  severity: "Specify the severity of the issue (e.g., Low, Medium, High, Critical)."
   environment:
-    operating_system: "Specify the operating system (e.g., Windows 10, macOS Monterey, Ubuntu 22.04)."
+    os: "Specify the operating system (e.g., Windows 10, macOS Monterey, Ubuntu 22.04)."
     browser: "Specify the browser (e.g., Chrome 117, Firefox 118, Safari 16) and version."
-    application_version: "Specify the version of the application where the issue occurs."
-    hardware: "Include any relevant hardware details (e.g., CPU, GPU, RAM)."
+    app_version: "Specify the version of the application where the issue occurs."
+    hardware: "Include relevant hardware details (e.g., CPU, GPU, RAM)."
   steps_to_reproduce:
     - "Step 1: ..."
     - "Step 2: ..."
     - "Step 3: ..."
   expected_behavior: "Describe what you expected to happen."
   actual_behavior: "Describe what actually happened."
-  logs_and_screenshots:
-    logs: "Attach or include any relevant logs."
+  attachments:
+    logs: "Attach or include relevant logs."
     screenshots: "Attach or describe screenshots if available."
-  additional_info: "Add any other information that may help diagnose the issue."
-  contact_information: "Provide your email or other contact details for follow-up (optional)."
+  additional_information: "Provide any other details that may help diagnose the issue."
+  contact_info: "Include email or other contact details for follow-up (optional)."
