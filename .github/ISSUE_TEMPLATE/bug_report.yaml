@@ -85,6 +85,15 @@ body:
     validations:
       required: true  # Actual behavior is required
 
+  - type: textarea
+    id: other-information
+    attributes:
+      label: Other Information
+      description: Provide any additional information or context that might help us resolve the issue.
+      placeholder: Additional context, error messages, or anything else that may be helpful.
+    validations:
+      required: false  # This field is optional
+
   - type: checkboxes
     id: terms
     attributes:
