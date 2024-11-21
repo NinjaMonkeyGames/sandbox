@@ -1,21 +1,76 @@
-report:
-  type: "bug"
-  summary: "Provide a brief summary of the issue."
-  description: "Describe the issue in detail, including steps to reproduce, expected results, and actual results."
-  severity: "Specify the severity of the issue (e.g., Low, Medium, High, Critical)."
-  environment:
-    os: "Specify the operating system (e.g., Windows 10, macOS Monterey, Ubuntu 22.04)."
-    browser: "Specify the browser (e.g., Chrome 117, Firefox 118, Safari 16) and version."
-    app_version: "Specify the version of the application where the issue occurs."
-    hardware: "Include relevant hardware details (e.g., CPU, GPU, RAM)."
-  steps_to_reproduce:
-    - "Step 1: ..."
-    - "Step 2: ..."
-    - "Step 3: ..."
-  expected_behavior: "Describe what you expected to happen."
-  actual_behavior: "Describe what actually happened."
-  attachments:
-    logs: "Attach or include relevant logs."
-    screenshots: "Attach or describe screenshots if available."
-  additional_information: "Provide any other details that may help diagnose the issue."
-  contact_info: "Include email or other contact details for follow-up (optional)."
+name: "Bug Report"
+description: "Use this template to report a bug or issue with the system."
+body:
+  - type: input
+    id: summary
+    attributes:
+      label: "Summary"
+      description: "Provide a brief summary of the issue."
+      placeholder: "Enter a concise summary of the problem."
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: "Description"
+      description: "Provide detailed information about the issue, including steps to reproduce it."
+      placeholder: "Enter a detailed description of the problem."
+      required: true
+  - type: dropdown
+    id: severity
+    attributes:
+      label: "Severity"
+      description: "Select the severity level of the issue."
+      options:
+        - Low
+        - Medium
+        - High
+        - Critical
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: "Operating System"
+      description: "Specify the operating system (e.g., Windows, macOS, Linux)."
+      placeholder: "Enter the operating system."
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: "Browser"
+      description: "Specify the browser and version (e.g., Chrome 117, Firefox 118)."
+      placeholder: "Enter the browser name and version."
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: "Steps to Reproduce"
+      description: "List the steps required to reproduce the issue."
+      placeholder: "- Step 1\n- Step 2\n- Step 3"
+      required: true
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: "Expected Behavior"
+      description: "Describe what you expected to happen."
+      placeholder: "Enter the expected outcome."
+      required: true
+  - type: textarea
+    id: actual_behavior
+    attributes:
+      label: "Actual Behavior"
+      description: "Describe what actually happened."
+      placeholder: "Enter the observed outcome."
+      required: true
+  - type: textarea
+    id: additional_information
+    attributes:
+      label: "Additional Information"
+      description: "Provide any other details or context that might help us address the issue."
+      placeholder: "Enter additional details."
+      required: false
+  - type: file
+    id: attachments
+    attributes:
+      label: "Attachments"
+      description: "Attach relevant files, logs, or screenshots."
+      multiple: true
