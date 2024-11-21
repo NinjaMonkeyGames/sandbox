@@ -33,9 +33,20 @@ body:
       label: Version
       description: What version of our software are you running?
       options:
-        - 1.0.2 (Default)
-        - 1.0.3 (Edge)
+        - 0.0.0 (Default)
       default: 0
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating System
+      description: What operating system are you using?
+      options:
+        - Windows
+        - macOS
+        - Linux
+        - Other
     validations:
       required: true
   - type: dropdown
@@ -45,9 +56,12 @@ body:
       multiple: true
       options:
         - Firefox
+        - Brave
         - Chrome
         - Safari
         - Microsoft Edge
+        - Opera
+        - Other
   - type: textarea
     id: logs
     attributes:
