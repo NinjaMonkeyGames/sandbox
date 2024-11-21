@@ -1,64 +1,64 @@
-name: Bug Report Form
-description: Please provide the details of the bug you're experiencing.
-labels: ["bug"]
+name: Bug Report
+description: File a bug report.
+title: "[Bug]: "
+labels: ["bug", "triage"]
+projects: ["octo-org/1", "octo-org/44"]
+assignees:
+  - octocat
 body:
-  # 1) Title (handled by GitHub, not in form)
-  
-  # 2) Drop-down OS Selection
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Details
+      description: How can we get in touch with you if we need more info?
+      placeholder: ex. email@example.com
+    validations:
+      required: false
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Also tell us, what did you expect to happen?
+      placeholder: Tell us what you see!
+      value: "A bug happened!"
+    validations:
+      required: true
   - type: dropdown
-    id: operating_system
+    id: version
     attributes:
-      label: "Operating System"
+      label: Version
+      description: What version of our software are you running?
       options:
-        - Windows
-        - macOS
-        - Linux
-        - Other
+        - 1.0.2 (Default)
+        - 1.0.3 (Edge)
+      default: 0
     validations:
       required: true
-
-  # 3) Description of the Problem (textarea)
-  - type: textarea
-    id: problem_description
-    attributes:
-      label: "Description of the Problem"
-      placeholder: "Please describe the problem you're facing."
-    validations:
-      required: true
-
-  # 4) Expected Behavior (textarea)
-  - type: textarea
-    id: expected_behavior
-    attributes:
-      label: "Expected Behavior"
-      placeholder: "What did you expect to happen?"
-    validations:
-      required: true
-
-  # 5) Actual Behavior (textarea)
-  - type: textarea
-    id: actual_behavior
-    attributes:
-      label: "Actual Behavior"
-      placeholder: "What actually happened?"
-    validations:
-      required: true
-
-  # 6) I Agree to the Terms of the Submission (boolean)
-  - type: boolean
-    id: agree_terms
-    attributes:
-      label: "I agree to the terms of the submission"
-    validations:
-      required: true
-
-  # 7) Bug Type (Dropdown for Bug Type Selection)
   - type: dropdown
-    id: bug_type
+    id: browsers
     attributes:
-      label: "Bug Type"
+      label: What browsers are you seeing the problem on?
+      multiple: true
       options:
-        - Documentation Error
-        - Application Bug
-    validations:
-      required: true
+        - Firefox
+        - Chrome
+        - Safari
+        - Microsoft Edge
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://example.com). 
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
