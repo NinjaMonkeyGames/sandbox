@@ -44,8 +44,8 @@ body:
     validations:
       required: true
 
-  # 6) I Agree to the Terms of the Submission (checkbox)
-  - type: checkbox
+  # 6) I Agree to the Terms of the Submission (boolean)
+  - type: boolean
     id: agree_terms
     attributes:
       label: "I agree to the terms of the submission"
