@@ -112,3 +112,11 @@ body:
         - label: I agree to follow this project's Code of Conduct
     validations:
       required: true  # Checkbox is required to submit the issue
+
+  - type: file
+    id: attachments
+    attributes:
+      label: Attachments
+      description: Please attach any relevant files, screenshots, or logs that can help us better understand the issue.
+    validations:
+      required: false  # Attachments are optional
