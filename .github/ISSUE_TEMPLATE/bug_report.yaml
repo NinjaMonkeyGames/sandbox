@@ -2,21 +2,26 @@
 #                                                      BUG REPORT                                                      #
 ########################################################################################################################
 
-# 
+# Meta Data
 
 name: Bug Report
 description: File a bug report
 title: "[Bug]: "
-labels: ["bug", "triage"]
+labels: ["bug", "triage", "new"]
 projects: ["NinjaMonkeyGames/sandbox"]
 assignees:
   - monkey-knuckles
+
+# Introduction Text
+
 body:
   - type: markdown
     attributes:
       value: |
         Thanks for taking the time to report this issue!
         Please fill out the form below to provide detailed information about the bug.
+
+# Email Input
 
   - type: input
     id: contact-email
@@ -26,6 +31,8 @@ body:
       placeholder: email@example.com
     validations:
       required: true  # Email is required
+
+# OS Selection
 
   - type: dropdown
     id: os
@@ -39,6 +46,8 @@ body:
         - Other
     validations:
       required: true  # OS selection is required
+
+# Browser Selection
 
   - type: dropdown
     id: browser
@@ -55,6 +64,8 @@ body:
     validations:
       required: true  # Browser selection is required
 
+# Bug Type
+
   - type: dropdown
     id: bug-type
     attributes:
@@ -66,6 +77,8 @@ body:
     validations:
       required: true  # Bug type selection is required
 
+# Problem Summary
+
   - type: textarea
     id: problem-summary
     attributes:
@@ -75,6 +88,8 @@ body:
     validations:
       required: true  # Summary is required
 
+# Expected Behavior
+
   - type: textarea
     id: expected-behavior
     attributes:
@@ -82,6 +97,8 @@ body:
       description: What did you expect to happen?
     validations:
       required: true  # Expected behavior is required
+
+# Steps To Reproduce
 
   - type: textarea
     id: steps-to-reproduce
@@ -92,6 +109,8 @@ body:
     validations:
       required: true  # Steps to reproduce are required
 
+# Actual Behavior
+
   - type: textarea
     id: actual-behavior
     attributes:
@@ -99,6 +118,8 @@ body:
       description: What actually happened? 
     validations:
       required: true  # Actual behavior is required
+
+# Other Information
 
   - type: textarea
     id: other-information
@@ -108,6 +129,8 @@ body:
       placeholder: Additional context, error messages, or anything else that may be helpful.
     validations:
       required: false  # This field is optional
+
+# Agree to terms
 
   - type: checkboxes
     id: terms
