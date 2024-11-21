@@ -1,47 +1,69 @@
-name: Improve existing content
-description: Make a suggestion to improve the content in an existing article.
-labels:
-  - content
+name: Bug Report
+description: File a bug report
+title: "[Bug]: "
+labels: ["bug", "triage"]
+projects: ["example-org/project1", "example-org/project2"]
+assignees:
+  - octocat
 body:
   - type: markdown
     attributes:
       value: |
-        **HUBBERS!!** This is the github/docs open source repo. You may want to open an issue in the internal-only github/docs-content repo instead.
+        Thanks for taking the time to file this bug report!
+        Please make sure you've upgraded to the latest version before submitting a bug.
 
-        * Before you file an issue read the [Contributing guide](https://docs.github.com/en/contributing).
-        * Check to make sure someone hasn't already opened a similar [issue](https://github.com/github/docs/issues).
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Details
+      description: How can we get in touch with you if we need more info?
+      placeholder: ex. email@example.com
+    validations:
+      required: false  # Optional field
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating System
+      description: What operating system are you using?
+      options:
+        - Windows
+        - macOS
+        - Linux
+        - Other
+    validations:
+      required: true  # This should show the asterisk and make the submit button gray until filled
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Please describe the issue in detail.
+      placeholder: Tell us what you see.
+    validations:
+      required: true  # Required, should show red asterisk
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+    validations:
+      required: true  # Required, should show red asterisk
+
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual Behavior
+      description: What actually happened?
+    validations:
+      required: true  # Required, should show red asterisk
 
   - type: checkboxes
     id: terms
     attributes:
       label: Code of Conduct
-      description: This project has a Code of Conduct that all participants are expected to understand and follow.
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://example.com).
       options:
-        - label: I have read and agree to the GitHub Docs project's [Code of Conduct](https://github.com/github/docs/blob/main/.github/CODE_OF_CONDUCT.md)
-          required: true
-
-  - type: textarea
-    attributes:
-      label: What article on docs.github.com is affected?
-      description: Please link to the article you'd like to see updated.
-    validations:
-      required: true
-
-  - type: textarea
-    attributes:
-      label: What part(s) of the article would you like to see updated?
-      description: |
-        - Give as much detail as you can to help us understand the change you want to see. 
-        - Why should the docs be changed? What use cases does it support? 
-        - What is the expected outcome or behavior?
-    validations:
-      required: true
-
-  - type: textarea
-    attributes:
-      label: Additional information
-      description: |
-        - Are you able to reliably reproduce the problem? How often does it occur? How many users are affected?
-        - Add any other context or screenshots about the feature here.
-    validations:
-      required: false
+        - label: I agree to follow this project's Code of Conduct
+          required: true  # Checkbox must be checked to submit
