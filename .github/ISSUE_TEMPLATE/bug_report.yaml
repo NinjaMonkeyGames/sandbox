@@ -1,76 +1,67 @@
 name: "Bug Report"
-description: "Use this template to report a bug or issue with the system."
+description: "Use this template to report a bug or issue."
+title: "Bug: [Enter a concise title here]"
+labels:
+  - bug
 body:
+  - type: markdown
+    attributes:
+      value: "### Please provide the following details to help us understand and address the issue."
   - type: input
     id: summary
     attributes:
       label: "Summary"
-      description: "Provide a brief summary of the issue."
-      placeholder: "Enter a concise summary of the problem."
-      required: true
+      description: "Provide a concise summary of the issue."
+      placeholder: "Brief summary of the problem."
   - type: textarea
     id: description
     attributes:
       label: "Description"
-      description: "Provide detailed information about the issue, including steps to reproduce it."
-      placeholder: "Enter a detailed description of the problem."
-      required: true
+      description: "Describe the issue in detail, including any relevant context and background."
+      placeholder: "Enter a detailed description."
   - type: dropdown
     id: severity
     attributes:
       label: "Severity"
-      description: "Select the severity level of the issue."
+      description: "How severe is the issue?"
       options:
         - Low
         - Medium
         - High
         - Critical
-      required: true
   - type: input
     id: os
     attributes:
       label: "Operating System"
-      description: "Specify the operating system (e.g., Windows, macOS, Linux)."
-      placeholder: "Enter the operating system."
-      required: true
+      description: "Which operating system are you using?"
+      placeholder: "e.g., Windows 10, macOS Monterey, Ubuntu 22.04"
   - type: input
     id: browser
     attributes:
       label: "Browser"
-      description: "Specify the browser and version (e.g., Chrome 117, Firefox 118)."
-      placeholder: "Enter the browser name and version."
-      required: true
+      description: "Which browser and version are you using?"
+      placeholder: "e.g., Chrome 117, Firefox 118"
   - type: textarea
-    id: steps
+    id: steps_to_reproduce
     attributes:
       label: "Steps to Reproduce"
-      description: "List the steps required to reproduce the issue."
-      placeholder: "- Step 1\n- Step 2\n- Step 3"
-      required: true
+      description: "Provide a list of steps to reproduce the issue."
+      placeholder: "- Step 1: ...\n- Step 2: ...\n- Step 3: ..."
   - type: textarea
     id: expected_behavior
     attributes:
       label: "Expected Behavior"
       description: "Describe what you expected to happen."
       placeholder: "Enter the expected outcome."
-      required: true
   - type: textarea
     id: actual_behavior
     attributes:
       label: "Actual Behavior"
       description: "Describe what actually happened."
-      placeholder: "Enter the observed outcome."
-      required: true
+      placeholder: "Enter the actual outcome."
   - type: textarea
     id: additional_information
     attributes:
       label: "Additional Information"
-      description: "Provide any other details or context that might help us address the issue."
-      placeholder: "Enter additional details."
-      required: false
-  - type: file
-    id: attachments
-    attributes:
-      label: "Attachments"
-      description: "Attach relevant files, logs, or screenshots."
-      multiple: true
+      description: "Provide any other details or context that may help."
+      placeholder: "Enter additional details or context."
