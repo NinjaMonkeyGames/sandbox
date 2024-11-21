@@ -113,10 +113,11 @@ body:
     validations:
       required: true  # Checkbox is required to submit the issue
 
-  - type: file
-    id: attachments
+  - type: input
+    id: attachment-link
     attributes:
-      label: Attachments
-      description: Please attach any relevant files, screenshots, or logs that can help us better understand the issue.
+      label: Attachment Link
+      description: If you have any relevant files, screenshots, or logs, please provide a link to them (e.g., from cloud storage or image hosting).
+      placeholder: ex. https://example.com/file.png
     validations:
-      required: false  # Attachments are optional
+      required: false  # Link is optional
