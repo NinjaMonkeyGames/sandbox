@@ -2,9 +2,9 @@ name: Bug Report
 description: File a bug report
 title: "[Bug]: "
 labels: ["bug", "triage"]
-projects: ["octo-org/project1", "octo-org/project2"]
+projects: ["monkey-knuckles/sandbox"]
 assignees:
-  - octocat
+  - monkey-knuckles
 body:
   - type: markdown
     attributes:
@@ -17,7 +17,7 @@ body:
     attributes:
       label: Contact Email
       description: Please provide an email where we can reach you if more information is needed.
-      placeholder: ex. email@example.com
+      placeholder: email@example.com
     validations:
       required: true  # Email is required
 
