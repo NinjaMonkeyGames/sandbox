@@ -103,6 +103,15 @@ body:
     validations:
       required: false  # This field is optional
 
+  - type: input
+    id: attachment-link
+    attributes:
+      label: Attachment Link
+      description: If you have any relevant files, screenshots, or logs, please provide a link to them (e.g., from cloud storage or image hosting).
+      placeholder: ex. https://example.com/file.png
+    validations:
+      required: false  # Link is optional
+
   - type: checkboxes
     id: terms
     attributes:
@@ -112,12 +121,3 @@ body:
         - label: I agree to follow this project's Code of Conduct
     validations:
       required: true  # Checkbox is required to submit the issue
-
-  - type: input
-    id: attachment-link
-    attributes:
-      label: Attachment Link
-      description: If you have any relevant files, screenshots, or logs, please provide a link to them (e.g., from cloud storage or image hosting).
-      placeholder: ex. https://example.com/file.png
-    validations:
-      required: false  # Link is optional
