@@ -78,6 +78,15 @@ body:
       required: true  # Expected behavior is required
 
   - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: Please list the steps to reproduce the issue.
+      placeholder: "1. \n2. \n3."
+    validations:
+      required: true  # Steps to reproduce are required
+
+  - type: textarea
     id: actual-behavior
     attributes:
       label: Actual Behavior
