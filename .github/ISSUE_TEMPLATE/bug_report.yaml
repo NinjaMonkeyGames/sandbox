@@ -6,7 +6,7 @@
 
 name: Bug Report
 description: File a bug report
-title: "[Bug]: [triage]:"
+title: ""
 labels: ["bug", "triage"]
 projects: ["NinjaMonkeyGames/sandbox"]
 assignees:
