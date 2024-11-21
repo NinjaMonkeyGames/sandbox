@@ -7,7 +7,7 @@
 name: Bug Report
 description: File a bug report
 title: "[Bug]: "
-labels: ["bug", "triage", "new"]
+labels: ["bug", "triage", "beta"]
 projects: ["NinjaMonkeyGames/sandbox"]
 assignees:
   - monkey-knuckles
