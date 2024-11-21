@@ -1,69 +1,64 @@
-name: Bug Report
-description: Create a report to help us improve
-labels: ["📋 triage"]
-title: '🐛 Bug'
-
+name: Bug Report Form
+description: Please provide the details of the bug you're experiencing.
+labels: ["bug"]
 body:
-  - type: markdown
+  # 1) Title (handled by GitHub, not in form)
+  
+  # 2) Drop-down OS Selection
+  - type: dropdown
+    id: operating_system
     attributes:
-      value: |
-        Thanks for reporting issues of python-telegram-bot!
-
-        Use this template to notify us if you found a bug.
-
-        To make it easier for us to help you please enter detailed information below.
-
-        Please note, we only support the latest version of python-telegram-bot and the master branch. Please make sure to upgrade & recreate the issue on the latest version prior to opening an issue.
-      
-  - type: textarea
-    attributes:
-      label: Steps to Reproduce
-      value: |
-        1. 
-        2.
-        3.
+      label: "Operating System"
+      options:
+        - Windows
+        - macOS
+        - Linux
+        - Other
     validations:
       required: true
-        
+
+  # 3) Description of the Problem (textarea)
   - type: textarea
+    id: problem_description
     attributes:
-      label: Expected Behaviour
-      description: Tell us what should happen
+      label: "Description of the Problem"
+      placeholder: "Please describe the problem you're facing."
     validations:
       required: true
-      
+
+  # 4) Expected Behavior (textarea)
   - type: textarea
+    id: expected_behavior
     attributes:
-      label: Actual Behaviour
-      description: Tell us what happens instead
+      label: "Expected Behavior"
+      placeholder: "What did you expect to happen?"
     validations:
       required: true
-      
-  - type: markdown
-    attributes:
-      value: "### Configuration"
 
-  - type: input
+  # 5) Actual Behavior (textarea)
+  - type: textarea
+    id: actual_behavior
     attributes:
-      label: Operating System
-    validations: 
+      label: "Actual Behavior"
+      placeholder: "What actually happened?"
+    validations:
       required: true
 
-  - type: textarea
+  # 6) I Agree to the Terms of the Submission (checkbox)
+  - type: checkbox
+    id: agree_terms
     attributes:
-      label: Version of Python, python-telegram-bot & dependencies
-      description: Paste the output of `$ python -m telegram` here. This will be automatically formatted into code, so no need for backticks.
-      render: shell
-    validations: 
+      label: "I agree to the terms of the submission"
+    validations:
       required: true
-      
-  - type: textarea
-    attributes:
-      label: Relevant Log Output
-      description: Insert logs here (if necessary). This will be automatically formatted into code, so no need for backticks.
-      render: python
 
-  - type: textarea
+  # 7) Bug Type (Dropdown for Bug Type Selection)
+  - type: dropdown
+    id: bug_type
     attributes:
-      label: Additional Context
-      description: You may provide any other additional context to the bug here.
+      label: "Bug Type"
+      options:
+        - Documentation Error
+        - Application Bug
+    validations:
+      required: true
