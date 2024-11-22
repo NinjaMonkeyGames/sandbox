@@ -4,18 +4,18 @@
 
 # Meta Data
 
-name: Bug Report
+name: 🐞 Bug Report
 description: File a bug report
-title: "Type problem title here!"
-placeholder: email@example.com
-labels: ["bug", "triage"]
+title: "[Bug]: "
+labels: ["bug", "new"]
 projects: ["NinjaMonkeyGames/sandbox"]
-assignees:
-  - monkey-knuckles
+
+# 
+
+body:
 
 # Introduction Text
 
-body:
   - type: markdown
     attributes:
       value: |
@@ -131,7 +131,7 @@ body:
     validations:
       required: false  # This field is optional
 
-# Agree to terms
+# Agree To Terms
 
   - type: checkboxes
     id: terms
