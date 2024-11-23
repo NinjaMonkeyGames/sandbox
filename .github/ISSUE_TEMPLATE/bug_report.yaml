@@ -10,7 +10,7 @@ title: "[Bug]: "
 labels: ["bug", "new"]
 projects: ["NinjaMonkeyGames/sandbox"]
 
-# 
+# Initialise Form
 
 body:
 
@@ -31,8 +31,7 @@ body:
       description: Please provide an email where we can reach you if more information is needed.
       placeholder: email@example.com
     validations:
-      required: true  # Email is required
-      pattern: ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$
+      required: true
 
 # OS Selection
 
@@ -47,7 +46,7 @@ body:
         - Linux
         - Other
     validations:
-      required: true  # OS selection is required
+      required: true
 
 # Browser Selection
 
@@ -64,7 +63,7 @@ body:
         - Opera
         - Other
     validations:
-      required: true  # Browser selection is required
+      required: true
 
 # Bug Type
 
@@ -77,7 +76,22 @@ body:
         - Application Bug
         - Documentation Problem
     validations:
-      required: true  # Bug type selection is required
+      required: true 
+
+# Severity
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      description: How serious is the problem?
+      options:
+        - Low
+        - Medium
+        - High
+        - Critical
+    validations:
+      required: true
 
 # Problem Summary
 
@@ -88,7 +102,7 @@ body:
       description: Please describe the issue in a few sentences.
       placeholder: A brief summary of the issue.
     validations:
-      required: true  # Summary is required
+      required: true
 
 # Expected Behavior
 
@@ -98,7 +112,7 @@ body:
       label: Expected Behavior
       description: What did you expect to happen?
     validations:
-      required: true  # Expected behavior is required
+      required: true
 
 # Steps To Reproduce
 
@@ -109,7 +123,7 @@ body:
       description: Please list the steps to reproduce the issue.
       placeholder: "1. \n2. \n3."
     validations:
-      required: true  # Steps to reproduce are required
+      required: true
 
 # Actual Behavior
 
@@ -119,7 +133,7 @@ body:
       label: Actual Behavior
       description: What actually happened? 
     validations:
-      required: true  # Actual behavior is required
+      required: true
 
 # Other Information
 
