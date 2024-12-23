@@ -1,0 +1,15 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//                                                   IDE KEYBINDINGS                                                  //
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// 1. Converts Selected Text To Title Case.
+
+{
+    // Converts Selected Text To Title Case
+
+    "key": "ctrl+shift+t",                              // Bind to CTRL + SHIFT + T
+    "command": "editor.action.transformToTitlecase",    // Transform text to title case
+    "when": "editorTextFocus"                           // Transform selected text only
+}
+
+

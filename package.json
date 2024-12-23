@@ -1,0 +1,11 @@
+{
+  "devDependencies": {
+    "@commitlint/cli": "^19.6.1",
+    "@commitlint/config-conventional": "^19.6.0",
+    "conventional-changelog-lint": "^0.2.0",
+    "markdownlint-cli2": "0.16.0"
+  },
+  "dependencies": {
+    "rc": "^1.2.8"
+  }
+}

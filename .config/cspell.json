@@ -1,0 +1,23 @@
+{
+    "language": "en,en-GB",
+    "version": "0.2",
+    "ignorePaths": [],
+    "dictionaryDefinitions": [],
+    "dictionaries": [],
+    "words": [
+        "addgroup",
+        "adduser",
+        "appgroup",
+        "appuser",
+        "buildx",
+        "CPSELL",
+        "Dockerhub",
+        "globalconfig",
+        "markdownlint",
+        "monkeyknuckles",
+        "Titlecase",
+        "WORKDIR"
+    ],
+    "ignoreWords": [],
+    "import": []
+}

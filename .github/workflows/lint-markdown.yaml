@@ -1,0 +1,45 @@
+########################################################################################################################
+#                                                     LINT MARKDOWN                                                    #
+########################################################################################################################
+
+# 1. Set Workflow Title Label.
+# 2. Performs Actions On Successful Push or Pull Request.
+# 3. Setup Linting Job.
+# 4. Checkout Code.
+# 5. Copy markdownlint-cli2 Configuration File to the Workspace.
+# 6. Lint All Markdown Files.
+
+# Set workflow title label
+
+name: Lint Markdown - markdownlint-cli2
+
+# Performs Actions On Successful Push or Pull Request
+
+on: [push, pull_request]
+
+# Setup Linting Job
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    
+    container:
+      image: monkeyknuckles/markdownlint-cli2
+      options: --user root
+
+    steps:
+    
+    # Checkout Code
+
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+    # Copy markdownlint-cli2 Configuration File to the Workspace
+
+      - name: Copy markdownlint config
+        run: cp /app/.config/.markdownlint.jsonc $GITHUB_WORKSPACE
+
+    # Lint All Markdown Files
+        
+      - name: Run markdownlint-cli2
+        run: markdownlint-cli2 "**/*.md" "#node_modules"

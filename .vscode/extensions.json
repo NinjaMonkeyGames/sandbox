@@ -1,0 +1,15 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//                                                   IDE EXTENSIONS                                                   //
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// 1. Prompts User To Installed Required Project Plugins.
+
+{
+    // Prompts User To Installed Required Project Plugins
+    
+    "recommendations":
+    [
+        "DavidAnson.vscode-markdownlint",       // Prompt install for markdownlint plugin
+        "streetsidesoftware.code-spell-checker" // Prompt install for cSpell
+    ]
+}

@@ -1,0 +1,49 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//                                                   IDE SETUP TASKS                                                  //
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// 1. Initialise Tasks Script.
+// 2. Prepare script environment.
+// 3. Install NodeJS Locally.
+// 4. Set Task Group.
+
+{
+    // Inistialise Tasks Script 
+
+    "version": "2.0.0", 
+    "tasks":               
+    [
+        {
+            // Prepare Script Environment
+
+            "label": "Install dependencies",
+            "type": "shell",                
+            "command": "powershell",         
+            
+            // Install NodeJS Locally
+
+            "args": 
+            [
+                "-Command",
+                "if (-Not (test-path 'node_modules'))",
+                "{",
+                "    write-host 'Installing dependencies, please wait...';",
+                "    npm install;",
+                "    write-host 'npm install completed.'",
+                "}", 
+                    "else",
+                "{",
+                "    Write-Host 'node_modules already exists. Skipping npm install.'",
+                "}"
+            ],
+
+            // Set Task Group
+
+            "group": 
+            {
+                "kind": "build",
+                "isDefault": true
+            },
+        }
+    ]
+} 
