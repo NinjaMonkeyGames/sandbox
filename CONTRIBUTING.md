@@ -4,6 +4,12 @@ This document contains information about house-styles, project structure and ins
 your pull requests. There are strict rules about how documentation should be updated. There are also strong linting
 rules to ensure a clean and consistent code base.
 
+## NEW DEVELOPER ONBOARDING PROCESS
+
+- Add avatar to .artefacts folder.
+- Create a GPG key
+- Invite to github
+
 ## PULL REQUEST POLICY
 
 Project must pass all CI/CD pipeline tests before merging with the master branch will be considered. Before a merge is
@@ -31,15 +37,15 @@ authorised all documentation must be updated to reflect any changes made to the 
 
 ⚠️ *It is essential that the code base integrity is maintained at all times.*
 
-
-
 ## COMMIT AND PUSH PROTOCOL
 
 ### IDE PROBLEM CHECKING
-### UPDATE DEVELOPER.MD
-### CHECK COMMIT_EDITMSG FORMATTING
-### FINAL HUMAN SANITY CHECK
 
+### UPDATE DEVELOPER.MD
+
+### CHECK COMMIT FORMATTING
+
+### FINAL HUMAN SANITY CHECK
 
 ## DEVELOPER MANUAL STRUCTURE
 
