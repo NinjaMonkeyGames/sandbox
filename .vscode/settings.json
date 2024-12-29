@@ -1,6 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                                                    IDE SETTINGS                                                    //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // 1. Automatic Actions.
 // 2. Add a visible ruler to the IDE.
 // 3. Format Settings.
@@ -10,38 +11,59 @@
 // 7. Markdownlint-Cli2 Configuration Options.
 {
     // Automatic Actions
+
     "editor.formatOnSave": true, // Automatically format files when saving
     "editor.formatOnType": true, // Automatically format code as you type
     "files.autoSave": "afterDelay", // All file changes will be saved periodically
     "files.autoSaveDelay": 1000, // Set autosave delay for 1000 milliseconds
+
     // Add A Visible Ruler To The IDE
-    "editor.rulers": [
+
+    "editor.rulers": 
+    [
         120 // set ruler width to 120 characters
     ],
+
     // Format Settings
+
     "editor.wrappingIndent": "same", // Keep indentation level of wrapped lines
     "files.eol": "\n", // Force all new files to be in LF format opposed to CRLF 
     "editor.wordWrap": "wordWrapColumn", // Automatically wrap lines of text
     "editor.wordWrapColumn": 120, // Set the wrap column to 120 characters
+    
     // Confirmation Settings
+
     "explorer.confirmDelete": false, // Prevents prompt when deleting files
     "explorer.confirmDragAndDrop": false, // Prevents prompt when moving files
+
     // Include Otherwise Hidden Folders In The File Tree View
-    "files.exclude": {
+
+    "files.exclude": 
+    {
         "**/.git": false, // Show .git folder
         "**/node_modules": false, // Show node_modules
     },
+
     // Include Otherwise Excluded Files In Project File Search
+
     "search.exclude": {
         "**/.git": false, // Include .git folder
         "**/node_modules": false, // Include node_modules folder
     },
+
     // Markdownlint-Cli2 Configuration Options
+
     "markdownlint.config": {
         "extends": ".config/.markdownlint.jsonc" // Sets location of '.markdownlint.jsonc' config file.
+
     },
+
+    "markdownlint.customRules": [".config/custom-rules/my-custom-rule.js"],
+
     // cSpell Configuration Options
-    "cSpell.import": [
+
+    "cSpell.import": 
+    [
         "./.config/cspell.json"
     ],
 }

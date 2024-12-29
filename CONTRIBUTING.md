@@ -6,9 +6,9 @@ rules to ensure a clean and consistent code base.
 
 ## NEW DEVELOPER ONBOARDING PROCESS
 
-- Add avatar to .artefacts folder.
-- Create a GPG key
-- Invite to github
+  - Add avatar to .artefacts folder.
+  - Create a GPG key
+  - Invite to github
 
 ## PULL REQUEST POLICY
 
@@ -17,7 +17,8 @@ authorised all documentation must be updated to reflect any changes made to the 
 
 ### ENFORCEMENT RULES
 
-1. If any of the CI/CD processes fail with and exit code other than zero the problem must be resolved before you will be allowed to merge with the code base.
+1. If any of the CI/CD processes fail with and exit code other than zero the problem must be resolved before you will be
+allowed to merge with the code base.
 
 2. Authorisation from the repository administrator is required before a merge with the master branch can be performed.
 
@@ -27,7 +28,7 @@ authorised all documentation must be updated to reflect any changes made to the 
 
 5. GitHub conversations must be resolved before a merge with the master branch can be authorised.
 
-6. Requests will automatically be referred for a code pilot review as an extra layer of precaution. 
+6. Requests will automatically be referred for a code pilot review as an extra layer of precaution.
 
 7. Brute force pushes are strictly prohibited.
 
@@ -294,5 +295,3 @@ There are some stylistic rules that need to be taken into consideration when mak
 
   For example: 'alert("Hello World!")' displays an alert message. The document has been designed like this for
   readability purposes.
-
-

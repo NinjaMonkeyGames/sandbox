@@ -513,19 +513,19 @@ Enforces consistency when submitting issues and feature requests.
 
 #### Asset Contents Description : [Issue Template Folder]
 
-Contains templates for GitHub issues.
+Contains templates for GitHub issue forms.
 
 ##### YAML GitHub Issue Forms Keyword Glossary
 
 | Key         | Description                                                             |
 |-------------|-------------------------------------------------------------------------|
 | Name        | Identifiable name to describe the purpose of the form.                  |
-| Description | Describes the function of the form.                                     |
-| Title       | A default title that will be pre-populated in the issue submission form.|
+| Description | Text that describes the function of the element.                        |
+| Title       | Default title that will be pre-populated in the issue submission form.  |
 | Labels      | Identify the type categories the issue belongs.                         |
 | Projects    | Assigns to a specific GitHub project.                                   |
 | Body        | Initialises form.                                                       |
-| Type        | Form element type E.G. text-box, checkbox, drop-down.                   |
+| Type        | Form element type E.G. textbox, checkbox, dropdown.                     |
 | Attributes  | Specifies sub-settings for a particular element type.                   |
 | Label       | Text appears above form element describing what it is.                  |
 | Value       | Sets markdown text.                                                     |
@@ -534,8 +534,6 @@ Contains templates for GitHub issues.
 | Validations | Checks if form is valid before form can be submitted.                   |
 | Required    | Determines if field is required to submit the form.                     |
 | Options     | Provides a list of options to select from drop-down box.                |
-
-See. [GitHub issue forms schema syntax documentation][4]
 
 ---
 
@@ -608,7 +606,7 @@ This section contains mete data for the bug submission form.
 2. description: describes the function of the form.
   a. Set description to 'File a bug report'.
 
-3. title: a default title that will be pre-populated in the issue submission form.
+3. title: default title that will be pre-populated in the issue submission form.
   a. Set default title text to '[Bug]:'.
  
 4. labels: identify the type categories the issue belongs.  
@@ -650,7 +648,7 @@ Tells GitHub that form content will follow.
 2.    attributes:
 3.      value: |
 4.        Thanks for taking the time to report this issue!
-5.        Please fill out the form below to provide detailed information about the bug.
+5.        Please take the time to fill out the form carefully.
 ```
 
 ##### Introduction text : [bug-report-template.yaml] - [CODE DESCRIPTION]
@@ -677,7 +675,7 @@ Tells GitHub that form content will follow.
 2.     id: contact-email
 3.     attributes:
 4.       label: Contact Email
-5.       description: Please provide an email where we can reach you if more information is needed.
+5.       description: Please provide an email encase we need to reach you.
 6.       placeholder: email@example.com
 7.     validations:
 8.       required: true
@@ -1302,7 +1300,7 @@ This section contains mete data for the bug submission form.
 2. description: describes the function of the form.
   a. Set description to 'File a bug report'.
 
-3. title: a default title that will be pre-populated in the issue submission form.
+3. title: default title that will be pre-populated in the issue submission form.
   a. Set default title text to '[Bug]:'.
  
 4. labels: identify the type categories the issue belongs.  

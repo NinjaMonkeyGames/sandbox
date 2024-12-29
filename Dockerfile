@@ -2,7 +2,7 @@
 #                                                      DOCKER FILE                                                     #
 ########################################################################################################################
 
-# 1. Use Alpine image with Node.js 23.
+# 1. Use Alpine image with Node.js 22.
 # 2. Set the working directory to app.
 # 3. Copy the markdownlint configuration file to the container.
 # 4. Install markdownlint-cli2 globally.
@@ -12,7 +12,7 @@
 # 8. Switch to the non-root user (appuser).
 # 9. Start a shell when the container is run.
 
-# Use Alpine image with Node.js 23
+# Use Alpine image with Node.js 22
 
 FROM node:23-alpine
 

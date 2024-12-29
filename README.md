@@ -102,7 +102,7 @@ terminal.
 #### Build container
 
 ```shell
-docker build -t "markdownlint-cli2" -f "markdownlint-cli2" .
+docker build -t "markdownlint-cli2" -f "Dockerfile" .
 ```
 
 #### Tag container
@@ -155,10 +155,10 @@ docker run -it markdownlint-cli2
 ## Includes
 
   - Alpine Linux        Alpine Linux v3.20.3
-  - NodeJS              v23.3.0
+  - NodeJS              v22.12.0
   - NPM                 v10.9.1
-  - Markdownlint-cli2   v0.16.0
-  - Markdownlint        v0.36.1
+  - Markdownlint-cli2   v0.17.0
+  - Markdownlint        v0.37.2
 
 ---
 
