@@ -3546,7 +3546,7 @@ See. [Semantic Versioning 2.0.0 | Semantic Versioning][8]
 
 ---
 
-## Glossary
+## GLOSSARY
 
 | Term   | Definition                                                                      |
 |--------|---------------------------------------------------------------------------------|
@@ -3566,7 +3566,7 @@ See. [Semantic Versioning 2.0.0 | Semantic Versioning][8]
 | Secret | Encrypted key stored as an environment variable.                                |
 | Git    | Git source control used for managing code base.                                 |
 
-## Resources
+## RESOURCES
 
   [1]: https://commonmark.org
   [2]: https://www.conventionalcommits.org/en/v1.0.0/#specification

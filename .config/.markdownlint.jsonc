@@ -14,8 +14,6 @@
   "default": true, // Set defaults for all rules as true by default.
   "extends": null, // Explicitly specifies there are no extended configurations.
 
-  
-
   // Rule code
 
   // MD001 - Heading levels should only increment by one level at a time

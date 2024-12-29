@@ -58,9 +58,14 @@
 
     },
 
-    "markdownlint.customRules": [".config/custom-rules/my-custom-rule.js"],
 
-    // cSpell Configuration Options
+    "markdownlint.customRules": 
+    [
+        ".config/custom-rules/capitalised-headings.js",
+    ],
+
+    
+// cSpell Configuration Options
 
     "cSpell.import": 
     [

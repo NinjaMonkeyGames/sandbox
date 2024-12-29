@@ -432,7 +432,7 @@ Allows Git source control to function.
 
  ℹ *The individual files in this directory will not be listed here because they are managed by Git therefore you should
  defer to the [Git Documentation][3]*
- 
+
 ---
 
 [BACK TO TOP](#markdownlint-cli2-cicd-pipeline-docker-project-programmers-manual)
@@ -509,12 +509,11 @@ Contains templates for GitHub issue forms.
 | Value       | 10  |Sets markdown text.                                                   |
 | ID          | 11  |A unique identifier for the field.                                    |
 | Placeholder | 12  |Text that appears inside the element itself.                          |
-| Validations | 13  |Checks if form is valid before form can be submitted.                 | | Required    | 14  |Determines if field is required to submit the form.                   |
+| Validations | 13  |Checks if form is valid before form can be submitted.                 |
+| Required    | 14  |Determines if field is required to submit the form.                   |
 | Options     | 15  |Provides a list of options to select from dropdown box.               |
 
 See. [GitHub issue forms schema syntax documentation][4]
-
-
 
 ---
 
@@ -927,7 +926,8 @@ form element.
 
 ##### Expected behaviour : [bug-report-template.yaml] - [CODE]
 
-The user can describe what they behaviour they expected to see based on the actions described in the 'Problem summary' field.
+The user can describe what they behaviour they expected to see based on the actions described in the 'Problem summary'
+field.
 
 ```yaml
 # Expected Behaviour
@@ -967,7 +967,8 @@ form element.
 
 ##### Steps to reproduce : [bug-report-template.yaml] - [CODE]
 
-This is a space where the user should enter an ordered list of what steps need to be taken in order to reproduce the problem so the issue can be investigated and resolved effectively.
+This is a space where the user should enter an ordered list of what steps need to be taken in order to reproduce the
+problem so the issue can be investigated and resolved effectively.
 
 ```yaml
 # Steps To Reproduce
@@ -1060,7 +1061,8 @@ This field can be used to describe any unwanted or unexpected behaviour such as 
 
 ##### Additional information : [bug-report-template.yaml] - [CODE]
 
-User can provide additional information they feel may be relevant to the problem that can't be properly articulated in the other fields.
+User can provide additional information they feel may be relevant to the problem that can't be properly articulated in
+the other fields.
 
 ```yaml
 # Additional Information
@@ -1193,7 +1195,7 @@ YAML script that creates a feature request form for GitHub issues.
 
 ---
 
-## Glossary
+## GLOSSARY
 
 | Term   | Definition                                                                     |
 |--------|--------------------------------------------------------------------------------|
@@ -1214,7 +1216,6 @@ YAML script that creates a feature request form for GitHub issues.
 | VSC    | Microsoft Visual Studio Code.                                                  |
 | WCAG   | Web Content Accessibility Guidelines.                                          |
 | YAML   | Yet another markup language. Scripts that control CI/CD pipelines.             |
-
 
 ---
 
