@@ -166,26 +166,77 @@ Contains configuration files for various [IDE](#glossary) plugins.
 
 ---
 
-### MARKDOWNLINT CONFIGURATION FILE [.MARKDOWNLINT.JSONC] 📄
+### CUSTOM MARKDOWNLINT RULES [FOLDER] 📁
+
+#### Attribute Table : [Custom Markdownlint Rules Folder]
+
+| Attribute             | Value                           |
+|-----------------------|---------------------------------|
+| Asset Name            | custom-markdownlint-rules       |
+| Relative Path         | .config                         |
+| Hidden                | Inherited                       |
+| Include in Repository | Yes                             |
+| Managed               | Yes                             |
+| Resolution            | N/A                             |
+| Asset Type            | FOLDER                          |
+| Asset File Size       | N/A                             |
+
+#### Asset Purpose : [Custom Markdownlint Rules Folder]
+
+To maintain repository integrity by providing extra markdown rules to keep the manual tidy and ensure consistent work.
+
+#### Asset Contents Description : [Custom Markdownlint Rules Folder]
+
+Contains JavaScript files each containing a custom markdownlint rule.
+
+---
+
+[BACK TO TOP](#markdownlint-cli2-cicd-pipeline-docker-project-programmers-manual)
+
+---
+
+### CAPITALISED HEADINGS CUSTOM MARKDOWNLINT RULE [CAPITALISED-HEADINGS.JS] 📄
+
+#### Attribute Table : [capitalised-headings.js]
+
+| Attribute             | Value                             |
+|-----------------------|-----------------------------------|
+| Asset Name            | capitalised-headings.js           |
+| Relative Path         | .config/custom-markdownlint-rules |                       
+| Hidden                | Inherited                         |
+| Include in Repository | Yes                               |
+| Managed               | Yes                               |
+| Resolution            | N/A                               |
+| Asset Type            | JavaScript                        |
+| Asset File Size       | N/A                               |
+
+#### Asset Purpose : [capitalised-headings.js]
+
+
+
+#### Asset Contents Description : [capitalised-headings.js]
+
+
+### MARKDOWNLINT CONFIGURATION FILE [.markdownlint-cli2.jsonc] 📄
 
 #### Attribute Table : [.markdownlint.jsonc]
 
 | Attribute             | Value                   |
 |-----------------------|-------------------------|
-| Asset Name            | .markdownlint.jsonc     |
+| Asset Name            | .markdownlint-cli2.jsonc|
 | Relative Path         | .config                 |
 | Hidden                | Yes                     |
 | Include in Repository | Yes                     |
 | Managed               | Yes                     |
 | Resolution            | N/A                     |
 | Asset Type            | JSONC                   |
-| Asset File Size       | 10,470 bytes            |
+| Asset File Size       | 5,898 bytes             |
 
-#### Asset Purpose : [.markdownlint.jsonc]
+#### Asset Purpose : [.markdownlint-cli2.jsonc]
 
 To maintain consistent markdown formatting(linting) throughout the project.
 
-#### Asset Contents Description : [.markdownlint.jsonc]
+#### Asset Contents Description : [.markdownlint-cli2.jsonc]
 
 Contains a list of rules written in JSON(C) format that dictate how markdownlint-cli2 will lint markdown files.
 There are 49 Different rules. These rules are prefixed with 'MD' followed by a three digit number.
@@ -193,17 +244,46 @@ There are 49 Different rules. These rules are prefixed with 'MD' followed by a t
  ℹ *Some of the numbers appear to missing! These are legacy rules that were removed from markdownlint.
  MD002, MD006, MD008, MD014, MD015, MD016, MD0017 have been removed.*
 
-#### Asset Code Breakdown : [.markdownlint.jsonc]
+#### Asset Code Breakdown : [.markdownlint-cli2.jsonc]
 
-##### Comment block heading list : [.markdownlint.jsonc]
+##### Comment block heading list : [.markdownlint-cli2.jsonc]
 
-1. Base setup
-2. Rule code
+1. Custom rules
+2. Base setup
+3. Rule code
     a. Setting
     b. Sub-setting description (If applicable)
     c. Value
 
-##### Base setup : [.markdownlint.jsonc] - [CODE]
+##### Custom rules : [.markdownlint-cli2.jsonc] - [CODE]
+
+```json
+ // Custom rules
+
+1. "customRules": 
+2. [
+3.   "./custom-markdownlint-rules/capitalised-headings.js", 
+4.   "./custom-markdownlint-rules/missing-file.js"
+5. ],
+```
+
+##### Custom rules : [.markdownlint-cli2.jsonc] - [CODE DESCRIPTION]
+
+```markdown
+1. customrules: Points to an array of file paths containing custom markdownlint-cli2 rules.
+2. Open list for writing.
+
+3. Include 'capitalised-headings.js' in the custom markdownlint rules list.
+  a. ',' continue list.
+
+4. Include 'missing-file.js' in the custom markdown rules list. 
+
+5. End of list.
+  a. ']' Close list for writing.
+  a. Continue '.markdownlint-cli2.jsonc' configuration. 
+```
+
+##### Base setup : [.markdownlint-cli2.jsonc] - [CODE]
 
 ```json
 // Base Setup
@@ -212,14 +292,14 @@ There are 49 Different rules. These rules are prefixed with 'MD' followed by a t
 2. "extends": null, // Explicitly specifies there are no extended configurations.
 ```
 
-##### Base setup : [.markdownlint.jsonc] - [CODE DESCRIPTION]
+##### Base setup : [.markdownlint-cli2.jsonc] - [CODE DESCRIPTION]
 
 ```markdown
 1. All rules will be considered true unless the configuration specifically states otherwise.
 2. This is set to null because this is the only configuration file that will be used in this project.
 ```
 
-##### markdownlint-cli2 Configuration File, Rule Table : [.markdownlint.jsonc]
+##### markdownlint-cli2 Configuration File, Rule Table : [.markdownlint-cli2.jsonc]
 
 The rest of the configuration has been entered in the form of a table for legibility purposes.
 

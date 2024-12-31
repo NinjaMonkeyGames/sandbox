@@ -23,11 +23,16 @@ module.exports = {
           const fullPath = path.join(dir, file);
           const stats = fs.statSync(fullPath);
 
+          // Ignore .git and node_modules directories
+          if (file === ".git" || file === "node_modules") {
+            return;
+          }
+
           // If it's a directory, check its name in DEVELOPER.md
           if (stats.isDirectory()) {
             if (!developerFileContent.includes(file)) {
               onError({
-                lineNumber: 1, // File name should match something in DEVELOPER.md
+                lineNumber: 1, // Placeholder, update to reflect actual line if necessary
                 detail: `Folder name "${file}" is not mentioned in DEVELOPER.md.`,
                 context: file,
               });
@@ -37,7 +42,7 @@ module.exports = {
             // If it's a file, check its name in DEVELOPER.md
             if (!developerFileContent.includes(file)) {
               onError({
-                lineNumber: 1, // File name should match something in DEVELOPER.md
+                lineNumber: 1, // Placeholder, update to reflect actual line if necessary
                 detail: `File name "${file}" is not mentioned in DEVELOPER.md.`,
                 context: file,
               });

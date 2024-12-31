@@ -3,14 +3,22 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 {
-  // Executes custom rules not part of the main markdownlint project.
+  // Custom rules
 
-  "customRules": ["./custom-rules/capitalised-headings.js", "./custom-rules/missing-file.js"], 
+  "customRules": 
+  [
+    "./custom-markdownlint-rules/capitalised-headings.js", 
+    "./custom-markdownlint-rules/missing-file.js"
+  ],
   
   "config":
   {
+    // Base setup
+
     "default": true, // Set defaults for all rules as true by default.
     "extends": null, // Explicitly specifies there are no extended configurations.
+
+    // Rule code
 
     "MD001": true, // Heading levels should only increment by one level at a time.
 
