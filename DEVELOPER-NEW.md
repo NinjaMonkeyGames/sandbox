@@ -202,7 +202,7 @@ Contains JavaScript files each containing a custom markdownlint rule.
 | Attribute             | Value                             |
 |-----------------------|-----------------------------------|
 | Asset Name            | capitalised-headings.js           |
-| Relative Path         | .config/custom-markdownlint-rules |                       
+| Relative Path         | .config/custom-markdownlint-rules |
 | Hidden                | Inherited                         |
 | Include in Repository | Yes                               |
 | Managed               | Yes                               |
@@ -212,10 +212,114 @@ Contains JavaScript files each containing a custom markdownlint rule.
 
 #### Asset Purpose : [capitalised-headings.js]
 
-
+Provide extra linting for markdownlint-cli2.
 
 #### Asset Contents Description : [capitalised-headings.js]
 
+This function is a custom markdownlint-cli2 script that will check level one and two headings to ensure they are capitalised in-line with NMG policy.
+
+#### Asset Code Breakdown : [capitalised-headings.js]
+
+1. Module exports.
+2. Export meta data.
+3. Capitalise headings function.
+
+##### Module exports : [capitalised-headings.js] - [CODE]
+
+```js
+1. module.exports =
+2. {
+```
+
+##### Module exports : [capitalised-headings.js] - [CODE DESCRIPTION]
+
+```markdown
+1. Exports function to markdownlint-cli2.
+2. Opens moduel for writing.
+```
+
+##### Meta data : [capitalised-headings.js] - [CODE]
+
+```js
+// Meta data
+  
+1. names: ["capitalised-headings"],
+2. description: "Ensure level 2 and 3 headings are fully capitalized.",
+3. information: new URL("https://example.com/CONTRIBUTING.md"),
+4. tags: ["headings", "style"],
+ ```
+
+##### Meta data : [capitalised-headings.js] - [CODE DESCRIPTION]
+
+```markdown
+1. names: the name of the markdownlint rule.
+  a. '[]' Contains an array.
+  b. '""' encapsulates string.
+  c. 'capitalized-headings' is the name string.
+  
+2. description: provides a more detailed description of the markdownlint rule.
+3. information: provides a help URL pertaining to the custom rule.
+4. tags: Describes the type of rule.
+```
+
+##### Heading capitalise function : [capitalised-headings.js] - [CODE]
+
+```js
+    // Heading capitalisation function
+  
+1.  function: (params, onError) =>
+2.  {
+3.    params.lines.forEach((lineContent, lineIndex) =>
+4.    {
+5.      const headingMatch = lineContent.match(/^(#{2,3})\s+(.*)$/);
+6.      if (headingMatch && headingMatch[2] !== headingMatch[2].toUpperCase())
+7.      {
+8.        onError
+9.        ({
+10.          lineNumber: lineIndex + 1,
+11.          detail: `Heading not fully capitalised: "${headingMatch[2]}"`,
+12.          context: lineContent.trim(),
+13.        });
+14.      }
+15.    });
+16.  },
+17.};
+```
+
+##### Heading capitalise function : [capitalised-headings.js] - [CODE DESCRIPTION]
+
+```markdown
+1. function: defines an anonymous function that accepts params (input data) and onError (error callback).
+  a. 
+
+2. Opens the function body.
+
+3. Iterates through each line of the input, where line is the content and index is its line number.
+
+4. Opens the loop's callback function body.
+
+5. Matches lines that start with 2 or 3 hash symbols (## or ###), followed by a space and some text this Regular expression.
+
+6. Checks if the line is a valid heading and whether the heading text is not fully capitalized.
+
+7. Opens the if condition body.
+8. Invokes the onError callback to report an error.
+
+9. Starts the error object passed as an argument to the onError function.
+
+10. Specifies the line number where the issue occurred (1-based index).
+
+11. Provides a detailed error message, showing the problematic heading text.
+
+12. Supplies the full context of the problematic line, trimmed of extra spaces.
+
+13. Closes the onError invocation.
+14. Closes the if condition block.
+15. Closes the forEach loop.
+16. Ends the function body definition.
+17. Closes the object definition that contains the function.
+
+```
 
 ### MARKDOWNLINT CONFIGURATION FILE [.markdownlint-cli2.jsonc] 📄
 
@@ -245,8 +349,6 @@ There are 49 Different rules. These rules are prefixed with 'MD' followed by a t
  MD002, MD006, MD008, MD014, MD015, MD016, MD0017 have been removed.*
 
 #### Asset Code Breakdown : [.markdownlint-cli2.jsonc]
-
-##### Comment block heading list : [.markdownlint-cli2.jsonc]
 
 1. Custom rules
 2. Base setup

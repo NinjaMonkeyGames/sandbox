@@ -63,7 +63,6 @@
     "markdownlint.customRules": 
     [
         ".config/custom-markdownlint-rules/capitalised-headings.js",
-        ".config/custom-markdownlint-rules/missing-file.js",
     ],
 
     

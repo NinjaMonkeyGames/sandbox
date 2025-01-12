@@ -7,8 +7,7 @@
 
   "customRules": 
   [
-    "./custom-markdownlint-rules/capitalised-headings.js", 
-    "./custom-markdownlint-rules/missing-file.js"
+    "./custom-markdownlint-rules/capitalised-headings.js"
   ],
   
   "config":

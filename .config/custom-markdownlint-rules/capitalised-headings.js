@@ -1,72 +1,46 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//                                    CAPITALISED HEADINGS CUSTOM MARKDOWNLINT RULE                                   //
+//                                            CAPITALISED HEADINGS FUNCTION                                           //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/**
- * Custom MarkdownLint rule to ensure level 2 and 3 headings are fully capitalized.
- * This rule checks all level 2 (##) and level 3 (###) headings in a Markdown file
- * and reports an error if any of the headings are not fully capitalized.
- * 
- * @type {import("markdownlint").Rule}
- * @name capitalized-headings
- * @description A MarkdownLint rule to enforce capitalization of level 2 and 3 headings.
- * @see {@link https://example.com/CONTRIBUTING.md} for more information on contributing.
- * @tags ["headings", "style"]
- */
+// This function is a custom markdownlint-cli2 script that will check level one and two headings to ensure they are capitslasided in-line with NMG policy. 
+
+// Module exports
 
 module.exports =
 {
-  /**
-   * Rule metadata including rule name, description, help URL, and tags.
-   * 
-   * @property {string[]} names - The aliases for this rule.
-   * @property {string} description - A brief explanation of what the rule checks.
-   * @property {URL} information - A URL pointing to documentation or help resources for this rule.
-   * @property {string[]} tags - Tags categorizing this rule.
-   */
-  names: ["capitalized-headings"],
-  description: "Ensure level 2 and 3 headings are fully capitalized.",
+  
+  // Meta data
+
+  names: ["capitalised-headings"],
+  description: "Ensure level 2 and 3 headings are fully capitalised.",
   information: new URL("https://example.com/CONTRIBUTING.md"),
   tags: ["headings", "style"],
 
   /**
-   * The function that implements the rule.
-   * 
-   * @function
-   * @param {Object} params - The parameters passed by MarkdownLint.
-   * @param {string[]} params.lines - The lines of the Markdown file being linted.
-   * @param {function(Object):void} onError - Callback to report errors.
-   * 
-   * @example
-   * // Example error reported by the rule:
-   * // Heading not fully capitalized: "some heading"
-   * // Context: ## some heading
+   * Custom markdownlint-cli2 rule to ensure level two and three headings are fully capitalized.
+   * @author NinjaMonkeyGaames
+   * @date 2025-01-10
+   * @param {Object} params                   - Parameters provided by markdownlint.
+   * @param {Object[]} params.lines           - Array of lines from the markdown file.
+   * @param {function(Object): void} onError  - Callback to report errors.
+   * @returns {void}
    */
 
+  // Heading capitalisation function
+  
   function: (params, onError) =>
   {
-    params.lines.forEach((line, index) =>
+    params.lines.forEach((lineContent, lineIndex) =>
     {
-      // Match level 2 (##) and level 3 (###) headings.
-
-      const match = line.match(/^(#{2,3})\s+(.*)$/);
-      if (match)
+      const headingMatch = lineContent.match(/^(#{2,3})\s+(.*)$/);
+      if (headingMatch && headingMatch[2] !== headingMatch[2].toUpperCase())
       {
-        const headingText = match[2];
-
-        // Check if the heading text is fully capitalized.
-
-        if (headingText !== headingText.toUpperCase())
-        {
-          // Report the error if the heading text is not fully capitalized.
-
-          onError
-          ({
-            lineNumber: index + 1, // 1-based line number.
-            detail: `Heading not fully capitalized: "${headingText}"`,
-            context: line.trim(), // Trim unnecessary whitespace for clarity.
-          });
-        }
+        onError
+        ({
+          lineNumber: lineIndex + 1,
+          detail: `Heading not fully capitalised: "${headingMatch[2]}"`,
+          context: lineContent.trim(),
+        });
       }
     });
   },
