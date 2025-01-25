@@ -39,6 +39,9 @@ jobs:
       - name: Copy markdownlint config
         run: cp /app/.markdownlint-cli2.jsonc $GITHUB_WORKSPACE
 
+      - name: Copy custom
+        run: cp /app/.markdownlint-cli2.jsonc $GITHUB_WORKSPACE
+
     # Lint All Markdown Files
         
       - name: Run markdownlint-cli2
