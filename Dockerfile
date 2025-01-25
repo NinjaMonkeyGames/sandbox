@@ -14,7 +14,7 @@
 
 # Use Alpine image with Node.js 22
 
-FROM node:23-alpine
+FROM node:23-alpine3.20
 
 # Set the working directory to app
 

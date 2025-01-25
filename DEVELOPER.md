@@ -2333,7 +2333,7 @@ Keeps a list of extensions needed to develop the project.
 
 Stores a list of extensions that the developer will be prompted to install when opening the project for the first time.
 
-ℹ️ *The following file has been written in table form for legibility purposes.* 
+ℹ️ *The following file has been written in table form for legibility purposes.*
 
 #### Extension packages table : [extensions.json]
 
