@@ -474,7 +474,7 @@ There are 49 Different rules. These rules are prefixed with 'MD' followed by a t
 
 1.  "customRules": 
 2.  [
-3.    "./custom-markdownlint-rules/capitalised-headings.js"
+3.    "../custom-markdownlint-rules/capitalised-headings.js"
 4.  ],
 ```
 
