@@ -45,4 +45,4 @@ jobs:
     # Lint All Markdown Files
         
       - name: Run markdownlint-cli2
-        run: markdownlint-cli2 "**/*.md" "#node_modules"
+        run: markdownlint-cli2 --rules .config\custom-markdownlint-rules\capitalised-headings.js
