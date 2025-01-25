@@ -19,10 +19,10 @@
 
 # Meta Data
 
-name: 🐞 Bug Report
-description: File a bug report.
-title: "[Bug]: "
-labels: ["bug", "new"]
+name: 🐞 Bug Report               [ 1 ]
+description: File a bug report.   [ 2 ]
+title: "[Bug]: [ 3 ]"
+labels: ["bug", "new", "[ 4 ]"]
 projects: ["NinjaMonkeyGames/12"]
 
 # Initialise Form
