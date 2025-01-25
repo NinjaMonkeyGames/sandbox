@@ -23,6 +23,7 @@ WORKDIR /app
 # Copy the markdownlint configuration file to the container
 
 COPY .config/.markdownlint-cli2.jsonc /app/.config/.markdownlint-cli2.jsonc
+COPY .config/custom-markdownlint-rules/capitalised-headings.js /app/.config/capitalised-headings.js
 
 # Install markdownlint-cli2 globally
 

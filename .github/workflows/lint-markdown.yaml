@@ -38,6 +38,7 @@ jobs:
 
       - name: Copy markdownlint config
         run: cp /app/.config/.markdownlint-cli2.jsonc $GITHUB_WORKSPACE
+        run: cp /app/.config/capitalised-headings.js $GITHUB_WORKSPACE
 
     # Lint All Markdown Files
         
