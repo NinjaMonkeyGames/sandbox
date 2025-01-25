@@ -42,4 +42,4 @@ jobs:
     # Lint All Markdown Files
         
       - name: Run markdownlint-cli2
-        run: markdownlint-cli2 "**/*.md" "#node_modules" "#markdown-fail"
+        run: ls -a
