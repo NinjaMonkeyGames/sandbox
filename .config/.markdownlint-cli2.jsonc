@@ -5,6 +5,10 @@
 {
   // Custom rules
 
+  "customRules": 
+  [
+    "./.config/capitalised-headings.jsonc/capitalised-headings.js"
+  ],
   
   // Main markdownlint-cli2 configuration
 
