@@ -2,15 +2,15 @@
 #                                               FEATURE REQUEST TEMPLATE                                               #
 ########################################################################################################################
 
-# 1. Meta data.
-# 2. Initialise form.
-# 3. Introduction text.
-# 4. Email input.
-# 5. OS selection.
-# 6. Browser selection.
-# 7. Feature type.
-# 8. Priority.
-# 9. Feature summary.
+# 1.  Meta data.
+# 2.  Initialise form.
+# 3.  Introduction text.
+# 4.  Email input.
+# 5.  OS selection.
+# 6.  Browser selection.
+# 7.  Feature type.
+# 8.  Priority.
+# 9.  Feature summary.
 # 10. Expected behaviour.
 # 11. Use case.
 # 12. Additional information.
@@ -158,6 +158,6 @@ body:
       label: Code of Conduct
       description: By submitting this feature request, you agree to follow our [Code of Conduct](https://example.com).
       options:
-        - label: I agree to follow this project's Code of Conduct
+        - label: I agree to follow this project's Code of Conduct.
     validations:
       required: true

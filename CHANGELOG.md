@@ -1,16 +1,25 @@
-# Changelog
+# CHANGELOG
 
 All notable changes to this project will be documented in this file.
 
-## [0.0.0] - 2025-12-23
+[![Common Changelog](https://common-changelog.org/badge.svg)](https://common-changelog.org)
 
-### Fixed
+## [0.0.0] - 2025-01-25
 
-    - Created a Dockerfile to build a container with markdownlint-cli2 installed.
-    - Created 'DEVELOPER.md' Markdownlint-Cli2 CI/CD Pipeline Docker Project Programmers Manual.
-    - Created 'README.md'.
-    - Created GitHub issue templates 'bug-report-template.yaml' and 'feature-request-template.yaml'.
-    - Created 'build-docker.yaml' which builds the project and pushes it to dockerhub.
-    - Created cSpell configuration to lint the project for spelling mistakes.
-    - Created 'CONTRIBUTING.md' containing instructions on how to contribute to the project.
-    - Created 'CHANGELOG.md' to keep track of changes made to the project.
+### ADDED
+
+- Created '.artefacts' folder.
+- Created 'logo.png'.
+- Created 'monkey-knuckles-avatar.png'.
+- Created '.config' folder.
+- Created 'custom-markdownlint-rules'.
+- Created 'capitalised-headings.js'.
+- Created '.markdownlint-cli2.jsonc'.
+- Created ''.
+- Created ''.
+- Created ''.
+- Created ''.
+- Created ''.
+- Created ''.
+- Created ''.
+- Created ''.

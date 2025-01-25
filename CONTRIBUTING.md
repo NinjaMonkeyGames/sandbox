@@ -295,3 +295,9 @@ There are some stylistic rules that need to be taken into consideration when mak
 
   For example: 'alert("Hello World!")' displays an alert message. The document has been designed like this for
   readability purposes.
+
+
+ ℹ *The purpose of having the exact file size recorded in bytes is because it provides an extra way to ensure document
+ integrity is being maintained when changes are made to files. If the file size is different to what is being reported
+ in the documentation then it is very likely that the document was not updated when the developer modified the file or
+ the job was not done correctly.*

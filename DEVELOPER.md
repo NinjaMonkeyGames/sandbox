@@ -1,153 +1,147 @@
 # Markdownlint-Cli2 CI/CD Pipeline Docker Project Programmers Manual
 
-This document is a reference guide for programmers. It provides a comprehensive list of all assets in the project,
-including detailed descriptions of their functionality and a complete breakdown of the code.
+This document is a reference-guide for programmers. It provides a comprehensive list of all assets contained within the
+project.
+
+This includes detailed API descriptions and asset code breakdown.
+
+This reference manual focuses on the project structure and logic.
+
+This document does not cover documentation style guidelines or contribution policies. For that see, 'CONTRIBUTING.md'.
 
 ℹ Please review 'CONTRIBUTING.md' carefully, as it contains important information on how to contribute to this
-repository and update the documentation. This reference manual focuses on the project structure and logic.
-It does not cover style guidelines or contribution policies.
+repository and how to update the documentation correctly.
 
 ---
 
 ## TABLE OF CONTENTS
 
+< Place holder for the table of contents (TOC) to be generated once the document is complete >
+
+[!TOC]
+
+---
+
 ## TARGET AUDIENCE
 
 This document is for developers actively working on this project.
 
----
-
-## PROJECT DESCRIPTION
-
-This project is essentially a Dockerfile with a script that contains instructions for a Docker container that has
-markdownlint-cli2 installed. markdownlint is a tool that lints markdown files based on the [CommonMark][1] standard.
-
----
-
 ## PROJECT PURPOSE
 
-The purpose of this program is to provide a Docker container setup that will lint Markdown files as part of a CI/CD
-workflow. This provides greater readability and compatibility for any Markdown files contained in the project.
-
----
+The purpose of this program is to provide a Docker container setup that will lint Markdown files as part of a
+[CI/CD](#glossary) workflow.
 
 ## PROJECT ASSETS
 
 ### FILE TREE VIEW
 
-```markdown
-markdownlint-cli2-docker
-│   .gitignore
-│   CODE_OF_CONDUCT.md
-│   CONTRIBUTING.md
-│   DEVELOPER-OLD.md
-│   DEVELOPER.md
-│   Dockerfile
-│   package-lock.json
-│   package.json
-│   README.md
-│   version.text
-│
-├───.artefacts
-│       logo.png
-│       monkey-knuckles-avatar.png
-│
-├───.config
-│       .markdownlint.jsonc
-│       commitlint.config.js
-│       cspell.json
-│
-├───.github
-│   ├───ISSUE_TEMPLATE
-│   │       bug-report-template.yaml
-│   │       feature-request-template.yaml
-│   │
-│   └───workflows
-│           build-docker.yaml
-│           lint-markdown.yaml
-│           lint-spelling.yaml
-├───.git
-│
-├───.vscode
-│       extensions.json
-│       keybindings.json
-│       settings.json
-│       tasks.json
-│
-└───markdown-fail
-        md001.md
-        md003.md
-        md004.md
-        md005.md
-        md007.md
-        md009.md
-        md010.md
-        md011.md
-        md012.md
-        md013.md
-        md018.md
-        md019.md
-        md020.md
-        md021.md
-        md022.md
-        md023.md
-        md024.md
-        md025.md
-        md026.md
-        md027.md
-        md028.md
-        md029.md
-        md030.md
-        md031.md
-        md032.md
-        md033.md
-        md034.md
-        md035.md
-        md036.md
-        md037.md
-        md038.md
-        md039.md
-        md040.md
-        md041.md
-        md042.md
-        md043.md
-        md044.md
-        md045.md
-        md046.md
-        md047.md
-        md048.md
-        md049.md
-        md050.md
-        md051.md
-        md052.md
-        md053.md
-        md054.md
-        md055.md
-        md056.md
- ```
+C:\Users\mailm\Documents\GitHub\sandbox
+├─.gitignore
+├─.prettierrc
+├─CHANGELOG.md
+├─CODE_OF_CONDUCT.md
+├─CONTRIBUTING-NEW.MD
+├─CONTRIBUTING.md
+├─DEVELOPER.md
+├─Dockerfile
+├─package-lock.json
+├─package.json
+├─README.md
+├─tree.md
+├─markdown-fail
+|       ├─md001.md
+|       ├─md003.md
+|       ├─md004.md
+|       ├─md005.md
+|       ├─md007.md
+|       ├─md009.md
+|       ├─md010.md
+|       ├─md011.md
+|       ├─md012.md
+|       ├─md013.md
+|       ├─md018.md
+|       ├─md019.md
+|       ├─md020.md
+|       ├─md021.md
+|       ├─md022.md
+|       ├─md023.md
+|       ├─md024.md
+|       ├─md025.md
+|       ├─md026.md
+|       ├─md027.md
+|       ├─md028.md
+|       ├─md029.md
+|       ├─md030.md
+|       ├─md031.md
+|       ├─md032.md
+|       ├─md033.md
+|       ├─md034.md
+|       ├─md035.md
+|       ├─md036.md
+|       ├─md037.md
+|       ├─md038.md
+|       ├─md039.md
+|       ├─md040.md
+|       ├─md041.md
+|       ├─md042.md
+|       ├─md043.md
+|       ├─md044.md
+|       ├─md045.md
+|       ├─md046.md
+|       ├─md047.md
+|       ├─md048.md
+|       ├─md049.md
+|       ├─md050.md
+|       ├─md051.md
+|       ├─md052.md
+|       ├─md053.md
+|       ├─md054.md
+|       ├─md055.md
+|       └md056.md
+├─.vscode
+|    ├─extensions.json
+|    ├─keybindings.json
+|    ├─settings.json
+|    └tasks.json
+├─.github
+|    ├─workflows
+|    |     ├─build-docker.yaml
+|    |     ├─lint-markdown.yaml
+|    |     └lint-spelling.yaml
+|    ├─ISSUE_TEMPLATE
+|    |       ├─bug-report-template.yaml
+|    |       └feature-request-template.yaml
+├─.config
+|    ├─.markdownlint-cli2.jsonc
+|    ├─commitlint.config.js
+|    ├─cspell.json
+|    ├─custom-markdownlint-rules
+|    |             └capitalised-headings.js
+├─.artefacts
+|     ├─logo.png
+|     └monkey-knuckles-avatar.png
 
----
+### ARTEFACTS FOLDER [.ARTEFACTS] 📁
 
-### ARTEFACTS [FOLDER] 📁
+#### Attribute Table : [.artefacts]
 
-#### Attribute Table : [Artefacts Folder]
+| Attribute             | Value             |
+|-----------------------|-------------------|
+| Asset Name            | .artefacts        |
+| Relative Path         | ./                |
+| Hidden                | Yes               |
+| Include in Repository | Yes               |
+| Managed               | Yes               |
+| Asset Type            | FOLDER            |
+| Asset Size            | 14,463 Bytes      |
 
-| Attribute             | Value        |
-|-----------------------|--------------|
-| Asset Name            | .artefacts   |
-| Relative Path         | ./           |
-| Hidden                | Yes          |
-| Include in Repository | Yes          |
-| Managed               | Yes          |
-| Asset Type            | FOLDER       |
+#### Asset Purpose : [.artefacts]
 
-#### Asset Purpose : [Artefacts Folder]
+Store artefacts that are used throughout the CI/CD process but not necessarily a part of the project itself. This keeps everything internal to the CI/CD process.
 
-To contain artefacts that are used throughout the CI/CD process but not necessarily apart of the project itself.
+#### Asset Contents Description : [.artefacts]
 
-#### Asset Contents Description : [Artefacts Folder]
-
-The '.artefacts' folder contains files such as logos that are used throughout the [CI/CD](#glossary) pipeline process.
+The '.artefacts' folder contains files such as logos, logs and other files that are used throughout the [CI/CD](#glossary) pipeline process.
 
 ---
 
@@ -159,23 +153,23 @@ The '.artefacts' folder contains files such as logos that are used throughout th
 
 #### Attribute Table : [logo.png]
 
-| Attribute             | Value      |
-|-----------------------|------------|
-| Asset Name            | logo.png   |
-| Relative Path         | .artefacts |
-| Hidden                | Inherited  |
-| Include in Repository | Yes        |
-| Managed               | Yes        |
-| Asset Type            | PNG        |
+| Attribute             | Value             |
+|-----------------------|-------------------|
+| Asset Name            | logo.png          |
+| Relative Path         | .artefacts        |
+| Hidden                | Inherited         |
+| Include in Repository | Yes               |
+| Managed               | Yes               |
+| Asset Type            | PNG               |
+| Asset Size            | 5,746 Bytes       |
 
 #### Asset Purpose : [logo.png]
 
-Brand identification.
+Brand identification. This logo is used in internal markdown files for branding purposes.
 
 #### Asset Contents Description : [logo.png]
 
-This file contains the NinjaMonkeyGames™ logo. This logo is used in internal markdown files for branding purposes.
-This is a PNG logo that measures 32px x 32px.
+This file contains the NinjaMonkeyGames™ logo.
 
 ![Company Logo](.artefacts/logo.png)
 
@@ -189,14 +183,15 @@ This is a PNG logo that measures 32px x 32px.
 
 #### Attribute Table : [monkey-knuckles-avatar.png]
 
-| Attribute             | Value                         |
-|-----------------------|-------------------------------|
-| Asset Name            | monkey-knuckles-avatar.png    |
-| Relative Path         | .artefacts                    |
-| Hidden                | Inherited                     |
-| Include in Repository | Yes                           |
-| Managed               | Yes                           |
-| Asset Type            | PNG                           |
+| Attribute             | Value                       |
+|-----------------------|-----------------------------|
+| Asset Name            | monkey-knuckles-avatar.png  |
+| Relative Path         | .artefacts                  |
+| Hidden                | Inherited                   |
+| Include in Repository | Yes                         |
+| Managed               | Yes                         |
+| Asset Type            | PNG                         |
+| Asset Size            | 8,717 Bytes                 |
 
 #### Asset Purpose : [monkey-knuckles-avatar.png]
 
@@ -204,12 +199,12 @@ Developer identification and contribution recognition.
 
 #### Asset Contents Description : [monkey-knuckles-avatar.png]
 
-This file contains Developer avatar for 'Monkey Knuckles'. It measures 32 x 32 pixels.
+This file contains Developer avatar for 'Monkey Knuckles'.
 
  ℹ *If you are a new developer and you have made a contribution to this project you should add your own avatar to the*
  *project and update the relevant parts of the documentation. See 'CONTRIBUTING.md'.*
 
-![Monkey Knuckles Avatar](.artefacts/monkey-knuckles-avatar.png)
+ ![Monkey Knuckles Avatar](.artefacts/monkey-knuckles-avatar.png)
 
 ---
 
@@ -217,24 +212,25 @@ This file contains Developer avatar for 'Monkey Knuckles'. It measures 32 x 32 p
 
 ---
 
-### CONFIGURATION [FOLDER] 📁
+### CONFIGURATION FOLDER [.CONFIG] 📁
 
-#### Attribute Table : [Configuration Folder]
+#### Attribute Table : [.config]
 
-| Attribute             | Value        |
-|-----------------------|--------------|
-| Asset Name            | .config      |
-| Relative Path         | ./           |
-| Hidden                | Yes          |
-| Include in Repository | Yes          |
-| Managed               | Yes          |
-| Asset Type            | FOLDER       |
+| Attribute             | Value             |
+|-----------------------|-------------------|
+| Asset Name            | .config           |
+| Relative Path         | ./                |
+| Hidden                | Yes               |
+| Include in Repository | Yes               |
+| Managed               | Yes               |
+| Asset Type            | FOLDER            |
+| Asset Size            | 10,676 Bytes      |
 
-#### Asset Purpose : [Configuration Folder]
+#### Asset Purpose : [.config]
 
-Keeps all plugin configuration files in the same place.
+Provide settings that allow the project to be linted consistently across the entire project based on predefined rules.
 
-#### Asset Contents Description : [Configuration Folder]
+#### Asset Contents Description : [.config]
 
 Contains configuration files for various [IDE](#glossary) plugins.
 
@@ -244,39 +240,257 @@ Contains configuration files for various [IDE](#glossary) plugins.
 
 ---
 
-### MARKDOWNLINT CONFIGURATION FILE [.MARKDOWNLINT.JSONC] 📄
+### CUSTOM MARKDOWNLINT RULES FOLDER [CUSTOM-MARKDOWNLINT-RULES] 📁
 
-#### Attribute Table : [.markdownlint.jsonc]
+#### Attribute Table : [custom-markdownlint-rules]
 
-| Attribute             | Value                 |
-|-----------------------|-----------------------|
-| Asset Name            | .markdownlint.jsonc   |
-| Relative Path         | .config               |
-| Hidden                | Yes                   |
-| Include in Repository | Yes                   |
-| Managed               | Yes                   |
-| Asset Type            | JSONC                 |
+| Attribute             | Value                       |
+|-----------------------|-----------------------------|
+| Asset Name            | custom-markdownlint-rules   |
+| Relative Path         | ./                          |
+| Hidden                | Inherited                   |
+| Include in Repository | Yes                         |
+| Managed               | Yes                         |
+| Asset Type            | FOLDER                      |
+| Asset Size            | 1,709 Bytes                 |
 
-#### Asset Purpose : [.markdownlint.jsonc]
+#### Asset Purpose : [custom-markdownlint-rules]
 
-To maintain consistent markdown formatting throughout the project.
+To maintain repository integrity by providing extra markdown rules to keep the manual tidy and ensure consistent work.
 
-#### Asset Contents Description : [.markdownlint.jsonc]
+#### Asset Contents Description : [custom-markdownlint-rules]
 
-This file contains a list of rules written in JSONC format that dictate how markdownlint-cli2 will lint markdown files.
+Contains JavaScript files each containing a custom markdownlint rules.
+
+##### Custom markdown rules syntax glossary : [.vscode]
+
+| Token       | Description                                                                |
+|-------------|----------------------------------------------------------------------------|
+| =           | Assignment operator.                                                       |
+| ""          | String encapsulation.                                                      |
+| ,           | Separate list items on to new line.                                        |
+
+---
+
+[BACK TO TOP](#markdownlint-cli2-cicd-pipeline-docker-project-programmers-manual)
+
+---
+
+### CAPITALISED HEADINGS CUSTOM MARKDOWNLINT RULE [CAPITALISED-HEADINGS.JS] 📄
+
+#### Attribute Table : [capitalised-headings.js]
+
+| Attribute             | Value                             |
+|-----------------------|-----------------------------------|
+| Asset Name            | capitalised-headings.js           |
+| Relative Path         | .config/custom-markdownlint-rules |
+| Hidden                | Inherited                         |
+| Include in Repository | Yes                               |
+| Managed               | Yes                               |
+| Asset Type            | JavaScript                        |
+| Asset Size            | 1,709 Bytes                       |
+
+#### Asset Purpose : [capitalised-headings.js]
+
+Provide extra linting for markdownlint-cli2.
+
+#### Asset Contents Description : [capitalised-headings.js]
+
+This function is a custom markdownlint-cli2 script that will check level one and two headings to ensure they are capitalised in-line with NMG policy.
+
+#### Asset Code Breakdown : [capitalised-headings.js]
+
+1. Module exports.
+2. Meta data.
+3. Heading capitalisation function.
+
+##### Module exports : [capitalised-headings.js] - [CODE]
+
+```javascript
+// Module exports
+
+1. module.exports =
+2. {
+```
+
+##### Module exports : [capitalised-headings.js] - [CODE DESCRIPTION]
+
+```markdown
+1. Exports data to markdownlint-cli2.
+2. Exposes module exports. 
+```
+
+##### Meta data : [capitalised-headings.js] - [CODE]
+
+```javascript
+// Meta data
+
+1. names: ["capitalised-headings"],
+2. description: "Ensure level 2 and 3 headings are fully capitalised.",
+3. information: new URL("./CONTRIBUTING.md"),
+4. tags: ["headings", "style"],
+```
+
+##### Capitalised headings : [capitalised-headings.js] - [CODE DESCRIPTION]
+
+```markdown
+1. names: specifies an identifiable name for the error.
+2. description: provides a longer string of text to describe the error.
+3. information: URL with rule explanation.
+4. tags: identifies the category of linting error.
+```
+
+##### Heading capitalisation function : [capitalised-headings.js] - [CODE]
+
+```javascript
+  // Heading capitalisation function
+  
+1.   function: (params, onError) =>
+2.   {
+3.     params.lines.forEach((lineContent, lineIndex) =>
+4.     {
+5.       const headingMatch = lineContent.match(/^(#{2,3})\s+(.*)$/);
+6.       if (headingMatch && headingMatch[2] !== headingMatch[2].toUpperCase())
+7.       {
+8.         onError
+9.         ({
+10.           lineNumber: lineIndex + 1,
+11.           detail: `Heading not fully capitalised: "${headingMatch[2]}"`,
+12.           context: lineContent.trim(),
+13.         });
+14.       }
+15.     });
+16.   },
+17. };
+```
+
+##### Heading capitalisation function : [capitalised-headings.js] - [CODE DESCRIPTION]
+
+```markdown
+1. Declares the function defining the custom MarkdownLint rule. It takes params (file context) and onError 
+   (error callback).
+      a. 'params' contains the context of the Markdown file, including lines (an array of file lines).
+      b. 'onError' callback used to report validation errors.
+      c. '=>' Arrow function syntax.
+
+2. Opening brace for the rule’s main logic.
+
+3. Iterates through all lines in the Markdown file using forEach. Each line's content and index are processed.
+  a. 'params.lines' accesses the lines array (each line in the Markdown file).
+  b. '.forEach' iterates over each line.
+  c. (lineContent, lineIndex) callback arguments for the line’s content and its index.
+    i. 'lineContent' contains line text.
+    ii. 'lineIndex' contains line index.
+  
+4. '{' opening brace for the line-processing logic.
+
+5. Matches lines that start with 2 or 3 # symbols (Markdown headings) followed by whitespace and text.
+  a. 'const headingMatch' declares a variable to store the result of the regular expression match.
+  b. '=' assigns the following code.
+  c. '.match(/^(#{2,3})\s+(.*)$/)' tests if the line matches the [RegEx](#glossary)
+    i. '/' Delimiters marking the start and end of the regex pattern.
+    ii. '^' Ensures the match starts at the beginning of the line.
+    iii. '(#{2,3})' Captures 2 or 3 consecutive # symbols.
+    iv. '#' Matches the literal # character.
+    v. '{2,3}' Specifies that the # symbol must appear at least 2 times and at most 3 times.
+    vi. '\s+' Matches one or more whitespace characters (spaces, tabs, etc.) after the # symbols.
+    vii. '(.*)' Captures the remaining text on the line after the whitespace.
+    viii. '.' Matches any character except line breaks.
+    ix. '*' Matches zero or more occurrences of the preceding character (any character in this case).
+    x. '$' Ensures the match ends at the last character of the line.
+    
+6. Checks if the line is a heading and its text is not fully capitalized. This is the core validation rule.
+  a. 'if' starts a conditional block.
+  b. 'headingMatch' checks if the line matches the heading pattern.
+  c. '&&' logical AND operator.
+  d. 'headingMatch[2]' accesses the heading text captured by the regex.
+  e. '!== headingMatch[2].toUpperCase()' checks if the heading text is not fully capitalized.
+  
+7. Opening brace for the error-handling logic.
+8. 'onError' invokes the onError function to report the validation error.
+9. '({' begins the error details object passed to onError.
+10. Specifies the line number where the issue was detected (1-based index).
+11. Provides a detailed error message showing the problematic heading text.
+  a. 'detail:' provides a descriptive error message.
+  b. "Heading not fully capitalised: "${headingMatch[2]}": Inserts the problematic text into the message.
+
+12. Provides additional context by including the trimmed content of the problematic line.
+  a. 'context: lineContent.trim(),
+' includes the problematic line content, trimmed of whitespace.
+
+13. '});' ends the error details object passed to onError.
+14. '}' closes the if block.
+15. '});' closes the forEach callback, completing the iteration over lines.
+16. '},' ends the main rule function logic.
+17. '};' ends the custom MarkdownLint rule definition.
+
+```
+
+---
+
+[BACK TO TOP](#markdownlint-cli2-cicd-pipeline-docker-project-programmers-manual)
+
+---
+
+### MARKDOWNLINT-CLI2 CONFIGURATION FILE [.MARKDOWNLINT-CLI2.JSONC] 📄
+
+#### Attribute Table : [.markdownlint-cli2.jsonc]
+
+| Attribute             | Value                             |
+|-----------------------|-----------------------------------|
+| Asset Name            | .markdownlint-cli2.jsonc          |
+| Relative Path         | .config                           |
+| Hidden                | Inherited                         |
+| Include in Repository | Yes                               |
+| Managed               | Yes                               |
+| Asset Type            | JSONC                             |
+| Asset Size            | 5,872 Bytes                       |
+
+#### Asset Purpose : [.markdownlint-cli2.jsonc]
+
+To maintain consistent markdown linting throughout the project.
+
+#### Asset Contents Description : [.markdownlint-cli2.jsonc]
+
+Contains a list of rules written in JSON(C) format that dictate how markdownlint-cli2 will lint markdown files.
 There are 49 Different rules. These rules are prefixed with 'MD' followed by a three digit number.
 
  ℹ *Some of the numbers appear to missing! These are legacy rules that were removed from markdownlint.
  MD002, MD006, MD008, MD014, MD015, MD016, MD0017 have been removed.*
 
-#### Asset Code Breakdown : [.markdownlint.jsonc]
+#### Asset Code Breakdown : [.markdownlint-cli2.jsonc]
 
-1. Base setup
-2. Rule code
-    a. Sub-setting description (If applicable)
-    b. Value
+1. Custom rules
+2. Base setup
+3. Rule code
+    a. Setting
+    b. Sub-setting description (If applicable)
+    c. Value
 
-##### Base setup : [.markdownlint.jsonc] - [CODE]
+##### Custom rules : [.markdownlint-cli2.jsonc] - [CODE]
+
+```json
+  // Custom rules
+
+1.  "customRules": 
+2.  [
+3.    "./custom-markdownlint-rules/capitalised-headings.js"
+4.  ],
+```
+
+##### Custom rules : [.markdownlint-cli2.jsonc] - [CODE DESCRIPTION]
+
+```markdown
+1. Module names or paths of custom rules to load and use when linting  markdown.
+
+2. Opens the custom rule list for writing.
+3. Path to the level 2 & 3 capitalised headings custom rule.
+4. Closes the custom rule list for writing.
+```
+
+See. [markdownlint configuration schema][1]
+
+##### Base setup : [.markdownlint-cli2.jsonc] - [CODE]
 
 ```json
 // Base Setup
@@ -285,22 +499,24 @@ There are 49 Different rules. These rules are prefixed with 'MD' followed by a t
 2. "extends": null, // Explicitly specifies there are no extended configurations.
 ```
 
-##### Base setup : [.markdownlint.jsonc] - [CODE-DESCRIPTION]
+##### Base setup : [.markdownlint-cli2.jsonc] - [CODE DESCRIPTION]
 
 ```markdown
 1. All rules will be considered true unless the configuration specifically states otherwise.
 2. This is set to null because this is the only configuration file that will be used in this project.
 ```
 
-##### markdownlint-cli2 Configuration File, Rule Table : [.markdownlint.jsonc]
+##### markdownlint-cli2 configuration file, rule table : [.markdownlint-cli2.jsonc]
 
 The rest of the configuration has been entered in the form of a table for legibility purposes.
+
+See. [Markdown Rules][2]
 
 | Rule Code | Sub-setting Description | Value              |
 |-----------|-------------------------|--------------------|
 | MD001     |                         | True               |
 | MD003     | style                   | consistent         |
-| MD004     | style                   | consistent         |
+| MD004     |                         | false              |
 | MD005     |                         | true               |
 | MD007     | indent                  | 2                  |
 | MD007     | start_indented          | true               |
@@ -332,7 +548,7 @@ The rest of the configuration has been entered in the form of a table for legibi
 | MD024     | siblings_only           | false              |
 | MD025     | level                   | 1                  |
 | MD025     | front_matter_title      | ^\\s*title\\s*[:=] |
-| MD026     | punctuation             | .,;:!。，；：！     |
+| MD026     | punctuation             | .,;:!。，；：！    |
 | MD027     |                         | true               |
 | MD028     |                         | true               |
 | MD029     | style                   | one_or_ordered     |
@@ -345,7 +561,7 @@ The rest of the configuration has been entered in the form of a table for legibi
 | MD033     | allowed_elements        |                    |
 | MD034     |                         | true               |
 | MD035     | style                   | consistent         |
-| MD036     | punctuation             | .,;:!?。，；：！？  |
+| MD036     | punctuation             | .,;:!?。，；：！？ |
 | MD037     |                         | true               |
 | MD038     |                         | true               |
 | MD039     |                         | true               |
@@ -381,52 +597,108 @@ The rest of the configuration has been entered in the form of a table for legibi
 
 ---
 
-### COMMIT LINT CONFIGURATION FILE [COMMITLINT.CONFIG.JS] 📄
+### COMMITLINT CONFIGURATION FILE [COMMITLINT.CONFIG.JS] 📄
 
 #### Attribute Table : [commitlint.config.js]
 
-| Attribute             | Value                 |
-|-----------------------|-----------------------|
-| Asset Name            | commitlint.config.js  |
-| Relative Path         | .config               |
-| Hidden                | Inherited             |
-| Include in Repository | Yes                   |
-| Managed               | Yes                   |
-| Asset Type            | JS                    |
+| Attribute             | Value                             |
+|-----------------------|-----------------------------------|
+| Asset Name            | commitlint.config.js              |
+| Relative Path         | .config                           |
+| Hidden                | Inherited                         |
+| Include in Repository | Yes                               |
+| Managed               | Yes                               |
+| Asset Type            | JavaScript                        |
+| Asset Size            | 2,626 Bytes                       |
 
 #### Asset Purpose : [commitlint.config.js]
 
 Maintains the repository integrity buy ensuring conventional commit standards are being adhered to.
 
+[Conventional Commits][3]
+
 #### Asset Contents Description : [commitlint.config.js]
 
 Contains linting rules pertaining to the conventional commit standards.
 
-See. [Conventional Commits][2]
+##### Commitlint configuration syntax table: [commitlint.config.js]
 
-### CPSELL [CSPELL.JSON] 📄
+This table displays the keywords found in 'commitlint.config.js' with an explanation of their function.
+
+| Setting           | Affect                                              |
+|-------------------|-----------------------------------------------------|
+| extends           | Extend configuration to conventional commits        |
+| rules             | Defines a list of commitlint rules                  |
+| header-max-length | Limit header length to 72 characters                |
+| type-empty        | Disallow empty types in commit messages             |
+| subject-empty     | Disallow empty subjects in commit messages          |
+| scope-empty       | Require a scope for commits                         |
+
+##### Type enumeration table : [commitlint.config.js]
+
+The following table is a list of commit types as defined in 'commitlint.config.js'.
+
+| Type          | Type Descriptions                                       |
+|---------------|---------------------------------------------------------|
+| feat          | New feature                                             |
+| fix           | Bug fix                                                 |
+| docs          | Documentation Changes                                   |
+| style         | Code style changes (formatting, etc., no code change)   |
+| refactor      | Refactor without adding new features or fixing bugs     |
+| perf          | Performance improvements                                |
+| test          | Adding or updating tests                                |
+| build         | Changes to build system or dependencies                 |
+| security      | Security fixes                                          |
+| ci            | Continuous integration-related changes                  |
+| chore         | Other changes that don't modify source or test files    |
+| revert        | Reverts a previous commit                               |
+| depreciation  | A feature or portion of code has become redundant       |
+| accessibility | Updates for better accessibility compliance (e.g., WCAG)|
+| analytics     | Changes to analytics or tracking                        |
+
+##### Scope enumeration table : [commitlint.config.js]
+
+The following table contains a list of commitlint scopes.
+
+| Scope          | Scope Descriptions                                     |
+|----------------|--------------------------------------------------------|
+| api            | API-related changes                                    |
+| ui             | UI-related changes                                     |
+| auth           | Authentication changes                                 |
+| db             | Database changes                                       |
+| deps           | Dependency updates                                     |
+| tests          | Test-related changes                                   |
+| config         | Configuration updates                                  |
+
+---
+
+[BACK TO TOP](#markdownlint-cli2-cicd-pipeline-docker-project-programmers-manual)
+
+---
+
+### CPSELL CONFIGURATION FILE [CSPELL.JSON] 📄
 
 #### Attribute Table : [cspell.json]
 
-| Attribute             | Value        |
-|-----------------------|--------------|
-| Asset Name            | cspell.json  |
-| Relative Path         | .config      |
-| Hidden                | Inherited    |
-| Include in Repository | Yes          |
-| Managed               | Yes          |
-| Asset Type            | JSON         |
+| Attribute             | Value                             |
+|-----------------------|-----------------------------------|
+| Asset Name            | cspell.json                       |
+| Relative Path         | .config                           |
+| Hidden                | Inherited                         |
+| Include in Repository | Yes                               |
+| Managed               | Yes                               |
+| Asset Type            | JSON                              |
+| Asset Size            | 560 Bytes                         |
 
 #### Asset Purpose : [cspell.json]
 
-To maintain a professional, constant error free style throughout all project documents.
+To maintain a professional, constant, error free style throughout all project documents.
 
 #### Asset Contents Description : [cspell.json]
 
-Contains language configuration and exceptions list for cSpell code spell checker.
+Contains a reference to a British English dictionary and a list of exception words.
 
-ℹ *No code breakdown has been provided here as 'cspell.json'   a simple list of exception words using a British English
-base dictionary.*
+ℹ️ *The exact contents of this file have not been included here as this configuration simply sets language to British English and lists extra spellings to include on top of that.*
 
 ---
 
@@ -434,32 +706,29 @@ base dictionary.*
 
 ---
 
-### GIT [FOLDER] 📁
+### GIT FOLDER [.GIT] 📁
 
-#### Attribute Table : [Git Folder]
+#### Attribute Table : [.git]
 
-| Attribute             | Value        |
-|-----------------------|--------------|
-| Asset Name            | .git         |
-| Relative Path         | ./           |
-| Hidden                | Yes          |
-| Include in Repository | Yes          |
-| Managed               | No           |
-| Asset Type            | FOLDER       |
+| Attribute             | Value                             |
+|-----------------------|-----------------------------------|
+| Asset Name            | .git                              |
+| Relative Path         | ./                                |
+| Hidden                | Yes                               |
+| Include in Repository | Yes                               |
+| Managed               | Yes                               |
+| Asset Type            | FOLDER                            |
+| Asset Size            | 520,571 Bytes                     |
 
-#### Asset Purpose : [Git Folder]
+#### Asset Purpose : [.git]
 
 Allows Git source control to function.
 
-#### Asset Contents Description : [Git Folder]
+#### Asset Contents Description : [.git]
 
-This folder contains configuration files required for Git to function and operate
- correctly.
+⚠️ *Modify these files with caution!*
 
- ⚠️ *Modify these files with caution!*
-
- ℹ *The individual files in this directory will not be listed here because they are managed by Git therefore you should
- defer to the [Git Documentation][3]*
+ ℹ *The individual files in this directory will not be listed here because they are managed by Git therefore you should defer to the [Git Documentation][4].*
 
 ---
 
@@ -467,26 +736,27 @@ This folder contains configuration files required for Git to function and operat
 
 ---
 
-### GITHUB [FOLDER] 📁
+### GITHUB FOLDER [.GITHUB] 📁
 
-#### Attribute Table : [GitHub Folder]
+#### Attribute Table : [.github]
 
-| Attribute             | Value        |
-|-----------------------|--------------|
-| Asset Name            | .github      |
-| Relative Path         | ./           |
-| Hidden                | Yes          |
-| Include in Repository | Yes          |
-| Managed               | Yes          |
-| Asset Type            | FOLDER       |
+| Attribute             | Value                             |
+|-----------------------|-----------------------------------|
+| Asset Name            | .github                           |
+| Relative Path         | ./                                |
+| Hidden                | Yes                               |
+| Include in Repository | Yes                               |
+| Managed               | Yes                               |
+| Asset Type            | FOLDER                            |
+| Asset Size            | 12,475 Bytes                      |
 
-#### Asset Purpose : [GitHub Folder]
+#### Asset Purpose : [.github]
 
 GitHub Actions relies on this folder for workflow functionality.
 
-#### Asset Contents Description : [GitHub Folder]
+#### Asset Contents Description : [.github]
 
-Stores files related to the GitHub [CI/CD](#glossary) pipeline and other documentation like template issues.
+Stores files related to the GitHub [CI/CD](#glossary) pipeline workflow such as linting configurations and GitHub YAML forms.
 
 ---
 
@@ -494,46 +764,51 @@ Stores files related to the GitHub [CI/CD](#glossary) pipeline and other documen
 
 ---
 
-### ISSUE TEMPLATE [FOLDER] 📁
+### ISSUE TEMPLATE FOLDER [ISSUE_TEMPLATE] 📁
 
-#### Attribute Table : [Issue Template Folder]
+#### Attribute Table : [issue_template]
 
-| Attribute             | Value           |
-|-----------------------|-----------------|
-| Asset Name            | ISSUE_TEMPLATE  |
-| Relative Path         | .github         |
-| Hidden                | Inherited       |
-| Include in Repository | Yes             |
-| Managed               | Yes             |
-| Asset Type            | FOLDER          |
+| Attribute             | Value                             |
+|-----------------------|-----------------------------------|
+| Asset Name            | ISSUE_TEMPLATE                    |
+| Relative Path         | .github                           |
+| Hidden                | Inherited                         |
+| Include in Repository | Yes                               |
+| Managed               | Yes                               |
+| Asset Type            | FOLDER                            |
+| Asset Size            | 8,308 Bytes                       |
 
-#### Asset Purpose : [Issue Template Folder]
+#### Asset Purpose : [issue_template]
 
 Enforces consistency when submitting issues and feature requests.
 
-#### Asset Contents Description : [Issue Template Folder]
+#### Asset Contents Description : [issue_template]
 
 Contains templates for GitHub issue forms.
 
 ##### YAML GitHub Issue Forms Keyword Glossary
 
-| Key         | Description                                                             |
-|-------------|-------------------------------------------------------------------------|
-| Name        | Identifiable name to describe the purpose of the form.                  |
-| Description | Text that describes the function of the element.                        |
-| Title       | Default title that will be pre-populated in the issue submission form.  |
-| Labels      | Identify the type categories the issue belongs.                         |
-| Projects    | Assigns to a specific GitHub project.                                   |
-| Body        | Initialises form.                                                       |
-| Type        | Form element type E.G. textbox, checkbox, dropdown.                     |
-| Attributes  | Specifies sub-settings for a particular element type.                   |
-| Label       | Text appears above form element describing what it is.                  |
-| Value       | Sets markdown text.                                                     |
-| ID          | A unique identifier for the field.                                      |
-| Placeholder | Text that appears inside the element itself.                            |
-| Validations | Checks if form is valid before form can be submitted.                   |
-| Required    | Determines if field is required to submit the form.                     |
-| Options     | Provides a list of options to select from drop-down box.                |
+⚠️ *Note that the 'required:' key will only work when the project is made public.*
+
+| Ref         | Description                                                           |
+|-------------|-----------------------------------------------------------------------|
+| Name        | Identifiable name to describe the purpose of the form.                |
+| Description | Describes the function of the form.                                   |
+| Title       | Default title that will be pre-populated in the issue submission form.|
+| Labels      | Identify the type categories the issue belongs.                       |
+| Projects    | Assigns to a specific GitHub project.                                 |
+| Body        | Initialises form.                                                     |
+| Type        | Form element type E.G. text-box, checkbox, dropdown.                  |
+| Attributes  | Specifies sub-settings for a particular element type.                 |
+| Label       | Text appears above form element describing what it is.                |
+| Value       | Sets markdown text.                                                   |
+| ID          | A unique identifier for the field.                                    |
+| Placeholder | Text that appears inside the element itself.                          |
+| Validations | Checks if form is valid before form can be submitted.                 |
+| Required    | Determines if field is required to submit the form.                   |
+| Options     | Provides a list of options to select from dropdown box.               |
+
+See. GitHub YAML issue forms schema syntax [documentation][5].
 
 ---
 
@@ -545,14 +820,15 @@ Contains templates for GitHub issue forms.
 
 #### Attribute Table : [bug-report-template.yaml]
 
-| Attribute             | Value                         |
-|-----------------------|-------------------------------|
-| Asset Name            | bug-report-template.yaml      |
-| Relative Path         | .github/ISSUE_TEMPLATE        |
-| Hidden                | Inherited                     |
-| Include in Repository | Yes                           |
-| Managed               | Yes                           |
-| Asset Type            | YAML                          |
+| Attribute             | Value                             |
+|-----------------------|-----------------------------------|
+| Asset Name            | bug-report-template.yaml          |
+| Relative Path         | .github/ISSUE_TEMPLATE            |
+| Hidden                | Inherited                         |
+| Include in Repository | Yes                               |
+| Managed               | Yes                               |
+| Asset Type            | YAML                              |
+| Asset Size            | 4,179 Bytes                       |
 
 #### Asset Purpose : [bug-report-template.yaml]
 
@@ -581,7 +857,11 @@ YAML script that creates a bug submission form for GitHub issues.
 
 ⚠️ *Note that the 'required:' key will only work when the project is made public.*
 
+ℹ️ *The code section of this asset has been presented in table form for eledgeability purposes.*
+
 ##### Meta data : [bug-report-template.yaml] - [CODE]
+
+This section of YAML script provides meta data for the form but is not an element of the form itself.
 
 ```yaml
 1. name: 🐞 Bug Report
@@ -591,33 +871,17 @@ YAML script that creates a bug submission form for GitHub issues.
 5. projects: ["NinjaMonkeyGames/12"]
 ```
 
-##### Meta data : [bug-report-template.yaml] - [BLOCK DESCRIPTION]
+##### Meta data attribute table : [bug-report-template.yaml] - [CODE DESCRIPTION]
 
-```markdown
-This section contains mete data for the bug submission form.
-```
+| Attribute Description | Attribute Value         |
+|-----------------------|-------------------------|
+| name                  | 🐞 Bug Report           |
+| description           | File a bug report       |
+| title                 | [Bug]:                  |
+| labels                | ["bug", "new"]          |
+| projects              | ["NinjaMonkeyGames/12"] |
 
-##### Meta data : [bug-report-template.yaml] - [CODE DESCRIPTION]
-
-```markdown
-1. name: identifiable name to describe the purpose of the form.
-  a. Set name to '🐞 Bug Report'.
-  
-2. description: describes the function of the form.
-  a. Set description to 'File a bug report'.
-
-3. title: default title that will be pre-populated in the issue submission form.
-  a. Set default title text to '[Bug]:'.
- 
-4. labels: identify the type categories the issue belongs.  
-  a. Set labels 'bug' and 'new'.
-  
-5. projects: assigns to a specific GitHub project.   
-  a. Set account namespace to 'NinjaMonkeyGames/'.
-  b. Set project to 12
-```
-
-⚠️ *GitHub used to use project names but the new system uses numerical identifiers.*
+⚠️ *GitHub once used project names but the new system uses numerical identifiers. 12 being the project 'name'*
 
 ##### Initialise form : [bug-report-template.yaml] - [CODE]
 
@@ -627,19 +891,11 @@ This section contains mete data for the bug submission form.
 1. body:
 ```
 
-##### Initialise form : [bug-report-template.yaml] - [BLOCK DESCRIPTION]
-
-```markdown
-Tells GitHub that form content will follow.
-```
-
 ##### Initialise form : [bug-report-template.yaml] - [CODE DESCRIPTION]
 
 ```markdown
-1. Tells GitHub the form will begin here.
+1. body: Initialises YAML form body.
 ```
-
-##### Introduction text : [bug-report-template.yaml] - [CODE]
 
 ```yaml
 # Introduction Text
@@ -647,23 +903,20 @@ Tells GitHub that form content will follow.
 1.  - type: markdown
 2.    attributes:
 3.      value: |
-4.        Thanks for taking the time to report this issue!
-5.        Please take the time to fill out the form carefully.
+4.        Thanks for taking the time to report this issue! Please fill out the form below to           provide detailed information about the bug.
 ```
 
-##### Introduction text : [bug-report-template.yaml] - [CODE DESCRIPTION]
+##### Introduction text attribute table : [bug-report-template.yaml] - [CODE DESCRIPTION]
+
+| Attribute Description | Attribute Value         |
+|-----------------------|-------------------------|
+| type                  | markdown                |
+| attributes            | List attributes         |
+| value                 | Fig 1.4                 |
 
 ```markdown
-1. type: form element type E.G. textbox, checkbox, dropdown.
-  a. Sets form element type to markdown.
-
-2. attributes: specifies sub-settings for a particular element type.
-
-3. value: sets markdown introduction text.
-  a. '|' Indicates multiple lines of text.
-
-4. Set first line of text to 'Thanks for taking the time to report this issue!'.
-5. Set second line of text to 'Please fill out the form below to provide detailed information about the bug.'.
+Fig 1.4
+Thanks for taking the time to report this issue! Please fill out the form below to provide detailed information about the bug.
 ```
 
 ##### Email input : [bug-report-template.yaml] - [CODE]
@@ -671,562 +924,342 @@ Tells GitHub that form content will follow.
 ```yaml
 # Email Input
 
-1.   - type: input
-2.     id: contact-email
-3.     attributes:
-4.       label: Contact Email
-5.       description: Please provide an email encase we need to reach you.
-6.       placeholder: email@example.com
-7.     validations:
-8.       required: true
+1.  - type: input
+2.    id: contact-email
+3.    attributes:
+4.      label: Contact Email
+5.      description: Please provide an email where we can reach you if more information is           needed.
+6.      placeholder: info@ninjamonkeygames.com
+7.    validations:
+8.      required: true
 ```
 
-##### Email input : [bug-report-template.yaml] - [BLOCK DESCRIPTION]
+##### Email input attribute table: [bug-report-template.yaml] - [CODE DESCRIPTION]
+
+| Attribute Description | Attribute Value                                                                             |
+|-----------------------|---------------------------------------------------------------------------------------------|
+| type                  | input                                                                                       |
+| id                    | contact-email                                                                               |
+| attributes            | List attributes                                                                             |
+| label                 | Contact Email                                                                               |
+| description           | Please provide an email where we can reach you if we need more information.                 |
+| placeholder           | <info@ninjamonkeygames.com>                                                                 |
+| validations           | Check if form is valid                                                                      |
+| required              | true                                                                                        |
 
 ```markdown
-Provides a field for users to enter their email address so they can be contacted about the bug request should there be 
-any issues or further clarification is required.
-```
-
-##### Email input : [bug-report-template.yaml] - [CODE DESCRIPTION]
-
-```markdown
-1. type: form element type E.G. textbox, checkbox, dropdown.
-  a. Sets form element type to input.
-
-2. id: a unique identifier for the field.
-  a. Set unique identifier to 'contact-email'.
-
-3. attributes: specifies sub-settings for a particular element type.
-
-4. label: text appears above form element describing what it is.
-  a. set label text to 'Contact Email'.
-
-5. description: text is displayed below the label and serves as a description to further clarify the purpose of the
-form element.
-  a. Set description to 'Please provide an email where we can reach you if more information is needed.'.
-
-6. placeholder: text appears inside the element itself. This serves as example data.
-  a. Set placeholder to 'email@example.com'.
-
-7. validations: checks if form is valid before form can be submitted.
-
-8. required: determines if field has been filled before it will allow the form to be submitted.
-  a. Set validation requirement to true.
-```
-
 ##### OS Selection : [bug-report-template.yaml] - [CODE]
 
 ```yaml
 # OS Selection
 
-1.  - type: dropdown
-2.    id: os
-3.    attributes:
-4.      label: Operating System
-5.      description: What operating system are you using?
-6.      options:
-7.         - Windows
-8.         - macOS
-9.         - Linux
-10.        - Other
-11.     validations:
-12.       required: true
+1.   - type: dropdown
+2.     id: os
+3.     attributes:
+4.       label: Operating System
+5.       description: What operating system are you using?
+6.       options:
+7.         - Chrome
+8.         - Firefox
+9.         - Safari
+10.        - Microsoft Edge
+11.        - Opera
+12.        - Other
+13.    validations:
+14.      required: true
 ```
 
-##### OS Selection : [bug-report-template.yaml] - [BLOCK DESCRIPTION]
+##### OS Selection attribute table : [bug-report-template.yaml] - [CODE DESCRIPTION]
 
-```markdown
-Allows the user to select the OS they are using from a number of options. This information can sometimes be used to 
-figure out the problem.
-```
-
-##### OS Selection : [bug-report-template.yaml] - [CODE DESCRIPTION]
-
-```markdown
-1. type: form element type E.G. textbox, checkbox, dropdown.
-  a. Sets form element type to dropdown.
-
-2. id: a unique identifier for the field.
-  a. Set unique identifier to 'os'.
-
-3. attributes: specifies sub-settings for a particular element type.
-
-4. label: text appears above form element describing what it is.
-  a. set label text to 'Operating System'.
-
-5. description: text that is displayed below the label and serves as a description to further clarify the purpose of the
-form element.
-  a. Set description to 'What operating system are you using?'.
-
-6.  options: provides a list of options to display in the dropdown box.
-7.  List Windows.
-8.  List macOS.
-9.  List Linux.
-10. List Other.
-
-11. validations: checks if form is valid before form can be submitted.
-
-12. required: determines if field has been filled before it will allow the form to be submitted.
-  a. Set validation requirement to true.
-```
+| Attribute Description | Attribute Value                               |
+|-----------------------|-----------------------------------------------|
+| type                  | dropdown                                      |
+| id                    | os                                            |
+| attributes            | List attributes                               |
+| label                 | Operating System                              |
+| description           | What operating system are you using?          |
+| options               | List of options                               |
+| Windows               | Windows OS                                    |
+| MacOS                 | MacOS OS                                      |
+| Linux                 | Linux OS                                      |
+| Other                 | Other OS                                      |
+| validations           | Check if form is valid                        |
+| required              | true                                          |
 
 ##### Browser selection : [bug-report-template.yaml] - [CODE]
 
 ```yaml
 # Browser Selection
 
-1.  - type: dropdown
-2.    id: browser
-3.    attributes:
-4.      label: Browser
-5.      description: What browser are you using?
-6.      options:
-7.        - Chrome
-8.        - Firefox
-9.        - Safari
-10.       - Microsoft Edge
-11.       - Opera
-12.       - Other
-13.    validations:
-14.      required: true
-```
-
-##### Browser selection : [bug-report-template.yaml] - [BLOCK DESCRIPTION]
-
-```markdown
-Allows the user to select the browser they are using from a number of options. This information can sometimes be used to
-figure out the problem.
+1.   - type: dropdown
+2.     id: browser
+3.     attributes:
+4.       label: Browser
+5.       description: What browser are you using?
+6.       options:
+7.         - Chrome
+8.         - Firefox
+9.         - Safari
+10.         - Microsoft Edge
+11.         - Opera
+12.         - Other
+13.     validations:
+14.       required: true
 ```
 
 ##### Browser selection : [bug-report-template.yaml] - [CODE DESCRIPTION]
 
-```markdown
-1. type: form element type E.G. textbox, checkbox, dropdown.
-  a. Sets form element type to dropdown.
-
-2. id: a unique identifier for the field.
-  a. Set unique identifier to 'browser'.
-
-3. attributes: specifies sub-settings for a particular element type.
-
-4. label: text appears above form element describing what it is.
-  a. set label text to 'Browser'.
-
-5. description: text that is displayed below the label and serves as a description to further clarify the purpose of the
-form element.
-  a. Set description to 'What browser are you using?'.
-
-6.  options: provides a list of options to display in the dropdown box.
-7.  List 'Chrome'.
-8.  List 'Firefox'.
-9.  List 'Safari'.
-10. List 'Microsoft Edge'.
-11. List 'Opera'.
-12. List 'Other'.
-13. validations: Checks if form is valid before form can be submitted.
-14. required: determines if field has been filled before it will allow the form to be submitted.
-  a. Set validation requirement to true.
-```
+| Attribute Description | Attribute Value                               |
+|-----------------------|-----------------------------------------------|
+| type                  | dropdown                                      |
+| id                    | browser                                       |
+| attributes            | List attributes                               |
+| label                 | Browser                                       |
+| description           | What operating system are you using?          |
+| options               | List of options                               |
+| Chrome                | Chrome browser                                |
+| Firefox               | Firefox browser                               |
+| Safari                | Safari browser                                |
+| Microsoft Edge        | Microsoft Edge browser                        |
+| Opera                 | Opera browser                                 |
+| Other                 | Other browser                                 |
+| validations           | Check if form is valid                        |
+| required              | true                                          |
 
 ##### Bug type : [bug-report-template.yaml] - [CODE]
 
 ```yaml
 # Bug Type
 
-1.  - type: dropdown
-2.    id: bug-type
-3.    attributes:
-4.      label: Bug Type
-5.      description: Select the type of issue you are reporting.
-6.      options:
-7.        - Application Bug
-8.        - Documentation Problem
-9.    validations:
-10.      required: true 
+1.   - type: dropdown
+2.     id: bug-type
+3.     attributes:
+4.       label: Bug Type
+5.       description: Select the type of issue you are reporting.
+6.       options:
+7.         - Application Bug
+8.         - Documentation Problem
+9.     validations:
+10.       required: true 
 ```
 
-##### Bug type : [bug-report-template.yaml] - [BLOCK DESCRIPTION]
+##### Bug type attribute table : [bug-report-template.yaml] - [CODE DESCRIPTION]
 
-```markdown
-Allows the user to select from a number of options what part of the system the bug affects.
-```
-
-##### Bug type : [bug-report-template.yaml] - [CODE DESCRIPTION]
-
-```markdown
-1. type: form element type E.G. textbox, checkbox, dropdown.
-  a. Sets form element type to dropdown.
-
-2. id: a unique identifier for the field.
-  a. Set unique identifier to 'bug-type'.
-
-3. attributes: Specifies sub-settings for a particular element type.
-
-4. label: text appears above form element describing what it is.
-  a. set label text to 'Bug Type'.
-
-5. description: text that is displayed below the label and serves as a description to further clarify the purpose of the
-form element.
-  a. Set description to 'Select the type of issue you are reporting.'.
-
-6. options: provides a list of options to display in the dropdown box.
-7. List 'Application Bug'.
-8. List 'Documentation Problem'.
-9. validations: Checks if form is valid before form can be submitted.
-
-10. required: determines if field has been filled before it will allow the form to be submitted.
-  a. Set validation requirement to true.
-```
+| Attribute Description | Attribute Value                               |
+|-----------------------|-----------------------------------------------|
+| type                  | dropdown                                      |
+| id                    | bug-type                                      |
+| attributes            | List attributes                               |
+| label                 | Bug Type                                      |
+| description           | Select the type of issue you are reporting.   |
+| options               | List of options                               |
+| Application Bug       | Application Bug                               |
+| Documentation Problem | Documentation Problem                         |
+| validations           | Check if form is valid                        |
+| required              | true                                          |
 
 ##### Severity : [bug-report-template.yaml] - [CODE]
 
 ```yaml
 # Severity
 
-1.  - type: dropdown
-2.    id: severity
-3.    attributes:
-4.      label: Severity
-5.      description: How serious is the problem?
-6.      options:
-7.        - Low
-8.        - Medium
-9.        - High
-10.       - Critical
-11.    validations:
-12.      required: true
+1.   - type: dropdown
+2.     id: severity
+3.     attributes:
+4.       label: Severity
+5.       description: How serious is the problem?
+6.       options:
+7.         - Low
+8.         - Medium
+9.         - High
+10.         - Critical
+11.     validations:
+12.       required: true
 ```
 
-##### Severity : [bug-report-template.yaml] - [BLOCK DESCRIPTION]
+##### Severity attribute table : [bug-report-template.yaml] - [CODE DESCRIPTION]
 
-```markdown
-Allows the user to select how severe the impact of the bug is.
-```
-
-##### Severity : [bug-report-template.yaml] - [CODE DESCRIPTION]
-
-```markdown
-1. type: form element type E.G. textbox, checkbox, dropdown.
-  a. Sets form element type to dropdown.
-
-2. id: a unique identifier for the field.
-  a. Set unique identifier to 'Severity'.
-
-3. attributes: specifies sub-settings for a particular element type.
-
-4. label: Text appears above form element describing what it is.
-  a. set label text to 'Severity'.
-
-5. description: text that is displayed below the label and serves as a description to further clarify the purpose of the
-form element.
-  a. Set description to 'How serious is the problem?'.
-
-6.  options: provides a list of options to display in the dropdown box.
-7.  List 'Low'.
-8.  List 'Medium'.
-9.  List 'High'.
-10. List 'Critical'.
-11. validations: Checks if form is valid before form can be submitted.
-12. required: determines if field has been filled before it will allow the form to be submitted.
-  a. Set validation requirement to true.
-```
+| Attribute Description | Attribute Value                               |
+|-----------------------|-----------------------------------------------|
+| type                  | dropdown                                      |
+| id                    | severity                                      |
+| attributes            | List attributes                               |
+| label                 | Severity                                      |
+| description           | How serious is the problem?                   |
+| options               | List of options                               |
+| Low                   | Low option                                    |
+| Medium                | Medium option                                 |
+| High                  | High option                                   |
+| Critical              | Critical option                               |
+| validations           | Check if form is valid                        |
+| required              | true                                          |
 
 ##### Problem summary : [bug-report-template.yaml] - [CODE]
 
 ```yaml
 # Problem Summary
 
-1.  - type: textarea
-2.    id: problem-summary
-3.    attributes:
-4.      label: Problem Summary
-5.      description: Please describe the issue in a few sentences.
-6.      placeholder: A brief summary of the issue.
-7.    validations:
-8.      required: true
+1.   - type: textarea
+2.     id: problem-summary
+3.     attributes:
+4.       label: Problem Summary
+5.       description: Please describe the issue in a few sentences.
+6.       placeholder: A brief summary of the issue.
+7.     validations:
+8.       required: true
 ```
 
-##### Problem summary : [bug-report-template.yaml] - [BLOCK DESCRIPTION]
+##### Problem summary attribute table : [bug-report-template.yaml] - [CODE DESCRIPTION]
 
-```markdown
-This is a free text field that allows the user to provide an overview of what the nature of the bug is.
-```
-
-##### Problem summary : [bug-report-template.yaml] - [CODE DESCRIPTION]
-
-```markdown
-1. type: form element type E.G. textbox, checkbox, dropdown.
-  a. Sets form element type to textarea.
-
-2. id: a unique identifier for the field.
-  a. Set unique identifier to 'problem-summary'.
-
-3. attributes: specifies sub-settings for a particular element type.
-
-4. label: Text appears above form element describing what it is.
-  a. set label text to 'Problem Summary'.
-
-5. description: text that is displayed below the label and serves as a description to further clarify the purpose of the
-form element.
-  a. Set description to 'Please describe the issue in a few sentences.'.
-
-6. placeholder: displays text inside the element as example content.
-  a. Set placeholder text to 'A brief summary of the issue.'.
-
-7. validations: checks if form is valid before form can be submitted.
-
-8. required: determines if field has been filled before it will allow the form to be submitted.
-  a. Set validation requirement to true.
-```
+| Attribute Description | Attribute Value                               |
+|-----------------------|-----------------------------------------------|
+| type                  | textarea                                      |
+| id                    | problem-summary                               |
+| attributes            | List attributes                               |
+| label                 | Problem Summary                               |
+| description           | Please describe the issue in a few sentences. |
+| placeholder           | A brief summary of the issue.                 |
+| validations           | Check if form is valid                        |
+| required              | true                                          |
 
 ##### Expected behaviour : [bug-report-template.yaml] - [CODE]
 
 ```yaml
 # Expected Behaviour
 
-1.  - type: textarea
-2.    id: expected-behaviour
-3.    attributes:
-4.      label: Expected Behaviour
-5.      description: What did you expect to happen?
-6.    validations:
-7.      required: true
+1.   - type: textarea
+2.     id: expected-behaviour
+3.     attributes:
+4.       label: Expected Behaviour
+5.       description: What did you expect to happen?
+6.     validations:
+7.       required: true
 ```
 
-##### Expected behaviour : [bug-report-template.yaml] - [BLOCK DESCRIPTION]
+##### Expected behaviour attribute table : [bug-report-template.yaml] - [CODE DESCRIPTION]
 
-```markdown
-This section allows the user to explain what behaviour they were expecting in place of the bug happening.
-```
-
-##### Expected behaviour : [bug-report-template.yaml] - [CODE DESCRIPTION]
-
-```markdown
-1. type: form element type E.G. textbox, checkbox, dropdown.
-  a. Sets form element type to textarea.
-
-2. id: a unique identifier for the field.
-  a. Set unique identifier to 'expected-behaviour'.
-
-3. attributes: specifies sub-settings for a particular element type.
-
-4. label: text appears above form element describing what it is.
-  a. set label text to 'Expected Behaviour'.
-
-5. description: text that is displayed below the label and serves as a description to further clarify the purpose of the
-form element.
-  a. Set description to 'What did you expect to happen?'.
-
-6. validations: checks if form is valid before form can be submitted.
-
-7. required: determines if field has been filled before it will allow the form to be submitted.
-  a. Set validation requirement to true.
-```
+| Attribute Description | Attribute Value                               |
+|-----------------------|-----------------------------------------------|
+| type                  | textarea                                      |
+| id                    | expected-behaviour                            |
+| attributes            | List attributes                               |
+| label                 | Expected Behaviour                            |
+| description           | What did you expect to happen?                |
+| validations           | Check if form is valid                        |
+| required              | true                                          |
 
 ##### Steps to reproduce : [bug-report-template.yaml] - [CODE]
 
 ```yaml
 # Steps To Reproduce
 
-1.  - type: textarea
-2.    id: steps-to-reproduce
-3.    attributes:
-4.      label: Steps to Reproduce
-5.      description: Please list the steps to reproduce the issue.
-6.      placeholder: "1. \n2. \n3."
-7.    validations:
-8.      required: true
+1.   - type: textarea
+2.     id: steps-to-reproduce
+3.     attributes:
+4.       label: Steps to Reproduce
+5.       description: Please list the steps to reproduce the issue.
+6.       placeholder: "1. \n2. \n3."
+7.     validations:
+8.       required: true
 ```
 
-##### Steps to reproduce : [bug-report-template.yaml] - [BLOCK DESCRIPTION]
+##### Steps to reproduce attribute table : [bug-report-template.yaml] - [CODE DESCRIPTION]
 
-```markdown
-A step by step list of actions that have to be taken in order to reproduce the bug.
-```
-
-##### Steps to reproduce : [bug-report-template.yaml] - [CODE DESCRIPTION]
-
-```markdown
-1. type: form element type E.G. textbox, checkbox, dropdown.
-  a. Sets form element type to textarea.
-
-2. id: a unique identifier for the field.
-  a. Set unique identifier to 'steps-to-reproduce'.
-
-3. attributes: specifies sub-settings for a particular element type.
-
-4. label: Text appears above form element describing what it is.
-  a. set label text to 'Steps to Reproduce'.
-
-5. description: text that is displayed below the label and serves as a description to further clarify the purpose of the
-form element.
-  a. Set description to 'Please list the steps to reproduce the issue.'.
-
-6. placeholder: displays text inside the element as example content.
-  a. Set placeholder text to '1. \n2. \n3.'.
-    i.   '1.' prints as '1.'.
-    ii.  '\n' inserts new line.
-    iii. '2.' prints as '2.'.
-    iv.  '\n' inserts new line.
-    v.   '3.' prints as '3.'.
-
-  Resulting in:
-    1.
-    2.
-    3.
-
-7. validations: Checks if form is valid before form can be submitted.
-
-8. required: determines if field has been filled before it will allow the form to be submitted.
-  a. Set validation requirement to true.
-```
+| Attribute Description | Attribute Value                               |
+|-----------------------|-----------------------------------------------|
+| type                  | textarea                                      |
+| id                    | steps-to-reproduce                            |
+| attributes            | List attributes                               |
+| label                 | Steps to Reproduce                            |
+| description           | Please list the steps to reproduce the issue. |
+| placeholder           | Numbered list                                 |
+| validations           | Check if form is valid                        |
+| required              | true                                          |
 
 ##### Actual behaviour : [bug-report-template.yaml] - [CODE]
 
 ```yaml
 # Actual Behaviour
 
-1.  - type: textarea
-2.    id: actual-behaviour
-3.    attributes:
-4.      label: Actual Behaviour
-5.      description: What actually happened? 
-6.    validations:
-7.      required: true
+1.   - type: textarea
+2.     id: actual-behaviour
+3.     attributes:
+4.       label: Actual Behaviour
+5.       description: What actually happened? 
+6.     validations:
+7.       required: true
 ```
 
-##### Actual behaviour : [bug-report-template.yaml] - [BLOCK DESCRIPTION]
+##### Actual behaviour attribute table : [bug-report-template.yaml] - [CODE DESCRIPTION]
 
-```markdown
-In this section the user can give information about the bug including any text or error codes that may have been 
-produced.
-```
-
-##### Actual behaviour : [bug-report-template.yaml] - [CODE DESCRIPTION]
-
-```markdown
-1. type: form element type E.G. textbox, checkbox, dropdown.
-  a. Sets form element type to textarea.
-
-2. id: a unique identifier for the field.
-  a. Set unique identifier to 'actual-behaviour'.
-
-3. attributes: specifies sub-settings for a particular element type.
-
-4. label: Text appears above form element describing what it is.
-  a. set label text to 'Actual Behaviour'.
-
-5. description: text that is displayed below the label and serves as a description to further clarify the purpose of the
-form element.
-  a. Set description to 'What actually happened?'.
-
-6. validations: checks if form is valid before form can be submitted.
-
-7. required: determines if field has been filled before it will allow the form to be submitted.
-  a. Set validation requirement to true.
-```
+| Attribute Description | Attribute Value                               |
+|-----------------------|-----------------------------------------------|
+| type                  | textarea                                      |
+| id                    | actual-behaviour                              |
+| attributes            | List attributes                               |
+| label                 | Actual Behaviour                              |
+| description           | What actually happened?                       |
+| validations           | Check if form is valid                        |
+| required              | true                                          |
 
 ##### Additional information : [bug-report-template.yaml] - [CODE]
 
 ```yaml
 # Additional Information
 
-1.  - type: textarea
-2.    id: additional-information
-3.    attributes:
-4.      label: Additional Information
-5.      description: Provide any additional information or context that might help us resolve the issue.
-6.      placeholder: Additional context, error messages, or anything else that may be helpful.
-7.    validations:
-8.      required: false
+1.   - type: textarea
+2.     id: additional-information
+3.     attributes:
+4.       label: Additional Information
+5.       description: Provide any additional information or context that might help us    6.       resolve the issue.
+7.       placeholder: Additional context, error messages, or anything else that may be    8.       helpful.
+9.     validations:
+10.      required: false
 ```
 
-##### Additional information : [bug-report-template.yaml] - [BLOCK DESCRIPTION]
+##### Additional information attribute table : [bug-report-template.yaml] - [CODE DESCRIPTION]
+
+| Attribute Description | Attribute Value                               |
+|-----------------------|-----------------------------------------------|
+| type                  | textarea                                      |
+| id                    | additional-information                        |
+| attributes            | List attributes                               |
+| label                 | Additional Information                        |
+| description           | Provide any additional information or context that might help us resolve the issue                                                       |
+| placeholder           | Additional context, error messages, or anything else that may be helpful.                                                                |
+| validations           | Check if form is valid                        |
+| required              | true                                          |
 
 ```markdown
-Here the user can provide any additional information about the bug that has not already been covered.
-```
-
-##### Additional information : [bug-report-template.yaml] - [CODE DESCRIPTION]
-
-```markdown
-1. type: form element type E.G. textbox, checkbox, dropdown.
-  a. Sets form element type to textarea.
-
-2. id: a unique identifier for the field.
-  a. Set unique identifier to 'additional-information'.
-
-3. attributes: specifies sub-settings for a particular element type.
-
-4. label: Text appears above form element describing what it is.
-  a. set label text to 'Additional Information'.
-
-5. description: text that is displayed below the label and serves as a description to further clarify the purpose of the
-form element.
-  a. Set description to 'Provide any additional information or context that might help us resolve the issue.'.
-
-6. placeholder: displays text inside the element as example content.
-  a. Set placeholder text to 'Additional context, error messages, or anything else that may be helpful.'.
-
-7. validations: checks if form is valid before form can be submitted.
-8. required: determines if field has been filled before it will allow the form to be submitted.
-  a. Set validation requirement to true.
-```
-
-##### Agree to terms : [bug-report-template.yaml] - [CODE]
+##### Agree to terms attribute table : [bug-report-template.yaml] - [CODE]
 
 ```yaml
 # Agree To Terms
 
-1.  - type: checkboxes
-2.    id: terms
-3.    attributes:
-4.      label: Code of Conduct
-5.      description: By submitting this bug report, you agree to follow our [Code of Conduct](https://example.com).
-6.      options:
-7.        - label: I agree to follow this project's Code of Conduct
-8.    validations:
-9.      required: true
+1.   - type: checkboxes
+2.     id: terms
+3.     attributes:
+4.       label: Code of Conduct
+5.       description: By submitting this bug report, you agree to follow our [Code of     6.       Conduct](./CODE_OF_CONDUCT.md).
+7.       options:
+8.         - label: I agree to follow this project's Code of conduct.
+9.     validations:
+10.       required: true
 ```
 
-##### Agree to terms : [bug-report-template.yaml] - [BLOCK DESCRIPTION]
+##### Agree to terms attribute table : [bug-report-template.yaml] - [CODE DESCRIPTION]
 
-```markdown
-Forces the user to accept the terms of service when submitting a bug report. This promotes mindfulness when submitting 
-bug reports.
-```
-
-##### Agree to terms : [bug-report-template.yaml] - [CODE DESCRIPTION]
-
-```markdown
-1. type: form element type E.G. textbox, checkbox, dropdown.
-  a. Sets form element type to checkbox.
-
-2. id: a unique identifier for the field.
-  a. Set unique identifier to 'terms'.
-
-3. attributes: specifies sub-settings for a particular element type.
-
-4. label: text appears above form element describing what it is.
-  a. set label text to 'Code of Conduct'.
-
-5. description: text that is displayed below the label and serves as a description to further clarify the purpose of the
-form element.
-  a. Set description to 'By submitting this bug report, you agree to follow our 
-  [Code of Conduct](./CODE_OF_CONDUCT.md).'.
-
-6. options: provides a list of options to display in the dropdown box.
-
-7. label: text appears above form element describing what it is.
-  a. set label text to 'I agree to follow this project's Code of Conduct'.
-
-8. validations: Checks if form is valid before form can be submitted.
-
-9. required: determines if field has been filled before it will allow the form to be submitted.
-  a. Set validation requirement to true.
-
-```
+| Attribute Description | Attribute Value                                   |
+|-----------------------|---------------------------------------------------|
+| type                  | checkboxes                                        |
+| id                    | terms                                             |
+| attributes            | List attributes                                   |
+| label                 | Code of Conduct                                   |
+| description           | By submitting this bug report, you agree to follow our [Code of  Conduct](./CODE_OF_CONDUCT.md)                                              |
+| options               | List of options                                   |
+| label                 | I agree to follow this project's Code of conduct. |
+| validations           | Check if form is valid                            |
+| required              | true                                              |
 
 ---
 
@@ -1234,26 +1267,27 @@ form element.
 
 ---
 
-### FEATURE REQUEST TEMPLATE [FEATURE-REQUEST-TEMPLATE.YAML] 📄
+### FEATURE REQUEST TEMPLATE [FEATURE-REQUEST-TEMPLATE] 📄
 
 #### Attribute Table : [feature-request-template.yaml]
 
-| Attribute             | Value                         |
-|-----------------------|-------------------------------|
-| Asset Name            | feature-request-template.yaml |
-| Relative Path         | .github/ISSUE_TEMPLATE        |
-| Hidden                | Inherited                     |
-| Include in Repository | Yes                           |
-| Managed               | Yes                           |
-| Asset Type            | YAML                          |
+| Attribute             | Value                             |
+|-----------------------|-----------------------------------|
+| Asset Name            | feature-request-template.yaml     |
+| Relative Path         | .github/ISSUE_TEMPLATE            |
+| Hidden                | Inherited                         |
+| Include in Repository | Yes                               |
+| Managed               | Yes                               |
+| Asset Type            | YAML                              |
+| Asset Size            | 4,129 Bytes                       |
 
 #### Asset Purpose : [feature-request-template.yaml]
 
-To get user feedback regarding the availability and quality of features.
+Provides a standard structure for reporting features.
 
 #### Asset Contents Description : [feature-request-template.yaml]
 
-YAML script that creates a feature request form for GitHub issues.
+YAML script that creates a feature submission form for GitHub issues.
 
 #### Asset Code Breakdown : [feature-request-template.yaml]
 
@@ -1276,39 +1310,22 @@ YAML script that creates a feature request form for GitHub issues.
 ##### Meta data : [feature-request-template.yaml] - [CODE]
 
 ```yaml
-1. name: 🐞 Bug Report
-2. description: File a bug report
-3. title: "[Bug]: "
-4. labels: ["bug", "new"]
+1. name: 🚀 Feature Request
+2. description: Submit a request for a new feature or improvement.
+3. title: "[Feature Request]: "
+4. labels: ["feature", "new"]
 5. projects: ["NinjaMonkeyGames/12"]
 ```
 
-##### Meta data : [feature-request-template.yaml] - [BLOCK DESCRIPTION]
+##### Meta data attribute table: [feature-request-template.yaml] - [CODE DESCRIPTION]
 
-```markdown
-This section contains mete data for the bug submission form.
-```
-
-##### Meta data : [feature-request-template.yaml] - [CODE DESCRIPTION]
-
-```markdown
-# Meta Data
-
-1. name: identifiable name to describe the purpose of the form.
-  a. Set name to '🐞 Bug Report'.
-  
-2. description: describes the function of the form.
-  a. Set description to 'File a bug report'.
-
-3. title: default title that will be pre-populated in the issue submission form.
-  a. Set default title text to '[Bug]:'.
- 
-4. labels: identify the type categories the issue belongs.  
-  a. Set labels 'bug' and 'new'.
-  
-5. projects: assigns to a specific GitHub project.   
-  a. Set project to 'NinjaMonkeyGames/12'.
-```
+| Attribute Description | Attribute Value                                   |
+|-----------------------|---------------------------------------------------|
+| name                  | 🚀 Feature Request                                |
+| description           | Submit a request for a new feature or improvement.|
+| title                 | [Bug]:                                            |
+| labels                | ["feature", "new"]                                |
+| projects              | ["NinjaMonkeyGames/12"]                           |
 
 ##### Initialise form : [feature-request-template.yaml] - [CODE]
 
@@ -1318,16 +1335,10 @@ This section contains mete data for the bug submission form.
 1. body:
 ```
 
-##### Initialise form : [feature-request-template.yaml] - [BLOCK DESCRIPTION]
-
-```markdown
-Tells GitHub that form content will follow.
-```
-
 ##### Initialise form : [feature-request-template.yaml] - [CODE DESCRIPTION]
 
 ```markdown
-1. Tells GitHub the form will begin here.
+1. body: Initialises YAML form body.
 ```
 
 ##### Introduction text : [feature-request-template.yaml] - [CODE]
@@ -1338,194 +1349,120 @@ Tells GitHub that form content will follow.
 1.  - type: markdown
 2.    attributes:
 3.      value: |
-4.        Thanks for taking the time to report this issue!
-5.        Please fill out the form below to provide detailed information about the bug.
+4.        Thanks for taking the time to suggest a new feature! Please fill out the form               below to provide detailed information regarding the feature you desire.
 ```
 
-##### Introduction text : [feature-request-template.yaml] - [BLOCK DESCRIPTION]
+##### Introduction text attribute table : [feature-request-template.yaml] - [CODE DESCRIPTION]
 
-```markdown
-This introduction text is used to briefly explain what the form is used for.
-```
-
-##### Introduction text : [feature-request-template.yaml] - [CODE DESCRIPTION]
-
-```markdown
-1. type: form element type E.G. textbox, checkbox, dropdown.
-  a. Sets form element type to markdown.
-
-2. attributes: specifies sub-settings for a particular element type.
-
-3. value: sets markdown text.
-  a. '|' Indicates multiple lines of text.
-
-4. Set first line of text to 'Thanks for taking the time to report this issue!'.
-
-5. Set second line of text to 'Please fill out the form below to provide detailed information about the bug.'.
-```
+| Attribute Description | Attribute Value         |
+|-----------------------|-------------------------|
+| type                  | Markdown                |
+| attributes            | List attributes         |
+| value                 | Thanks for taking the time to suggest a new feature! Please fill out the form below to provide detailed information regarding the feature you desire.                                                          |
 
 ##### Email input : [feature-request-template.yaml] - [CODE]
 
 ```yaml
 # Email Input
 
-1.   - type: input
-2.     id: contact-email
-3.     attributes:
-4.       label: Contact Email
-5.       description: Please provide an email where we can reach you if more information is needed.
-6.       placeholder: email@example.com
-7.     validations:
-8.       required: true
+1.  - type: input
+2.    id: contact-email
+3.    attributes:
+4.      label: Contact Email
+5.      description: Please provide an email where we can reach you if more information is           needed.
+6.      placeholder: info@ninjamonkeygames.com
+7.    validations:
+8.      required: true
 ```
 
-##### Email input : [feature-request-template.yaml] - [BLOCK DESCRIPTION]
+##### Email input attribute table: [feature-request-template.yaml] - [CODE DESCRIPTION]
 
-```markdown
-Provides a field for users to enter their email address so they can be contacted about the bug request should there be 
-any issues or further clarification is required.
-```
-
-##### Email input : [feature-request-template.yaml] - [CODE DESCRIPTION]
-
-```markdown
-1. type: form element type E.G. textbox, checkbox, dropdown.
-  a. Sets form element type to input.
-
-2. id: a unique identifier for the field.
-  a. Set unique identifier to 'contact-email'.
-
-3. attributes: specifies sub-settings for a particular element type.
-
-4. label: text appears above form element describing what it is.
-  a. set label text to 'Contact Email'.
-
-5. description: text is displayed below the label and serves as a description to further clarify the purpose of the
-form element.
-  a. Set description to 'Please provide an email where we can reach you if more information is needed.'.
-
-6. placeholder: text appears inside the element itself. This serves as example data.
-  a. Set placeholder to 'email@example.com'.
-
-7. validations: checks if form is valid before form can be submitted.
-
-8. required: determines if field has been filled before it will allow the form to be submitted.
-  a. Set validation requirement to true.
-```
+| Attribute Description | Attribute Value                                                                              |
+|-----------------------|----------------------------------------------------------------------------------------------|
+| type                  | input                                                                                        |
+| id                    | contact-email                                                                                |
+| attributes            | List attributes                                                                              |
+| label                 | Contact Email                                                                                |
+| description           | Please provide an email where we can reach you if we need more information.                  |
+| placeholder           | <info@ninjamonkeygames.com>                                                                  |
+| validations           | Check if form is valid                                                                       |
+| required              | true                                                                                         |
 
 ##### OS Selection : [feature-request-template.yaml] - [CODE]
 
 ```yaml
 # OS Selection
 
-1.  - type: dropdown
-2.    id: os
-3.    attributes:
-4.      label: Operating System
-5.      description: What operating system are you using?
-6.      options:
+1.   - type: dropdown
+2.     id: os
+3.     attributes:
+4.       label: Operating System
+5.       description: What operating system are you using?
+6.       options:
 7.         - Windows
 8.         - macOS
 9.         - Linux
 10.        - Other
-11.     validations:
-12.       required: true
+11.    validations:
+12.      required: true
 ```
 
-##### OS Selection : [feature-request-template.yaml] - [BLOCK DESCRIPTION]
+##### OS Selection attribute table : [feature-request-template.yaml] - [CODE DESCRIPTION]
 
-```markdown
-Allows the user to select the OS they are using from a number of options. This information can sometimes be used to 
-figure out the problem.
-```
-
-##### OS Selection : [feature-request-template.yaml] - [CODE DESCRIPTION]
-
-```markdown
-1. type: form element type E.G. textbox, checkbox, dropdown.
-  a. Sets form element type to dropdown.
-
-2. id: a unique identifier for the field.
-  a. Set unique identifier to 'os'.
-
-3. attributes: specifies sub-settings for a particular element type.
-
-4. label: text appears above form element describing what it is.
-  a. set label text to 'Operating System'.
-
-5. description: text that is displayed below the label and serves as a description to further clarify the purpose of the
-form element.
-  a. Set description to 'What operating system are you using?'.
-
-6.  options: provides a list of options to display in the dropdown box.
-7.  List Windows.
-8.  List macOS.
-9.  List Linux.
-10. List Other.
-
-11. validations: checks if form is valid before form can be submitted.
-
-12. required: determines if field has been filled before it will allow the form to be submitted.
-  a. Set validation requirement to true.
-```
+| Attribute Description | Attribute Value                               |
+|-----------------------|-----------------------------------------------|
+| type                  | dropdown                                      |
+| id                    | os                                            |
+| attributes            | List attributes                               |
+| label                 | Operating System                              |
+| description           | What operating system are you using?          |
+| options               | List of options                               |
+| Windows               | Windows OS                                    |
+| MacOS                 | MacOS OS                                      |
+| Linux                 | Linux OS                                      |
+| Other                 | Other OS                                      |
+| validations           | Check if form is valid                        |
+| required              | true                                          |
 
 ##### Browser selection : [feature-request-template.yaml] - [CODE]
 
 ```yaml
 # Browser Selection
 
-1.  - type: dropdown
-2.    id: browser
-3.    attributes:
-4.      label: Browser
-5.      description: What browser are you using?
-6.      options:
-7.        - Chrome
-8.        - Firefox
-9.        - Safari
-10.       - Microsoft Edge
-11.       - Opera
-12.       - Other
-13.    validations:
-14.      required: true
-```
-
-##### Browser selection : [feature-request-template.yaml] - [BLOCK DESCRIPTION]
-
-```markdown
-Allows the user to select the browser they are using from a number of options. This information can sometimes be used to
-figure out the problem.
+1.   - type: dropdown
+2.     id: browser
+3.     attributes:
+4.       label: Browser
+5.       description: What browser are you using?
+6.       options:
+7.         - Chrome
+8.         - Firefox
+9.         - Safari
+10.         - Microsoft Edge
+11.         - Opera
+12.         - Other
+13.     validations:
+14.       required: true
 ```
 
 ##### Browser selection : [feature-request-template.yaml] - [CODE DESCRIPTION]
 
-```markdown
-1. type: form element type E.G. textbox, checkbox, dropdown.
-  a. Sets form element type to dropdown.
-
-2. id: a unique identifier for the field.
-  a. Set unique identifier to 'browser'.
-
-3. attributes: specifies sub-settings for a particular element type.
-
-4. label: text appears above form element describing what it is.
-  a. set label text to 'Browser'.
-
-5. description: text that is displayed below the label and serves as a description to further clarify the purpose of the
-form element.
-  a. Set description to 'What browser are you using?'.
-
-6.  options: provides a list of options to display in the dropdown box.
-7.  List 'Chrome'.
-8.  List 'Firefox'.
-9.  List 'Safari'.
-10. List 'Microsoft Edge'.
-11. List 'Opera'.
-12. List 'Other'.
-13. validations: Checks if form is valid before form can be submitted.
-14. required: determines if field has been filled before it will allow the form to be submitted.
-  a. Set validation requirement to true.
-```
+| Attribute Description | Attribute Value                               |
+|-----------------------|-----------------------------------------------|
+| type                  | dropdown                                      |
+| id                    | browser                                       |
+| attributes            | List attributes                               |
+| label                 | Browser                                       |
+| description           | What operating system are you using?          |
+| options               | List of options                               |
+| Chrome                | Chrome browser                                |
+| Firefox               | Firefox browser                               |
+| Safari                | Safari browser                                |
+| Microsoft Edge        | Microsoft Edge browser                        |
+| Opera                 | Opera browser                                 |
+| Other                 | Other browser                                 |
+| validations           | Check if form is valid                        |
+| required              | true                                          |
 
 ##### Feature type : [feature-request-template.yaml] - [CODE]
 
@@ -1533,104 +1470,69 @@ form element.
 # Feature Type
 
 1.  - type: dropdown
-2.    id: bug-type
+2.    id: feature-type
 3.    attributes:
-4.      label: Bug Type
-5.      description: Select the type of issue you are reporting.
+4.      label: Feature Type
+5.      description: Select the type of feature you are requesting.
 6.      options:
 7.        - New Feature
 8.        - Improvement
 9.        - Enhancement
-10.     validations:
-11.      required: true 
+10.    validations:
+11.      required: true
 ```
 
-##### Feature Type : [bug-report-template.yaml] - [BLOCK DESCRIPTION]
+##### Feature type attribute table: [feature-request-template.yaml] - [CODE DESCRIPTION]
 
-```markdown
-Allows the user to select the type of new feature required.
-```
-
-##### Feature type : [feature-request-template.yaml] - [CODE DESCRIPTION]
-
-```markdown
-1. type: form element type E.G. textbox, checkbox, dropdown.
-  a. Sets form element type to dropdown.
-
-2. id: a unique identifier for the field.
-  a. Set unique identifier to 'bug-type'.
-
-3. attributes: Specifies sub-settings for a particular element type.
-
-4. label: text appears above form element describing what it is.
-  a. set label text to 'Bug Type'.
-
-5. description: text that is displayed below the label and serves as a description to further clarify the purpose of the
-form element.
-  a. Set description to 'Select the type of issue you are reporting.'.
-
-6.  options: provides a list of options to display in the dropdown box.
-7.  List 'New Feature'.
-8.  List 'Improvement'.
-9.  List 'Enhancement'.
-10. validations: Checks if form is valid before form can be submitted.
-
-11. required: determines if field has been filled before it will allow the form to be submitted.
-  a. Set validation requirement to true.
-```
+| Attribute Description | Attribute Value                               |
+|-----------------------|-----------------------------------------------|
+| type                  | dropdown                                      |
+| id                    | feature-type                                  |
+| attributes            | List attributes                               |
+| label                 | Feature Type                                  |
+| description           | Select the type of feature you are requesting.|
+| options               | List of options                               |
+| New Feature           | New Feature                                   |
+| Improvement           | Improvement                                   |
+| Enhancement           | Enhancement                                   |
+| validations           | Check if form is valid                        |
+| required              | true                                          |
 
 ##### Priority : [feature-request-template.yaml] - [CODE]
 
 ```yaml
 # Priority
 
-1.  - type: dropdown
-2.    id: priority
-3.    attributes:
-4.      label: Priority
-5.      description: How important is this feature request?
-6.      options:
-7.        - Low
-8.        - Medium
-9.        - High
-10.       - Critical
+1.   - type: dropdown
+2.     id: priority
+3.     attributes:
+4.       label: Priority
+5.       description: How important is this feature request?
+6.       options:
+7.         - Low
+8.         - Medium
+9.         - High
+10.        - Critical
 11.    validations:
 12.      required: true
 ```
 
-##### Priority : [feature-request-template.yaml] - [BLOCK DESCRIPTION]
+##### Priority attribute table: [feature-request-template.yaml] - [CODE DESCRIPTION]
 
-```markdown
-Allows the user to determine how essential the new feature is.
-```
-
-##### Priority : [feature-request-template.yaml] - [CODE DESCRIPTION]
-
-```markdown
-1. type: form element type E.G. textbox, checkbox, dropdown.
-  a. Sets form element type to dropdown.
-
-2. id: a unique identifier for the field.
-  a. Set unique identifier to 'priority'.
-
-3. attributes: specifies sub-settings for a particular element type.
-
-4. label: Text appears above form element describing what it is.
-  a. set label text to 'Priority'.
-
-5. description: text that is displayed below the label and serves as a description to further clarify the purpose of the
-form element.
-  a. Set description to 'How serious is the problem?'.
-
-6.  options: provides a list of options to display in the dropdown box.
-7.  List 'Low'.
-8.  List 'Medium'.
-9.  List 'High'.
-10. List 'Critical'.
-11. validations: Checks if form is valid before form can be submitted.
-12. required: determines if field has been filled before it will allow the form to be submitted.
-  a. Set validation requirement to true.
-```
+| Attribute Description | Attribute Value                               |
+|-----------------------|-----------------------------------------------|
+| type                  | dropdown                                      |
+| id                    | priority                                      |
+| attributes            | List attributes                               |
+| label                 | Priority                                      |
+| description           | How important is this feature request?        |
+| options               | List of options                               |
+| Low                   | Low                                           |
+| Medium                | Medium                                        |
+| High                  | High                                          |
+| Critical              | Critical                                      |
+| validations           | Check if form is valid                        |
+| required              | true                                          |
 
 ##### Feature summary : [feature-request-template.yaml] - [CODE]
 
@@ -1641,45 +1543,24 @@ form element.
 2.    id: feature-summary
 3.    attributes:
 4.      label: Feature Summary
-5.      description: Please describe the issue in a few sentences.
-6.      placeholder: A brief summary of the issue.
+5.      description: Please provide a brief summary of the feature you're requesting.
+6.      placeholder: A short description of the feature.
 7.    validations:
 8.      required: true
 ```
 
-##### Feature summary : [feature-request-template.yaml] - [BLOCK DESCRIPTION]
+##### Feature summary attribute table: [feature-request-template.yaml] - [CODE DESCRIPTION]
 
-```markdown
-This is a free text field that allows the user to provide an overview of what functionality the new feature should 
-provide.
-```
-
-##### Feature summary : [feature-request-template.yaml] - [CODE DESCRIPTION]
-
-```markdown
-1. type: form element type E.G. textbox, checkbox, dropdown.
-  a. Sets form element type to textarea.
-
-2. id: a unique identifier for the field.
-  a. Set unique identifier to 'feature-summary'.
-
-3. attributes: specifies sub-settings for a particular element type.
-
-4. label: Text appears above form element describing what it is.
-  a. set label text to 'Feature Summary'.
-
-5. description: text that is displayed below the label and serves as a description to further clarify the purpose of the
-form element.
-  a. Set description to 'Please describe the issue in a few sentences.'.
-
-6. placeholder: displays text inside the element as example content.
-  a. Set placeholder text to 'A brief summary of the issue.'.
-
-7. validations: checks if form is valid before form can be submitted.
-
-8. required: determines if field has been filled before it will allow the form to be submitted.
-  a. Set validation requirement to true.
-```
+| Attribute Description | Attribute Value                                                 |
+|-----------------------|-----------------------------------------------------------------|
+| type                  | textarea                                                        |
+| id                    | feature-summary                                                 |
+| attributes            | List attributes                                                 |
+| label                 | Feature Summary                                                 |
+| description           | Please provide a brief summary of the feature you're requesting.|
+| placeholder           | A short description of the feature.                             |
+| validations           | Check if form is valid                                          |
+| required              | true                                                            |
 
 ##### Expected behaviour : [feature-request-template.yaml] - [CODE]
 
@@ -1690,40 +1571,22 @@ form element.
 2.    id: expected-behaviour
 3.    attributes:
 4.      label: Expected Behaviour
-5.      description: What did you expect to happen?
+5.      description: What should happen when this feature is implemented?
 6.    validations:
 7.      required: true
 ```
 
-##### Expected behaviour : [feature-request-template.yaml] - [BLOCK DESCRIPTION]
+##### Expected behaviour attribute table : [feature-request-template.yaml] - [CODE DESCRIPTION]
 
-```markdown
-This section allows the user to explain what behaviour they were expecting of the new feature.
-```
-
-##### Expected behaviour : [feature-request-template.yaml] - [CODE DESCRIPTION]
-
-```markdown
-1. type: form element type E.G. textbox, checkbox, dropdown.
-  a. Sets form element type to textarea.
-
-2. id: a unique identifier for the field.
-  a. Set unique identifier to 'expected-behaviour'.
-
-3. attributes: specifies sub-settings for a particular element type.
-
-4. label: text appears above form element describing what it is.
-  a. set label text to 'Expected Behaviour'.
-
-5. description: text that is displayed below the label and serves as a description to further clarify the purpose of the
-form element.
-  a. Set description to 'What did you expect to happen?'.
-
-6. validations: checks if form is valid before form can be submitted.
-
-7. required: determines if field has been filled before it will allow the form to be submitted.
-  a. Set validation requirement to true.
-```
+| Attribute Description | Attribute Value                                                 |
+|-----------------------|-----------------------------------------------------------------|
+| type                  | textarea                                                        |
+| id                    | expected-behaviour                                              |
+| attributes            | List attributes                                                 |
+| label                 | Expected Behaviour                                              |
+| description           | What should happen when this feature is implemented?            |
+| validations           | Check if form is valid                                          |
+| required              | true                                                            |
 
 ##### Use case : [feature-request-template.yaml] - [CODE]
 
@@ -1740,38 +1603,18 @@ form element.
 8.      required: true
 ```
 
-##### Use case : [feature-request-template.yaml] - [BLOCK DESCRIPTION]
+##### Use case attribute table: [feature-request-template.yaml] - [CODE DESCRIPTION]
 
-```markdown
-User can provide information about the situation they found themselves in that requires the newly proposed feature.
-```
-
-##### Use case : [feature-request-template.yaml] - [CODE DESCRIPTION]
-
-```markdown
-1. type: form element type E.G. textbox, checkbox, dropdown.
-  a. Sets form element type to textarea.
-
-2. id: a unique identifier for the field.
-  a. Set unique identifier to 'use-case'.
-
-3. attributes: Specifies sub-settings for a particular element type.
-
-4. label: Text appears above form element describing what it is.
-  a. set label text to 'Use Case'.
-
-5. description: text that is displayed below the label and serves as a description to further clarify the purpose of the
-form element.
-  a. Set description to 'How would this feature benefit you or your workflow?'.
-
-6. placeholder: text that appears inside the element itself. This serves as an example.
-  a. Set placeholder to 'Describe the scenario in which this feature would be useful.'.
-
-7. validations: checks if form is valid before form can be submitted.
-
-8. required: determines if field has been filled before it will allow the form to be submitted.
-  a. Set validation requirement to true.
-```
+| Attribute Description | Attribute Value                                                 |
+|-----------------------|-----------------------------------------------------------------|
+| type                  | textarea                                                        |
+| id                    | use-case                                                        |
+| attributes            | List attributes                                                 |
+| label                 | Use Case                                                        |
+| description           | How would this feature benefit you or your workflow?            |
+| placeholder           | Describe the scenario in which this feature would be useful.    |
+| validations           | Check if form is valid                                          |
+| required              | true                                                            |
 
 ##### Additional information : [feature-request-template.yaml] - [CODE]
 
@@ -1782,43 +1625,24 @@ form element.
 2.    id: additional-information
 3.    attributes:
 4.      label: Additional Information
-5.      description: Provide any additional information or context that might help us resolve the issue.
-6.      placeholder: Additional context, error messages, or anything else that may be helpful.
+5.      description: Please provide any additional context, screenshots, or details that           may help us understand your request better.
+6.      placeholder: Any extra details or resources that might help.
 7.    validations:
 8.      required: false
 ```
 
-##### Additional information : [feature-request-template.yaml] - [BLOCK DESCRIPTION]
+##### Additional information attribute table: [feature-request-template.yaml] - [CODE DESCRIPTION]
 
-```markdown
-Here the user can provide any additional information about the feature that has not already been covered.
-```
-
-##### Additional information : [feature-request-template.yaml] - [CODE DESCRIPTION]
-
-```markdown
-1. type: form element type E.G. textbox, checkbox, dropdown.
-  a. Sets form element type to textarea.
-
-2. id: a unique identifier for the field.
-  a. Set unique identifier to 'additional-information'.
-
-3. attributes: specifies sub-settings for a particular element type.
-
-4. label: text appears above form element describing what it is.
-  a. set label text to 'Additional Information'.
-
-5. description: text that is displayed below the label and serves as a description to further clarify the purpose of the
-form element.
-  a. Set description to 'Provide any additional information or context that might help us resolve the issue.'.
-
-6. placeholder: displays text inside the element as example content.
-  a. Set placeholder text to 'Additional context, error messages, or anything else that may be helpful.'.
-
-7. validations: checks if form is valid before form can be submitted.
-8. required: determines if field has been filled before it will allow the form to be submitted.
-  a. Set validation requirement to true.
-```
+| Attribute Description | Attribute Value                                                 |
+|-----------------------|-----------------------------------------------------------------|
+| type                  | textarea                                                        |
+| id                    | additional-information                                          |
+| attributes            | List attributes                                                 |
+| label                 | Additional Information                                          |
+| description           | Please provide any additional context, screenshots, or details that may help us understand your request better.                                          |
+| placeholder           | Any extra details or resources that might help.                 |
+| validations           | Check if form is valid                                          |
+| required              | false                                                           |
 
 ##### Agree to terms : [feature-request-template.yaml] - [CODE]
 
@@ -1829,71 +1653,54 @@ form element.
 2.    id: terms
 3.    attributes:
 4.      label: Code of Conduct
-5.      description: By submitting this feature request, you agree to follow our [Code of Conduct](https://example.com).
+5.      description: By submitting this feature request, you agree to follow our [Code of          Conduct](https://example.com).
 6.      options:
 7.        - label: I agree to follow this project's Code of Conduct
 8.    validations:
 9.      required: true
 ```
 
-##### Agree to terms : [feature-request-template.yaml] - [BLOCK DESCRIPTION]
+##### Agree to terms attribute table: [feature-request-template.yaml] - [CODE DESCRIPTION]
 
-```markdown
-Forces the user to accept the terms of service when submitting a feature request. This promotes mindfulness when 
-requesting new features.
-```
+| Attribute Description | Attribute Value                                                 |
+|-----------------------|-----------------------------------------------------------------|
+| type                  | checkboxes                                                      |
+| id                    | terms                                                           |
+| attributes            | List attributes                                                 |
+| label                 | Code of Conduct                                                 |
+| description           | By submitting this feature request, you agree to follow our [Code of Conduct](https://example.com).                                                         |
+| options               | List of options                                                 |
+| label                 | I agree to follow this project's Code of Conduct.               |
+| validations           | Check if form is valid                                          |
+| required              | true                                                            |
 
-##### Agree to terms : [feature-request-template.yaml] - [CODE DESCRIPTION]
+---
 
-```markdown
-1. type: form element type E.G. textbox, checkbox, dropdown.
-  a. Sets form element type to checkbox.
+[BACK TO TOP](#markdownlint-cli2-cicd-pipeline-docker-project-programmers-manual)
 
-2. id: a unique identifier for the field.
-  a. Set unique identifier to 'terms'.
+---
 
-3. attributes: specifies sub-settings for a particular element type.
+### WORKFLOWS FOLDER [WORKFLOWS] 📁
 
-4. label: text appears above form element describing what it is.
-  a. set label text to 'Code of Conduct'.
+#### Attribute Table : [workflows]
 
-5. description: text that is displayed below the label and serves as a description to further clarify the purpose of the
-form element.
-  a. Set description to 'By submitting this feature request, you agree to follow our 
-  [Code of Conduct](./CODE_OF_CONDUCT.md).'.
+| Attribute             | Value                             |
+|-----------------------|-----------------------------------|
+| Asset Name            | workflows                         |
+| Relative Path         | .github                           |
+| Hidden                | Inherited                         |
+| Include in Repository | Yes                               |
+| Managed               | Yes                               |
+| Asset Type            | FOLDER                            |
+| Asset Size            | 4,167 Bytes                       |
 
-6. options: provides a list of options to display in the dropdown box.
-
-7. label: text appears above form element describing what it is.
-  a. set label text to 'I agree to follow this project's Code of Conduct'.
-
-8. validations: checks if form is valid before form can be submitted.
-
-9. required: determines if field has been filled before it will allow the form to be submitted.
-  a. Set validation requirement to true.
-
-```
-
-### WORKFLOWS [FOLDER] 📁
-
-#### Attribute Table : [Workflow Folder]
-
-| Attribute             | Value             |
-|-----------------------|-------------------|
-| Asset Name            | workflows         |
-| Relative Path         | .github           |
-| Hidden                | Inherited         |
-| Include in Repository | Yes               |
-| Managed               | Yes               |
-| Asset Type            | FOLDER            |
-
-#### Asset Purpose : [Workflows Folder]
+#### Asset Purpose : [workflows]
 
 GitHub relies on this folder for workflow functionality.
 
-#### Asset Contents Description : [Workflows Folder]
+#### Asset Contents Description : [workflows]
 
-Stores YAML files that will be triggered by GitHub Actions.
+Stores YAML files that will be triggered by GitHub Actions as part of the [CI/CD](#glossary) workflow.
 
 ##### YAML GitHub actions keyword glossary
 
@@ -1905,16 +1712,16 @@ Stores YAML files that will be triggered by GitHub Actions.
 | paths       | Specifies the files and paths to be included.                      |
 | jobs        | Defines a set of jobs to be run in the pipeline.                   |
 | build       | Specifies the name of the job being configured.                    |
+| runs-on     | Specifies an OS environment to run on.                             |
 | steps       | Defines the sequence of steps that the job will execute.           |
 | uses        | Tells GitHub Actions it is about to use a prebuild Actions script. |
 | with        | Puts the workflow in at state ready to accept login credentials.   |
 | username    | States that a username will follow.                                |
 | password    | States that a password will follow.                                |
-| run         | executes command(s).                                               |
+| run         | Executes command(s).                                               |
 | lint        | A label to specify the category of job.                            |
-| runs-on     | Specifies what runner and OS to use.                               |
-| container   | indicates that a container image will follow.                      |
-| image       | States a Docker image will be used.                                |
+| container   | Sets container options.                                          |
+| image       | Specifies docker image.                                           |
 | if          | Conditional statement.                                             |
 
 ---
@@ -1927,14 +1734,15 @@ Stores YAML files that will be triggered by GitHub Actions.
 
 #### Attribute Table : [build-docker.yaml]
 
-| Attribute             | Value             |
-|-----------------------|-------------------|
-| Asset Name            | build-docker.yaml |
-| Relative Path         | .github/workflows |
-| Hidden                | Inherited         |
-| Include in Repository | Yes               |
-| Managed               | Yes               |
-| Asset Type            | YAML              |
+| Attribute             | Value                             |
+|-----------------------|-----------------------------------|
+| Asset Name            | build-docker.yaml                 |
+| Relative Path         | .github/workflows                 |
+| Hidden                | Inherited                         |
+| Include in Repository | Yes                               |
+| Managed               | Yes                               |
+| Asset Type            | YAML                              |
+| Asset Size            | 1,670 Bytes                       |
 
 #### Asset Purpose : [build-docker.yaml]
 
@@ -1945,8 +1753,6 @@ Stores YAML files that will be triggered by GitHub Actions.
 
 This file is triggered by GitHub Actions. It checks if 'Dockerfile' has been updated then
 builds and pushes the changes to Dockerhub.
-
-**name:** Text label displayed when GitHub Actions executes a YAML script.
 
 #### Asset Code Breakdown : [build-docker.yaml]
 
@@ -1959,7 +1765,8 @@ builds and pushes the changes to Dockerhub.
 7. Build and push Docker image with [SBOM](#glossary) and provenance.
 
 The following link provides information about the syntax used in GitHub [YAML](#glossary) files.
-*See:* [Workflow syntax for GitHub Actions][5]
+
+See: [Workflow syntax for GitHub Actions][6]
 
 ##### Set workflow title label : [build-docker.yaml] - [CODE]
 
@@ -1972,11 +1779,10 @@ The following link provides information about the syntax used in GitHub [YAML](#
 ##### Set workflow title label : [build-docker.yaml] - [CODE-DESCRIPTION]
 
 ```markdown
- 1. name: text label displayed when GitHub Actions executes a YAML script.
-   a. Set name to 'Build and Push Docker Image'.
+ 1. Set name to 'Build and Push Docker Image'.
 ```
 
-##### Checks if 'Dockerfile' Has Been Modified on Push : [build-docker.yaml] - [CODE]
+##### Checks if 'Dockerfile' has been modified on push : [build-docker.yaml] - [CODE]
 
 ```yaml
 # Checks if 'Dockerfile' has been modified on push
@@ -1991,10 +1797,9 @@ The following link provides information about the syntax used in GitHub [YAML](#
 
 ```markdown
 1. on: automatically triggers a workflow when 'on:' condition as been met.
-2. push: defines the push event as the trigger, which means the workflow runs when code is pushed.
-
+2. push: execute event when pushed.
 3. paths: specifies the files and paths to be included.
-4. Include 'Dockerfile'.
+4. Include 'Dockerfile' as a path.
 ```
 
 ##### Initialise pipeline : [build-docker.yaml] - [CODE]
@@ -2015,15 +1820,13 @@ The following link provides information about the syntax used in GitHub [YAML](#
 1. jobs: defines a set of jobs to be run in the pipeline.
 2. build: specifies the name of the job being configured.
 3. Sets runner environment to 'ubuntu-3.20.3'.
-  a. runs-on: specifies what runner and OS to use.
+  a. runs-on: specifies an OS environment to run on.
   b. 'ubuntu-3.20.3' sets runner to 'ubuntu-3.20.3'.
 4. steps: defines the sequence of steps that the job will execute.
 ```
 
 ℹ *️ Note Ubuntu is the runner only and should not be confused with the alpine installation used as a base for the
 markdownlint-cli docker.*
-
----
 
 ##### Checkout code : [build-docker.yaml] - [CODE]
 
@@ -2109,7 +1912,7 @@ markdownlint-cli docker.*
         iii. 'DOCKER_PAT' is the name of the environment variable secret.
 ```
 
-⚠️ Password is not the Dockerhub account password but a personal [personal access token][6] or  [PAT](#glossary).
+⚠️ Password is not the Dockerhub account password but a [personal personal access token][7] or  [PAT](#glossary).
 
 ##### Build and push Docker image with SBOM and provenance : [build-docker.yaml] - [CODE]
 
@@ -2161,24 +1964,19 @@ markdownlint-cli docker.*
 8. Push dockerfile to Dockerhub using the flags and switches detailed above.
 ```
 
----
-
-[BACK TO TOP](#markdownlint-cli2-cicd-pipeline-docker-project-programmers-manual)
-
----
-
 ### LINT MARKDOWN [LINT-MARKDOWN.YAML] 📄
 
 #### Attribute Table : [lint-markdown.yaml]
 
-| Attribute             | Value                           |
-|-----------------------|---------------------------------|
-| Asset Name            | lint-markdown.yaml              |
-| Relative Path         | .github/workflows               |
-| Hidden                | Inherited                       |
-| Include in Repository | Yes                             |
-| Managed               | Yes                             |
-| Asset Type            | YAML                            |
+| Attribute             | Value                             |
+|-----------------------|-----------------------------------|
+| Asset Name            | lint-markdown.yaml                |
+| Relative Path         | .github/workflows                 |
+| Hidden                | Inherited                         |
+| Include in Repository | Yes                               |
+| Managed               | Yes                               |
+| Asset Type            | YAML                              |
+| Asset Size            | 1,354 Bytes                       |
 
 #### Asset Purpose : [lint-markdown.yaml]
 
@@ -2187,7 +1985,7 @@ integrity.
 
 #### Asset Contents Description : [lint-markdown.yaml]
 
-To test the Dockerhub container connection and to lint test files in 'markdown-fail'.
+Contains YAML that will instruct GitHub Actions to lint markdown files.
 
 #### Asset Code Breakdown : [lint-markdown.yaml]
 
@@ -2244,15 +2042,15 @@ To test the Dockerhub container connection and to lint test files in 'markdown-f
 ##### Setup linting job : [lint-markdown.yaml] - [CODE-DESCRIPTION]
 
 ```markdown
-1. jobs: provides a unique ID. Each workflow can have one or more jobs.
+1. jobs: defines a set of jobs to be run in the pipeline.
 2. lint: identifies the type of job for organisational purposes.
 
-3. runs-on: specifies what runner and OS to use.
+3. runs-on: specifies an OS environment to run on.
     a. sets OS to Ubuntu version 3.20.3.
     
 4. container: sets container options.
 
-5. image: states a Docker image will be used.
+5. image: specifies docker image.
     a. 'monkeyknuckles' is the name of the Dockerhub account.
     b. 'markdownlint-cli2' is the name of the individual container to connect to.
 
@@ -2297,7 +2095,7 @@ To test the Dockerhub container connection and to lint test files in 'markdown-f
 1. name: text label displayed when GitHub Actions executes a YAML script.
     a. 'Copy markdownlint config' is the text that will be displayed.
     
-2. run: executes the following commands.
+2. run: executes the following command(s).
     a. cp /app/.markdownlint.jsonc' copies the markdownlint configuration file '.markdownlint.jsonc' from the container
     'app' folder to $GITHUB_WORKSPACE.
 ```
@@ -2333,14 +2131,15 @@ To test the Dockerhub container connection and to lint test files in 'markdown-f
 
 #### Attribute Table : [lint-spelling.yaml]
 
-| Attribute             | Value             |
-|-----------------------|-------------------|
-| Asset Name            | lint-spelling.yaml|
-| Relative Path         | .github/workflows |
-| Hidden                | Yes               |
-| Include in Repository | Inherited         |
-| Managed               | Yes               |
-| Asset Type            | YAML              |
+| Attribute             | Value                             |
+|-----------------------|-----------------------------------|
+| Asset Name            | lint-spelling.yaml                |
+| Relative Path         | .github/workflows                 |
+| Hidden                | Inherited                         |
+| Include in Repository | Yes                               |
+| Managed               | Yes                               |
+| Asset Type            | YAML                              |
+| Asset Size            | 1,143 Bytes                       |
 
 #### Asset Purpose : [lint-spelling.yaml]
 
@@ -2404,15 +2203,15 @@ Contains a YAML script to check spellings in all project files using cSpell.
 ##### Setup Spellchecking Job : [lint-spelling.yaml] - [CODE DESCRIPTION]
 
 ```markdown
-1. jobs: provides a unique ID. Each workflow can have one or more jobs.
+1. jobs: defines a set of jobs to be run in the pipeline.
 2. spellcheck: identifies the type of job for organisational purposes.
 
-3. runs-on: specifies what runner and OS to use.
+3. runs-on: specifies an OS environment to run on.
     a. sets OS to Ubuntu version 3.20.3.
     
 4. container: sets container options.
 
-5. image: states a Docker image will be used.
+5. image: Specifies docker image.
     a. 'monkeyknuckles' is the name of the Dockerhub account.
     b. 'cspell' is the name of the individual container to connect to.
 
@@ -2473,26 +2272,38 @@ Contains a YAML script to check spellings in all project files using cSpell.
 
 ---
 
-### VSCODE [FOLDER] 📁
+### VSCODE SETTINGS FOLDER [.VSCODE] 📁
 
-#### Attribute Table : [VSCode Folder]
+#### Attribute Table : [.vscode]
 
-| Attribute             | Value             |
-|-----------------------|-------------------|
-| Asset Name            | .vscode           |
-| Relative Path         | ./                |
-| Hidden                | Yes               |
-| Include in Repository | Yes               |
-| Managed               | Yes               |
-| Asset Type            | FOLDER            |
+| Attribute             | Value                             |
+|-----------------------|-----------------------------------|
+| Asset Name            | .vscode                           |
+| Relative Path         | ./                                |
+| Hidden                | Yes                               |
+| Include in Repository | Yes                               |
+| Managed               | Yes                               |
+| Asset Type            | FOLDER                            |
+| Asset Size            | 5,564 Bytes                       |
 
-#### Asset Purpose : [VSCode Folder]
+#### Asset Purpose : [.vscode]
 
 To maintain a consistent development environment for all developers working on the project.
 
-#### Asset Contents Description : [VSCode Folder]
+#### Asset Contents Description : [.vscode]
 
-Contains settings and configuration files relating to the setup of [VSC](#glossary) [IDE](#glossary).
+Contains settings and configuration files relating to the setup of the [VSC](#glossary) [IDE](#glossary).
+
+##### Dockerfile syntax glossary : [.vscode]
+
+| Token       | Description                                                                |
+|-------------|----------------------------------------------------------------------------|
+| ""          | Encapsulates strings.                                                      |
+| {}          | Opens and closes JSON for writing.                                         |
+| []          | Opens and closes list of settings.                                         |
+| ,           | Continues list.                                                            |
+| .           | Access a specific property within a category or group of related settings. |
+| :           | Assigns key value.                                                         |
 
 ---
 
@@ -2500,56 +2311,39 @@ Contains settings and configuration files relating to the setup of [VSC](#glossa
 
 ---
 
-### IDE EXTENSIONS [EXTENSIONS.JSON] 📄
+### VSC IDE EXTENSIONS [EXTENSIONS.JSON] 📄
 
 #### Attribute Table : [extensions.json]
 
-| Attribute             | Value                       |
-|-----------------------|-----------------------------|
-| Asset Name            | extensions.json             |
-| Relative Path         | .vscode                     |
-| Hidden                | Inherited                   |
-| Include in Repository | Yes                         |
-| Managed               | Yes                         |
-| Asset Type            | JSONC                       |
+| Attribute             | Value                             |
+|-----------------------|-----------------------------------|
+| Asset Name            | extensions.json                   |
+| Relative Path         | .vscode                           |
+| Hidden                | Inherited                         |
+| Include in Repository | Yes                               |
+| Managed               | Yes                               |
+| Asset Type            | JSON                              |
+| Asset Size            | 707 Bytes                         |
 
 #### Asset Purpose : [extensions.json]
 
-Keep a list of extensions needed to develop the project.
+Keeps a list of extensions needed to develop the project.
 
 #### Asset Contents Description : [extensions.json]
 
 Stores a list of extensions that the developer will be prompted to install when opening the project for the first time.
 
-#### Asset Code Breakdown : [extensions.json]
+ℹ️ *The following file has been written in table form for legibility purposes.* 
 
-1. Prompts user to install markdownlint VSC plugin.
+#### Extension packages table : [extensions.json]
 
-##### Prompts user to installed required project plugins : [extensions.json] - [CODE]
-
-```json
-1. {
-    // Prompts User To Installed Required Project Plugins
-    
-2.    "recommendations":
-3.    [
-4.        "DavidAnson.vscode-markdownlint"        // Prompt install for markdownlint plugin
-5.        "streetsidesoftware.code-spell-checker" // Prompt install for cSpell
-6.    ]
-7. }
-```
-
-##### Prompts user to installed required project plugins : [extensions.json] - [CODE-DESCRIPTION]
-
-```markdown
-1. '{' open JSON file for writing.
-2. recommendations: prompts user to install listed IDE extensions.
-3. '[' opens list.
-4. Includes markdownlint by David Anson.
-5. Includes cSpell code spell checker plugin by streetsidesoftware.
-6. ']' closes list.
-7. '}' close JSON file for writing.
-```
+| Package name          | Recommendation string                 |
+|-----------------------|---------------------------------------|
+| markdownlint          | DavidAnson.vscode-markdownlint        |
+| cSpell                | streetsidesoftware.code-spell-checker |
+| commitlint            | joshbolduc.commitlint                 |
+| Docker                | ms-azuretools.vscode-docker           |
+| WSL                   | ms-vscode-remote.remote-wsl           |
 
 ---
 
@@ -2557,26 +2351,27 @@ Stores a list of extensions that the developer will be prompted to install when 
 
 ---
 
-### KEYBINDINGS [KEYBINDINGS.JSON] 📄
+### VSC IDE KEYBINDINGS [KEYBINDINGS.JSON] 📄
 
 #### Attribute Table : [keybindings.json]
 
-| Attribute             | Value                       |
-|-----------------------|-----------------------------|
-| Asset Name            | keybindings.json            |
-| Relative Path         | .vscode                     |
-| Hidden                | Inherited                   |
-| Include in Repository | Yes                         |
-| Managed               | Yes                         |
-| Asset Type            | JSONC                       |
+| Attribute             | Value                             |
+|-----------------------|-----------------------------------|
+| Asset Name            | keybindings.json                  |
+| Relative Path         | .vscode                           |
+| Hidden                | Inherited                         |
+| Include in Repository | Yes                               |
+| Managed               | Yes                               |
+| Asset Type            | JSON                              |
+| Asset Size            | 735 Bytes                         |
 
 #### Asset Purpose : [keybindings.json]
 
-To make development smoother by binding common functions to key combinations.
+Makes development smoother by binding common functions to key combinations.
 
 #### Asset Contents Description : [keybindings.json]
 
-A list of keybindings coupled with actions.
+Binds specific key combinations with commonly performed actions.
 
 ##### JSON VSC keybindings legend
 
@@ -2588,32 +2383,13 @@ A list of keybindings coupled with actions.
 
 #### Asset Code Breakdown : [keybindings.json]
 
-1. Converts Selected Text To Title Case.
+The entries for this file are written in table form for legibility purposes.
 
-##### Automatic actions : [keybindings.json] - [CODE]
+1. Convert Selected Text To Title Case.
 
-```json
-    // Converts Selected Text To Title Case
-
-  1. "key": "ctrl+shift+t",                           // Bind to CTRL + SHIFT + T
-  2. "command": "editor.action.transformToTitlecase", // Transform text to title case
-  3. "when": "editorTextFocus"                        // Transform selected text only
-```
-
-##### Automatic actions : [keybindings.json] - [CODE-DESCRIPTION]
-
-```markdown
-1. key: Binds key combination.
-  a. Bind keys 'CTRL+SHIFT+T'.
-
-2. command: execute command to convert selected text into title case.
-  a. 'editor' enters the 'editor' namespace.
-  b. '.action' enters the 'action' namespace.
-  c. '.transformToTitlecase' is the script that transforms selected text into TitleCase.
-  
-3. when: context in which the 'transformToTitlecase' script will run.
-  a. "editorTextFocus" checks if a selected text is in focus.
-```
+| ID  | Key          | Command                            | when (Condition) |
+|-----|--------------|------------------------------------|------------------|
+|  1  | ctrl+shift+t | editor.action.transformToTitlecase | editorTextFocus  |
 
 ---
 
@@ -2621,22 +2397,23 @@ A list of keybindings coupled with actions.
 
 ---
 
-### IDE SETTINGS [SETTINGS.JSON] 📄
+### VSC IDE SETTINGS [SETTINGS.JSON] 📄
 
 #### Attribute Table : [settings.json]
 
-| Attribute             | Value                       |
-|-----------------------|-----------------------------|
-| Asset Name            | settings.json               |
-| Relative Path         | .vscode                     |
-| Hidden                | Inherited                   |
-| Include in Repository | Yes                         |
-| Managed               | Yes                         |
-| Asset Type            | JSONC                       |
+| Attribute             | Value                             |
+|-----------------------|-----------------------------------|
+| Asset Name            | settings.json                     |
+| Relative Path         | .vscode                           |
+| Hidden                | Inherited                         |
+| Include in Repository | Yes                               |
+| Managed               | Yes                               |
+| Asset Type            | JSON                              |
+| Asset Size            | 2,581 Bytes                       |
 
 #### Asset Purpose : [settings.json]
 
-Maintain a consistent development environment for all developers working on this project.
+Allows developers to set their IDE up automatically.
 
 #### Asset Contents Description : [settings.json]
 
@@ -2654,182 +2431,164 @@ Stores the majority of IDE based configurations.
 
 ##### Automatic actions : [settings.json] - [CODE]
 
-```yaml
+```json
+// Automatic Actions
 
-1. "editor.formatOnSave": true,            // Automatically format files when saving
-2. "editor.formatOnType": true,            // Automatically format code as you type
-3. "files.autoSave": "afterDelay",         // All file changes will be saved periodically
-4. "files.autoSaveDelay": 1000,            // Set autosave delay for 1000 milliseconds
-
+"editor.formatOnSave": true,    // Automatically format files when saving
+"editor.formatOnType": true,    // Automatically format code as you type
+"files.autoSave": "afterDelay", // All file changes will be saved periodically
+"files.autoSaveDelay": 1000,    // Set autosave delay for 1000 milliseconds
 ```
 
 ##### Automatic actions : [settings.json] - [CODE-DESCRIPTION]
 
-```markdown
-1. Automatically format files when saving.
-    a. Select 'editor.' scope.
-    b. Select 'formatOnSave'
-    c. Enable 'formatOnSave'.
-    
-2. Automatically format code as you type.
-    a. Select 'editor.' scope.
-    b. Select 'formatOnType'
-    c. Enable 'formatOnType'
-    
-3. All file changes will be saved periodically.
-    a. Select 'files.' scope.
-    b. Select 'autoSave' 
-    c. Save files after a delay.
-    
-4. Set autosave delay for 1000 milliseconds.
-    a. Select 'files.' scope.
-    b. Select 'autoSaveDelay' 
-    c. Automatically save files every 1000ms. 
-```
+| Setting             | Value      | Description                                   |
+|---------------------|------------|-----------------------------------------------|
+| editor.formatOnSave | true       | Automatically format files when saving        |
+| editor.formatOnType | true       | Automatically format code as you type         |
+| files.autoSave      | afterDelay | All file changes will be saved periodically   |
+| files.autoSaveDelay | 1000       | Set Set auto-save delay for 1000 milliseconds |
 
 ##### Add A visible ruler to the IDE : [settings.json] - [CODE]
 
 ```json
-// Add a visible ruler in the IDE
+ // Add A Visible Ruler To The IDE
 
-1. "editor.rulers": 
-2. [
-3.     120 // set ruler width to 120 characters
-4. ], 
+  "editor.rulers": 
+  [
+      120 // set ruler width to 120 characters
+  ],
 ```
 
-##### Add A visible ruler to the IDE : [settings.json] - [CODE-DESCRIPTION]
+##### Add A visible ruler to the IDE : [settings.json] - [CODE DESCRIPTION]
 
-```markdown
-1. Enter correct scope.
-    a. Select 'editor.' scope.
-    b. Select 'rulers' scope.
-    
-2. Open settings list.
-3. Set ruler limit to 120 to match the markdown 120 character limit.
-4. Close settings list.
-```
+| Setting             | Value      | Description                                   |
+|---------------------|------------|-----------------------------------------------|
+| editor.rulers       | 120        | set ruler width to 120 characters             |
 
-##### Format Settings : [settings.json] - [CODE]
+##### Format settings : [settings.json] - [CODE]
 
 ```json
-1. "editor.wrappingIndent": "same",        // Keep indentation level of wrapped lines
-2. "files.eol": "\n",                      // Force all new files to be in LF format opposed to CRLF 
-3. "editor.wordWrap": "wordWrapColumn",    // Automatically wrap lines of text
-4. "editor.wordWrapColumn": 120,           // Set the wrap column to 120 characters
+// Format Settings
+
+"editor.wrappingIndent": "same",     // Keep indentation level of wrapped lines
+"files.eol": "\n",                   // Force all new files to be in LF format opposed to CRLF 
+"editor.wordWrap": "wordWrapColumn", // Automatically wrap lines of text
+"editor.wordWrapColumn": 120,        // Set the wrap column to 120 characters
 ```
 
-##### Format settings : [settings.json] - [CODE-DESCRIPTION]
+##### Format settings : [settings.json] - [CODE DESCRIPTION]
 
-```markdown
-1. Keep indentation level of wrapped lines.
-    a. Select 'editor' scope.
-    b. Select 'wrappingIndent'. 
-    c. "same" makes indents consistent across lines.
-    
-2. Force all new files to be in LF format opposed.
-    a. Select 'files' scope.
-    b. Select end of line.
-    c. "\n" represents a linefeed.
-    
-3. Automatically wrap lines of text.
-    a. Select 'editor' scope.
-    b. Select 'wordWrap'.
-    c. "wordWrapColumn" automatically breaks to a new line when character limit reaches the limit set in 
-    'editor.wordWrapColumn'.
-    
-4. Set the wrap column to 120 characters.
-    a. Select 'editor' scope.
-    b. Select 'editor.wordWrapColumn'.
-    c. Set word wrap character limit to 120 characters to match the markdown limit.
-```
+| Setting              | Value      | Description                                          |
+|----------------------|------------|------------------------------------------------------|
+| editor.wrappingIndent| same       | Keep indentation level of wrapped lines              |
+| files.eol":          | \n         | Force new files to be in LF format opposed to CRLF   |
+| editor.wordWrap      | wordWrapColumn | wordWrapColumn                                   |
+| editor.wordWrapColumn| 120        | Set the wrap column to 120 characters                |
 
-##### Confirmation Settings : [settings.json] - [CODE]
+##### Confirmation settings : [settings.json] - [CODE]
 
 ```json
-1. "explorer.confirmDelete": false,        // Prevents prompt when deleting files
-2. "explorer.confirmDragAndDrop": false,   // Prevents prompt when moving files
+// Confirmation Settings
+
+"explorer.confirmDelete": false,        // Prevents prompt when deleting files
+"explorer.confirmDragAndDrop": false,   // Prevents prompt when moving files
 ```
 
-##### Confirmation settings : [settings.json] - [CODE-DESCRIPTION]
+##### Confirmation settings : [settings.json] - [CODE DESCRIPTION]
 
-```markdown
-1. Prevents prompt when deleting files.
-    a. Select 'explorer' scope.
-    b. Select 'confirmDelete'.
-    c. Disable confirmation.
-    
-2. Prevents prompt when moving files.
-    a. Select 'explorer' scope.
-    b. Select 'confirmDragAndDrop'.
-    c. Disable confirmation.
-```
+| Setting               | Value      | Description                                         |
+|-----------------------|------------|-----------------------------------------------------|
+| explorer.confirmDelete| false      | Prevents prompt when deleting files                 |
+| explorer.confirmDragAndDrop | false | Prevents prompt when moving files                  |
 
 ##### Include otherwise hidden folders in the file tree view : [settings.json] - [CODE]
 
 ```json
-1. "files.exclude": 
-2. {
-3.    "**/.git": false,         // Show .git folder
-4.    "**/node_modules": false, // Show node_modules
-5.},
+// Include Otherwise Hidden Folders In The File Tree View
+
+"files.exclude": 
+{
+    "**/.git": false,           // Show .git folder
+    "**/node_modules": false,   // Show node_modules
+},
 ```
 
-##### Include otherwise hidden folders in the File tree view : [settings.json] - [CODE-DESCRIPTION]
+##### Include otherwise hidden folders in the file tree view : [settings.json] - [CODE DESCRIPTION]
 
-```markdown
-1. Include Otherwise Hidden Folders In The File Tree View 
-    a. Select 'files' scope.
-    b. Exclude the listed files, directories or globs.
-2. Open JSON for writing.
-3. Allow all files contained in the '.git' visible in the VSC tree view.
-4. Include all files contained in the 'node_modules' folder.
-5. Close JSON for writing.
-```
+| Setting                | Value      | Description                                        |
+|------------------------|------------|----------------------------------------------------|
+| files.exclude [**/.git]| false      | Show .git folder                                   |
+| files.exclude [**/node_modules] | false | Show node_modules                              |
 
 ##### Include otherwise excluded files in project file search : [settings.json] - [CODE]
 
 ```json
-1. "search.exclude": 
-2. {
-3.    "**/.git": false,         // Show .git folder
-4.    "**/node_modules": false, // Show node_modules
-5.},
+// Include Otherwise Excluded Files In Project File Search
+
+"search.exclude": {
+    "**/.git": false,           // Include (Exclude) .git folder
+    "**/node_modules": false,   // Include (Exclude) node_modules folder
+},
 ```
 
-##### Include otherwise excluded files in project file search : [settings.json] - [CODE-DESCRIPTION]
+##### Include otherwise excluded files in project file search : [settings.json] - [CODE DESCRIPTION]
 
-```markdown
-1. Include Otherwise Hidden Folders In The File Tree View 
-    a. Select 'search' scope.
-    b. Exclude the listed files, directories or globs.
-2. Open JSON for writing.
-3. Allow all files contained in the '.git' folder searchable.
-4. Include all files contained in the 'node_modules' folder.
-5. Close JSON for writing.
-```
+| Setting                | Value      | Description                                        |
+|------------------------|------------|----------------------------------------------------|
+| search.exclude[**/.git]| false      | Include .git folder                                |
+| search.exclude[**/node_modules] | false | Include node_modules folder                    |
 
-##### Markdownlint-Cli2 configuration options : [settings.json] - [CODE]
+##### Markdownlint-Cli2 Configuration options : [settings.json] - [CODE]
 
 ```json
-  // Markdownlint-Cli2 Configuration Options
+// Markdownlint-Cli2 Configuration Options
 
-  1. "markdownlint.config": 
-  2. {
-  3.     "extends": ".config/.markdownlint.jsonc" // Sets location of '.markdownlint.jsonc' config file.
-  4. },
+"markdownlint.config": {
+    "extends": ".config/.markdownlint-cli2.jsonc" // Sets location of '.markdownlint.jsonc' config file
+
+},
 ```
 
-##### Markdownlint-Cli2 configuration options : [settings.json] - [CODE DESCRIPTION]
+##### Markdownlint-Cli2 Configuration options : [settings.json] - [CODE DESCRIPTION]
 
-```markdown
-1. Select markdownlint configuration options.
-2. Open JSON for writing.
-3. Sets markdownlint configuration file path.
-  a. extends: specifies the location where the '.markdownlint.jsonc' file is stored.
-  b. Sets 'extends:' path to ".config/.markdownlint.jsonc".
-4. Close JSON for writing.
+| Setting                | Value      | Description                                        |
+|------------------------|------------|----------------------------------------------------|
+| markdownlint.config [extends] | .config/.markdownlint-cli2.jsonc | Sets location of '.markdownlint.jsonc' config file                                                          |
+
+##### Custom markdownlint rules : [settings.json] - [CODE]
+
+```json
+// Custom Markdownlint Rules
+
+"markdownlint.customRules": 
+[
+    ".config/custom-markdownlint-rules/capitalised-headings.js", // Sets locations of 'capitalised-heading.js'
+],
 ```
+
+##### Custom markdownlint rules : [settings.json] - [CODE DESCRIPTION]
+
+| Setting                | Value      | Description                                        |
+|------------------------|------------|----------------------------------------------------|
+| markdownlint.customRules | .config/custom-markdownlint-rules/capitalised-headings.js | Sets locations of 'capitalised-heading.js' |
+
+##### cSpell Configuration Options : [settings.json] - [CODE]
+
+```json
+// cSpell Configuration Options
+
+"cSpell.import": 
+[
+    "./.config/cspell.json"
+],
+```
+
+##### cSpell Configuration Options : [settings.json] - [CODE DESCRIPTION]
+
+| Setting                | Value                 | Description                             |
+|------------------------|-----------------------|-----------------------------------------|
+| cSpell.import[]        | ./.config/cspell.json | cSpell Configuration Options            |
 
 ---
 
@@ -2837,18 +2596,19 @@ Stores the majority of IDE based configurations.
 
 ---
 
-### IDE SETUP TASKS [TASKS.JSON] 📄
+### VSC IDE TASKS [TASKS.JSON] 📄
 
 #### Attribute Table : [tasks.json]
 
-| Attribute             | Value                       |
-|-----------------------|-----------------------------|
-| Asset Name            | tasks.json                  |
-| Relative Path         | .vscode                     |
-| Hidden                | Inherited                   |
-| Include in Repository | Yes                         |
-| Managed               | Yes                         |
-| Asset Type            | JSONC                       |
+| Attribute             | Value                             |
+|-----------------------|-----------------------------------|
+| Asset Name            | tasks.json                        |
+| Relative Path         | .vscode                           |
+| Hidden                | Inherited                         |
+| Include in Repository | Yes                               |
+| Managed               | Yes                               |
+| Asset Type            | JSON                              |
+| Asset Size            | 1,541 Bytes                       |
 
 #### Asset Purpose : [tasks.json]
 
@@ -3004,32 +2764,31 @@ this task.
 
 ---
 
-### MARKDOWN FAIL [FOLDER] 📁
+### MARKDOWN RULE VIOLATION EXAMPLES FOLDER [MARKDOWN-FAIL] 📁
 
-#### Attribute Table : [Markdown Fail Folder]
+#### Attribute Table : [markdown-fail]
 
-| Attribute             | Value             |
-|-----------------------|-------------------|
-| Asset Name            | markdown-fail     |
-| Relative Path         | ./                |
-| Hidden                | No                |
-| Include in Repository | Yes               |
-| Managed               | Yes               |
-| Asset Type            | FOLDER            |
+| Attribute             | Value                             |
+|-----------------------|-----------------------------------|
+| Asset Name            | markdown-fail                     |
+| Relative Path         | ./                                |
+| Hidden                | No                                |
+| Include in Repository | Yes                               |
+| Managed               | Yes                               |
+| Asset Type            | FOLDER                            |
+| Asset Size            | 2,915 Bytes                       |
 
-#### Asset Purpose : [Markdown Fail Folder]
+#### Asset Purpose : [markdown-fail]
 
-To test markdown rules set in '.markdownlint.jsonc'.
+To ensure all of the markdown settings are correct and markdownlint is operating as expected.
 
-#### Asset Contents Description : [Markdown Fail Folder]
+#### Asset Contents Description : [markdown-fail]
 
-Contains as file for each markdownlint test. All of the rule settings can be found
-[here](#asset-contents-description--markdownlintjsonc).
+Contains as file for each markdownlint test.
 
-Each file contains fail test code taken from the [markdownlint manual][7].
+Each file contains fail test code taken from the [markdownlint manual][8].
 
-ℹ *These tests can be used to compare to the markdown configuration file in order to make sure everything is setup
-correctly.*
+ℹ *These tests can be used to compare to the markdown configuration file in order to make sure everything is setup correctly.*
 
 ---
 
@@ -3037,26 +2796,27 @@ correctly.*
 
 ---
 
-### NODE MODULES [FOLDER] 📁
+### NODE MODULES FOLDER [NODE_MODULES] 📁
 
-#### Attribute Table : [Node Modules Folder]
+#### Attribute Table : [node_modules]
 
-| Attribute             | Value             |
-|-----------------------|-------------------|
-| Asset Name            | node_modules      |
-| Relative Path         | ./                |
-| Hidden                | No                |
-| Include in Repository | No                |
-| Managed               | No                |
-| Asset Type            | FOLDER            |
+| Attribute             | Value                             |
+|-----------------------|-----------------------------------|
+| Asset Name            | node_modules                      |
+| Relative Path         | ./                                |
+| Hidden                | No                                |
+| Include in Repository | No                                |
+| Managed               | No                                |
+| Asset Type            | FOLDER                            |
+| Asset Size            | N/A                               |
 
-#### Asset Purpose : [Node Modules]
+#### Asset Purpose : [node_modules]
 
-'node_modules' is stored locally to streamline the IDE setup.
+Used to run IDE related tools such as markdownlint.
 
-#### Asset Contents Description : [Node Modules]
+#### Asset Contents Description : [node_modules]
 
- Store source code for various plugins and utilities.
+Store source code for various plugins and utilities.
 
 ---
 
@@ -3068,14 +2828,15 @@ correctly.*
 
 #### Attribute Table : [.gitignore]
 
-| Attribute             | Value                       |
-|-----------------------|-----------------------------|
-| Asset Name            | .gitignore                  |
-| Relative Path         | ./                          |
-| Hidden                | Yes                         |
-| Include in Repository | Yes                         |
-| Managed               | Yes                         |
-| Asset Type            | TEXT                        |
+| Attribute             | Value                             |
+|-----------------------|-----------------------------------|
+| Asset Name            | .gitignore                        |
+| Relative Path         | ./                                |
+| Hidden                | Yes                               |
+| Include in Repository | Yes                               |
+| Managed               | Yes                               |
+| Asset Type            | TEXT                              |
+| Asset Size            | 977 Bytes                         |
 
 #### Asset Purpose : [.gitignore]
 
@@ -3093,46 +2854,19 @@ Lists files to exclude from the repository when committing.
 
 ---
 
-### CODE OF CONDUCT : [CODE_OF_CONDUCT.MD] 📄
+### CHANGELOG [CHANGELOG.MD] 📄
 
-#### Attribute Table : [CODE_OF_CONDUCT.md]
+#### Attribute Table : [changelog.md]
 
-| Attribute             | Value                   |
-|-----------------------|-------------------------|
-| Asset Name            | CODE_OF_CONDUCT.md      |
-| Relative Path         | ./                      |
-| Hidden                | No                      |
-| Include in Repository | Yes                     |
-| Managed               | Yes                     |
-| Asset Type            | MARKDOWN                |
-
-#### Asset Purpose : [CODE_OF_CONDUCT.md]
-
-Provides guidelines to ensure that people agree to treat the repository with respect and professionalism.
-
-#### Asset Contents Description : [CODE_OF_CONDUCT.md]
-
-Contains an agreement for all people contributing to the project must agree to. This document mainly contains
-information regarding community behaviour.
-
----
-
-[BACK TO TOP](#markdownlint-cli2-cicd-pipeline-docker-project-programmers-manual)
-
----
-
-### CHANGELOG : [CHANGELOG.MD] 📄
-
-#### Attribute Table : [CHANGELOG.md]
-
-| Attribute             | Value                   |
-|-----------------------|-------------------------|
-| Asset Name            | CHANGELOG.md            |
-| Relative Path         | ./                      |
-| Hidden                | No                      |
-| Include in Repository | Yes                     |
-| Managed               | Yes                     |
-| Asset Type            | MARKDOWN                |
+| Attribute             | Value                             |
+|-----------------------|-----------------------------------|
+| Asset Name            | CHANGLELOG.md                     |
+| Relative Path         | ./                                |
+| Hidden                | No                                |
+| Include in Repository | Yes                               |
+| Managed               | Yes                               |
+| Asset Type            | MARKDOWN                          |
+| Asset Size            | 759 Bytes                         |
 
 #### Asset Purpose : [changelog.md]
 
@@ -3140,31 +2874,9 @@ Keeps track of changes made to the repository.
 
 #### Asset Contents Description : [changelog.md]
 
-A changelog based on conventional changelog standards.
+A changelog based on common changelog standards.
 
-### CONTRIBUTING [CONTRIBUTING.MD] 📄
-
-#### Attribute Table : [contributing.md]
-
-| Attribute             | Value                       |
-|-----------------------|-----------------------------|
-| Asset Name            | CONTRIBUTING.md             |
-| Relative Path         | ./                          |
-| Hidden                | No                          |
-| Include in Repository | Yes                         |
-| Managed               | Yes                         |
-| Asset Type            | MARKDOWN                    |
-
-#### Asset Purpose : [contributing.md]
-
-To maintain constant standards across the entire code base including documentation.
-
-#### Asset Contents Description : [contributing.md]
-
-Provides detailed information for developers on how to make changes and update documentation according to the project
-standards.
-
-ℹ *This file is picked up and processed by GitHub.*
+See. [Common Changelog][9]
 
 ---
 
@@ -3172,24 +2884,82 @@ standards.
 
 ---
 
-### DOCKER FILE [DOCKERFILE] 📄
+### CONTRIBUTING [CONTRIBUTING.MD] 📄
 
-#### Attribute Table : [Dockerfile]
+#### Attribute Table : [contributing.md]
 
-| Attribute             | Value                       |
-|-----------------------|-----------------------------|
-| Asset Name            | Dockerfile                  |
-| Relative Path         | ./                          |
-| Hidden                | No                          |
-| Include in Repository | Yes                         |
-| Managed               | Yes                         |
-| Asset Type            | DOCKERFILE                  |
+| Attribute             | Value                             |
+|-----------------------|-----------------------------------|
+| Asset Name            | CONTRIBUTING.md                   |
+| Relative Path         | ./                                |
+| Hidden                | No                                |
+| Include in Repository | Yes                               |
+| Managed               | Yes                               |
+| Asset Type            | MARKDOWN                          |
+| Asset Size            | 9,732 Bytes                       |
 
-#### Asset Purpose : [Dockerfile]
+#### Asset Purpose : [contributing.md]
+
+To inform developers about the structure and standards for the project. This is essential to read for any new developer.
+
+#### Asset Contents Description : [contributing.md]
+
+Provides detailed information for developers on how to make changes and update documentation according to the project
+standards.
+
+---
+
+[BACK TO TOP](#markdownlint-cli2-cicd-pipeline-docker-project-programmers-manual)
+
+---
+
+### DEVELOPER [DEVELOPER.MD] 📄
+
+#### Attribute Table : [developer.md]
+
+| Attribute             | Value                             |
+|-----------------------|-----------------------------------|
+| Asset Name            | DEVELOPER.md                      |
+| Relative Path         | ./                                |
+| Hidden                | No                                |
+| Include in Repository | Yes                               |
+| Managed               | Yes                               |
+| Asset Type            | MARKDOWN                          |
+| Asset Size            | /---/ Bytes                       |
+
+#### Asset Purpose : [developer.md]
+
+Inform the developer how the project performs functionally. This serves as development manual.
+
+#### Asset Contents Description : [developer.md]
+
+A detailed description of every asset in the project with a description of it's purpose and function.
+
+---
+
+[BACK TO TOP](#markdownlint-cli2-cicd-pipeline-docker-project-programmers-manual)
+
+---
+
+### DOCKERFILE [DOCKERFILE] 📄
+
+#### Attribute Table : [dockerfile]
+
+| Attribute             | Value                             |
+|-----------------------|-----------------------------------|
+| Asset Name            | Dockerfile                        |
+| Relative Path         | ./                                |
+| Hidden                | No                                |
+| Include in Repository | Yes                               |
+| Managed               | Yes                               |
+| Asset Type            | DOCKERFILE                        |
+| Asset Size            | 1,686 Bytes                       |
+
+#### Asset Purpose : [dockerfile]
 
 Build Dockerfile.
 
-#### Asset Contents Description : [Dockerfile]
+#### Asset Contents Description : [dockerfile]
 
 Contains the build script required to create markdownlint-cli2 Docker container.
 
@@ -3202,8 +2972,28 @@ Contains the build script required to create markdownlint-cli2 Docker container.
 | RUN         | Executes program.                                                        |
 | USER        | Set user to.                                                             |
 | COPY        | Copies a file or folder from one place to another.                       |
-| &&          | Logical operator to ensure this command was successful before continuing.|
-| \           | Line continuation character.                                             |
+
+##### Dockerfile syntax glossary : [Dockerfile]
+
+| Token       | Description                                                                                            |
+|-------------|--------------------------------------------------------------------------------------------------------|
+| &&          | Logical operator to ensure this command was successful before continuing.                              |
+| \           | Line continuation character.                                                                           |
+| -g          | set global flag to install globally.                                                                   |
+| install     | Installs a package.                                                                                    |
+| npm         | Executes npm                                                                                           |
+| mkdir       | Creates a new folder.                                                                                  |
+| -p          | Ensures all sub directories are also created.                                                          |
+| &&          | Logical operator to ensure this command was successful before continuing.                              |
+| \           | Line continuation character.                                                                           |
+| ""          | String encapsulation.                                                                                  |
+| >           | Redirection operator. It writes the output of the echo command into a file.                            |
+| set         | specifies that a configuration setting is being added or updated.                                      |
+| apk         | Installs an application with apk.                                                                      |
+| add         | Add package to Alpine Package Manager.                                                                 |
+| --no-cache  | Clears or ignores previous cache to avoid unexpected errors.                                           |
+| update      | Updates all apk packages.                                                                              |
+| upgrade     | Upgrade selected packaged to a later version                                                           |
 
 #### Asset code breakdown : [Dockerfile]
 
@@ -3234,8 +3024,6 @@ Contains the build script required to create markdownlint-cli2 Docker container.
 
 ##### Set the working directory to app : [Dockerfile] - [CODE]
 
-**Purpose:** The work directory is the folder when the project files to be linted are stored.
-
 ```dockerfile
 # Set the working directory to app
 
@@ -3265,8 +3053,6 @@ COPY .config/.markdownlint.jsonc /app/.config/.markdownlint.jsonc
 
 ##### Install markdownlint-cli2 globally : [Dockerfile] - [CODE]
 
-**Purpose:** Installs the markdownlint-cli2 program globally which is required to lint markdown files.
-
 ```dockerfile
 # Install markdownlint-cli2 globally
 
@@ -3279,15 +3065,13 @@ COPY .config/.markdownlint.jsonc /app/.config/.markdownlint.jsonc
 1. Install markdownlint-cli2 globally
     a. RUN Executes program.
     b. Run npm with install flag
-    c. 'g' set global flag to install on container globally.
+    c. '-g' set global flag to install globally.
     d. Mark markdownlint-cli2 as the package to install.
 ```
 
 ##### Update cross-spawn : [Dockerfile] - [CODE]
 
-**Purpose:** Cross-spawn comes as part of the base Alpine package and needs to be updated due to security concerns.
-
-```yaml
+```dockerfile
 # Update cross-spawn
 
 1. RUN mkdir -p /usr/local/etc && \
@@ -3318,7 +3102,7 @@ COPY .config/.markdownlint.jsonc /app/.config/.markdownlint.jsonc
     a. 'npm' executes npm.
     b. A flag set to manage npm's configuration settings.
     c. 'Set' specifies that a configuration setting is being added or updated.
-    d. 'globalconfig' specifies that global npm configuration wil be used.
+    d. 'globalconfig' specifies that global npm configuration will be used.
     e. '/usr/local/etc/npmrc' specifies config location.
     f. '&&' is a logical operator to ensure this command was successful before continuing.
     g. '\' Line continuation character.
@@ -3331,11 +3115,9 @@ COPY .config/.markdownlint.jsonc /app/.config/.markdownlint.jsonc
 
 ⚠️ *cross-spawn is updated in order to avoid CVE errors reports as there is a known CVE. issue.*
 
-##### Update OpenSSL to the latest version using APK - [CODE]
+##### Update OpenSSL to the latest version using APK : [Dockerfile] - [CODE]
 
-**Purpose:** OpenSSL comes as part of the base Alpine package and needs to be updated due to security concerns.
-
-```yaml
+```dockerfile
 # Update OpenSSL to the latest version using APK
 
 1. RUN apk update && \
@@ -3343,7 +3125,7 @@ COPY .config/.markdownlint.jsonc /app/.config/.markdownlint.jsonc
 3.    apk upgrade openssl
 ```
 
-##### Update OpenSSL to the latest version using APK - [CODE - DESCRIPTION]
+##### Update OpenSSL to the latest version using APK : [Dockerfile] - [CODE - DESCRIPTION]
 
 ```markdown
 1. Update Alpine Package Manager.
@@ -3368,92 +3150,33 @@ COPY .config/.markdownlint.jsonc /app/.config/.markdownlint.jsonc
 
 ⚠️ *openssl is updated in order to avoid CVE errors reports as there is a known CVE issue.*
 
-##### Create a non-root user and group : [Dockerfile] - [CODE]
-
-```dockerfile
-# Create a non-root user and group
-
-1. RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-```
-
-##### Create a non-root user and group : [Dockerfile] - [CODE-DESCRIPTION]
-
-```markdown
-1. Create a non-root user and group
-    a. RUN Executes program.
-    b. Create a new group in the Alpine Linux-based container image.
-    c. 'S' Stands for "System" group; it creates a system group instead of a regular user group.
-    
-    d. Specifies the name of the group being created (appgroup).
-    e. Logical AND operator; ensures that the next command runs only if the previous one succeeds.
-    
-    f. A command to create a new user in the Alpine Linux-based container image.
-    
-    g. Stands for "System" user; it creates a system user with limited privileges.
-    
-    h. Specifies the name of the user being created (appuser).
-    i. Specifies the group to which the new user will belong.
-    j. The name of the group that the new user (appuser) will be added to.
-```
-
-##### Switch to the non-root user (appuser) : [Dockerfile] - [CODE]
-
-```yaml
-# Switch to the non-root user (appuser)
-
-USER appuser
-```
-
-##### Switch to the non-root user (appuser) : [Dockerfile] - [CODE-DESCRIPTION]
-
-```markdown
-1. Set user to 'appuser'.
-  a. USER Specifies a user.
-  b. Sets user to 'appuser'.
-```
-
-##### Start a shell when the container is run : [Dockerfile] - [CODE]
-
-```yaml
-# Start a shell when the container is run
-
-CMD ["/bin/sh"]
-```
-
-##### Start a shell when the container is run : [Dockerfile] - [CODE-DESCRIPTION]
-
-```markdown
-1. 'CMD' Sets initial command path.
-    a. ["/bin/sh"] sets the path to start the docker in.
-```
-
 ---
 
 [BACK TO TOP](#markdownlint-cli2-cicd-pipeline-docker-project-programmers-manual)
 
 ---
 
-### PACKAGE LOCK FILE [PACKAGE-LOCK.JSON] 📄
+### NODE PACKAGE LOCK FILE [PACKAGE-LOCK.JSON] 📄
 
-#### File Attribute Table : [package-lock.json]
+#### Attribute Table : [package-lock.json]
 
-| Attribute             | Value                       |
-|-----------------------|-----------------------------|
-| Asset Name            | package-lock.json           |
-| Relative Path         | ./                          |
-| Hidden                | No                          |
-| Include in Repository | Yes                         |
-| Managed               | No                          |
-| Asset Type            | JSON                        |
+| Attribute             | Value                             |
+|-----------------------|-----------------------------------|
+| Asset Name            | package-lock.json                 |
+| Relative Path         | ./                                |
+| Hidden                | No                                |
+| Include in Repository | Yes                               |
+| Managed               | No                                |
+| Asset Type            | JSON                              |
+| Asset Size            | 136,621 Bytes                     |
 
 #### Asset Purpose : [package-lock.json]
 
-Keeps all package dependency versions pinned. This ensures the environment is the same for all developers and minimises
-errors.
+Keeps all package dependency versions pinned. This ensures the environment is the same for all developers and minimises errors.
 
 #### Asset Contents Description : [package-lock.json]
 
-Keeps a list of all packages and their dependencies with pinned version numbers.
+package-lock.json: A file automatically generated by npm to lock the exact versions of dependencies (and their sub-dependencies) installed. It ensures consistent installs across environments by tracking the precise dependency tree.
 
 ---
 
@@ -3461,27 +3184,27 @@ Keeps a list of all packages and their dependencies with pinned version numbers.
 
 ---
 
-### PACKAGE FILE [PACKAGE.JSON] 📄
+### NODE PACKAGE FILE [PACKAGE.JSON] 📄
 
 #### Attribute Table : [package.json]
 
-| Attribute             | Value                       |
-|-----------------------|-----------------------------|
-| Asset Name            | package.json                |
-| Relative Path         | ./                          |
-| Hidden                | No                          |
-| Include in Repository | Yes                         |
-| Managed               | No                          |
-| Asset Type            | JSON                        |
+| Attribute             | Value                             |
+|-----------------------|-----------------------------------|
+| Asset Name            | package.json                      |
+| Relative Path         | ./                                |
+| Hidden                | No                                |
+| Include in Repository | Yes                               |
+| Managed               | Yes                               |
+| Asset Type            | JSON                              |
+| Asset Size            | 250 Bytes                         |
 
 #### Asset Purpose : [package.json]
 
-Keeps all package dependency versions pinned. This ensures the environment is the same for all developers and minimises
-errors.
+Keeps all package dependency versions pinned. This ensures the environment is the same for all developers and minimises errors.
 
 #### Asset Contents Description : [package.json]
 
-Stores list of Node packages needed in the project.
+A file that defines a Node.js project. It includes metadata about the project (e.g., name, version, description) and lists dependencies, scripts, and configuration for the project.
 
 ---
 
@@ -3489,24 +3212,25 @@ Stores list of Node packages needed in the project.
 
 ---
 
-### README FILE [README.MD] 📄
+### README [README.MD] 📄
 
-#### Attribute Table : [README.md]
+#### Attribute Table : [readme.md]
 
-| Attribute             | Value                       |
-|-----------------------|-----------------------------|
-| Asset Name            | README.md                   |
-| Relative Path         | ./                          |
-| Hidden                | No                          |
-| Include in Repository | Yes                         |
-| Managed               | Yes                         |
-| Asset Type            | MARKDOWN                    |
+| Attribute             | Value                             |
+|-----------------------|-----------------------------------|
+| Asset Name            | readme.MD                         |
+| Relative Path         | ./                                |
+| Hidden                | No                                |
+| Include in Repository | Yes                               |
+| Managed               | Yes                               |
+| Asset Type            | JSON                              |
+| Asset Size            | 10,587 Bytes                      |
 
-#### Asset Purpose : [README.md]
+#### Asset Purpose : [readme.md]
 
-Provide information about the project to enable users and developers to properly interact with the project.
+Provides general information about the project to enable users and developers to get an overview of what the project is about and how it's structured.
 
-#### Asset Contents Description : [README.md]
+#### Asset Contents Description : [readme.md]
 
 Provides an overall description of the project and other useful information.
 
@@ -3516,29 +3240,30 @@ Provides an overall description of the project and other useful information.
 
 ---
 
-### VERSION FILE [VERSION.TEXT] 📄
+## GLOSSARY
 
-#### Attribute Table : [version.text]
-
-| Attribute             | Value                       |
-|-----------------------|-----------------------------|
-| Asset Name            | version.text                |
-| Relative Path         | ./                          |
-| Hidden                | No                          |
-| Include in Repository | Yes                         |
-| Managed               | Yes                         |
-| Asset Type            | TEXT                        |
-
-#### Asset Purpose : [version.text]
-
-Too keep track of versions. This file is updated when a new version is pulled and merged with the master branch.
-
-#### Asset Contents Description : [version.text]
-
-A string of text consisting of a 'v' followed by a three digit version number based on the semantic versioning system.
-(Major, Minor, Patch).
-
-See. [Semantic Versioning 2.0.0 | Semantic Versioning][8]
+| Term   | Definition                                                                     |
+|--------|--------------------------------------------------------------------------------|
+| APK    | Alpine Package Keeper. Alpine Linux package manager.                           |
+| CI/CD  | Continues Integration Continues Development.                                   |
+| CVSS   | Common Vulnerability Scoring System.                                           |
+| Git    | Git source control used for managing code base.                                |
+| GIT    | Source control software.                                                       |
+| IDE    | Integrated Development Environment.                                            |
+| JSONC  | JavaScript Object Notation Commented.                                          |
+| MD     | Markdown.                                                                      |
+| NMG    | Ninja Monkey Games™                                                            |
+| NPM    | Network Package Manager. Used by Node.JS to manage plugins and other tools.    |
+| OS     | Operating system.                                                              |
+| PAT    | [Personal access tokens][10] are used instead of the Dockerhub account password.|
+| PNG    | Portable Network Graphic.                                                      |
+| RegEx  | Regular expression. A pattern of characters used to mask a string.             |
+| SBOM   | Software Bill of Materials is list of package dependencies.                    |
+| Secret | Encrypted key stored as an environment variable.                               |
+| VSC    | Microsoft Visual Studio Code.                                                  |
+| WCAG   | Web Content Accessibility Guidelines.                                          |
+| WSL    | Windows Subsystem for Linux.                                                   |
+| YAML   | Yet another markup language. Scripts that control CI/CD pipelines.             |
 
 ---
 
@@ -3546,34 +3271,15 @@ See. [Semantic Versioning 2.0.0 | Semantic Versioning][8]
 
 ---
 
-## GLOSSARY
+## EXTERNAL RESOURCES
 
-| Term   | Definition                                                                      |
-|--------|---------------------------------------------------------------------------------|
-| APK    | Alpine Package Keeper.                                                          |
-| PAT    | [Personal access tokens][9] are used instead of the Dockerhub account password. |
-| SBOM   | Software Bill of Materials is list of package dependencies.                     |
-| VSC    | Microsoft Visual Studio Code.                                                   |
-| IDE    | Integrated Development Environment.                                             |
-| CI/CD  | Continues Integration Continues Development.                                    |
-| JSONC  | JavaScript Object Notation Commented.                                           |
-| GIT    | Source control software.                                                        |
-| NPM    | Network Package Manager. Used by Node.JS to manage plugins and other tools.     |
-| MD     | Markdown.                                                                       |
-| PNG    | Portable Network Graphic.                                                       |
-| YAML   | Yet another markup language. Scripts that control CI/CD pipelines.              |
-| OS     | Operating system.                                                               |
-| Secret | Encrypted key stored as an environment variable.                                |
-| Git    | Git source control used for managing code base.                                 |
-
-## RESOURCES
-
-  [1]: https://commonmark.org
-  [2]: https://www.conventionalcommits.org/en/v1.0.0/#specification
-  [3]: https://git-scm.com/doc
-  [4]: https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema
+  [1]: https://github.com/DavidAnson/markdownlint/blob/main/schema/markdownlint-config-schema.json
+  [2]: https://github.com/markdownlint/markdownlint/blob/main/docs/RULES.md
+  [3]: https://www.conventionalcommits.org/en/v1.0.0/#specification
+  [4]: https://git-scm.com/doc
   [5]: https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema
-  [6]: https://docs.docker.com/security/for-developers/access-tokens
-  [7]: https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md
-  [8]: https://semver.org/
-  [9]: https://docs.docker.com/security/for-developers/access-tokens
+  [6]: https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema
+  [7]: https://docs.docker.com/security/for-developers/access-tokens/
+  [8]: https://github.com/markdownlint/markdownlint/blob/main/docs/RULES.md
+  [9]: https://common-changelog.org/
+  [10]: https://github.com/DavidAnson/markdownlint/blob/main/schema/markdownlint-config-schema.json

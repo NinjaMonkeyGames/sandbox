@@ -2,15 +2,15 @@
 #                                                  BUG REPORT TEMPLATE                                                 #
 ########################################################################################################################
 
-# 1. Meta data.
-# 2. Initialise form.
-# 3. Introduction text.
-# 4. Email input.
-# 5. OS selection.
-# 6. Browser selection.
-# 7. Bug type.
-# 8. Severity.
-# 9. Problem summary.
+# 1.  Meta data.
+# 2.  Initialise form.
+# 3.  Introduction text.
+# 4.  Email input.
+# 5.  OS selection.
+# 6.  Browser selection.
+# 7.  Bug type.
+# 8.  Severity.
+# 9.  Problem summary.
 # 10. Expected behaviour.
 # 11. Steps to reproduce.
 # 12. Actual Behaviour.
@@ -34,8 +34,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to report this issue!
-        Please fill out the form below to provide detailed information about the bug.
+        Thanks for taking the time to report this issue! Please fill out the form below to provide detailed information about the bug.
 
 # Email Input
 

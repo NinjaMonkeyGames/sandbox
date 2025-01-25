@@ -2,13 +2,16 @@
 //                                            CAPITALISED HEADINGS FUNCTION                                           //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// This function is a custom markdownlint-cli2 script that will check level one and two headings to ensure they are capitslasided in-line with NMG policy. 
+// This function is a custom markdownlint-cli2 script that will check level one and two headings to ensure they are capitalised in-line with NMG policy. 
+
+// 1. Module exports.
+// 2. Meta data.
+// 3. Heading capitalisation function.
 
 // Module exports
 
 module.exports =
 {
-  
   // Meta data
 
   names: ["capitalised-headings"],
@@ -18,7 +21,8 @@ module.exports =
 
   /**
    * Custom markdownlint-cli2 rule to ensure level two and three headings are fully capitalized.
-   * @author NinjaMonkeyGaames
+   * 
+   * @author NinjaMonkeyGames
    * @date 2025-01-10
    * @param {Object} params                   - Parameters provided by markdownlint.
    * @param {Object[]} params.lines           - Array of lines from the markdown file.

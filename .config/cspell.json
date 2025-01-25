@@ -1,24 +1,33 @@
 {
-    "language": "en,en-GB",
     "version": "0.2",
-    "ignorePaths": [],
-    "dictionaryDefinitions": [],
-    "dictionaries": [],
+    "language": "en-GB",
+    "dictionaries": [
+        "en-gb"
+    ],
     "words": [
         "addgroup",
         "adduser",
         "appgroup",
         "appuser",
-        "buildx",
-        "capitslasided",
+        "Buildx",
+        "CENTERED",
+        "CHANGLELOG",
         "CPSELL",
         "Dockerhub",
+        "eledgeability",
         "globalconfig",
+        "keybinding",
+        "linted",
         "markdownlint",
         "monkeyknuckles",
+        "therefor",
         "Titlecase",
-        "WORKDIR"
+        "WCAG"
     ],
     "ignoreWords": [],
-    "import": []
+    "ignorePaths": [
+        "**/node_modules/**",
+        "**/dist/**",
+        "**/build/**"
+    ]
 }

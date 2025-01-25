@@ -12,10 +12,10 @@
 {
     // Automatic Actions
 
-    "editor.formatOnSave": true, // Automatically format files when saving
-    "editor.formatOnType": true, // Automatically format code as you type
-    "files.autoSave": "afterDelay", // All file changes will be saved periodically
-    "files.autoSaveDelay": 1000, // Set autosave delay for 1000 milliseconds
+    "editor.formatOnSave": true,            // Automatically format files when saving
+    "editor.formatOnType": true,            // Automatically format code as you type
+    "files.autoSave": "afterDelay",         // All file changes will be saved periodically
+    "files.autoSaveDelay": 1000,            // Set autosave delay for 1000 milliseconds
 
     // Add A Visible Ruler To The IDE
 
@@ -26,35 +26,37 @@
 
     // Format Settings
 
-    "editor.wrappingIndent": "same", // Keep indentation level of wrapped lines
-    "files.eol": "\n", // Force all new files to be in LF format opposed to CRLF 
-    "editor.wordWrap": "wordWrapColumn", // Automatically wrap lines of text
-    "editor.wordWrapColumn": 120, // Set the wrap column to 120 characters
+    "editor.wrappingIndent": "same",        // Keep indentation level of wrapped lines
+    "files.eol": "\n",                      // Force all new files to be in LF format opposed to CRLF 
+    "editor.wordWrap": "wordWrapColumn",    // Automatically wrap lines of text
+    "editor.wordWrapColumn": 120,           // Set the wrap column to 120 characters
     
     // Confirmation Settings
 
-    "explorer.confirmDelete": false, // Prevents prompt when deleting files
-    "explorer.confirmDragAndDrop": false, // Prevents prompt when moving files
+    "explorer.confirmDelete": false,        // Prevents prompt when deleting files
+    "explorer.confirmDragAndDrop": false,   // Prevents prompt when moving files
 
     // Include Otherwise Hidden Folders In The File Tree View
 
     "files.exclude": 
     {
-        "**/.git": false, // Show .git folder
-        "**/node_modules": false, // Show node_modules
+        "**/.git": false,                   // Show .git folder
+        "**/node_modules": false,           // Show node_modules
     },
 
     // Include Otherwise Excluded Files In Project File Search
 
-    "search.exclude": {
-        "**/.git": false, // Include .git folder
-        "**/node_modules": false, // Include node_modules folder
+    "search.exclude": 
+    {
+        "**/.git": false,                   // Include (Exclude) .git folder
+        "**/node_modules": false,           // Include (Exclude) node_modules folder
     },
 
     // Markdownlint-Cli2 Configuration Options
 
-    "markdownlint.config": {
-        "extends": ".config/.markdownlint-cli2.jsonc" // Sets location of '.markdownlint.jsonc' config file.
+    "markdownlint.config": 
+    {
+        "extends": ".config/.markdownlint-cli2.jsonc" // Sets location of '.markdownlint.jsonc' config file
 
     },
 
@@ -62,7 +64,7 @@
 
     "markdownlint.customRules": 
     [
-        ".config/custom-markdownlint-rules/capitalised-headings.js",
+        ".config/custom-markdownlint-rules/capitalised-headings.js", // Sets locations of 'capitalised-heading.js'
     ],
 
     
