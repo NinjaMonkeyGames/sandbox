@@ -36,10 +36,10 @@ jobs:
 
     # Copy markdownlint-cli2 Configuration File to the Workspace
 
-      - name: Copy custom
-        run: cp /app/.markdownlint-cli2.jsonc $GITHUB_WORKSPACE
+      - name: Copy markdownlint config
+        run: cp /app/.config/.markdownlint-cli2.jsonc $GITHUB_WORKSPACE
 
     # Lint All Markdown Files
         
       - name: Run markdownlint-cli2
-        run: markdownlint-cli2 "**/*.md" "#node_modules" "#markdown-fail" --rules .config/custom-markdown-rules/capitalised-headings.js
+        run: markdownlint-cli2 "**/*.md" "#node_modules"

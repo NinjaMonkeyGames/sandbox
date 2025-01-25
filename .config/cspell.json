@@ -1,12 +1,10 @@
 {
     "version": "0.2",
     "language": "en-GB",
-    "dictionaries": 
-    [
+    "dictionaries": [
         "en-gb"
     ],
-    "words": 
-    [
+    "words": [
         "addgroup",
         "adduser",
         "appgroup",
@@ -26,14 +24,8 @@
         "Titlecase",
         "WCAG"
     ],
-
-    "ignoreWords": 
-    [
-        
-    ],
-
-    "ignorePaths": 
-    [
+    "ignoreWords": [],
+    "ignorePaths": [
         "**/node_modules/**",
         "**/dist/**",
         "**/build/**"

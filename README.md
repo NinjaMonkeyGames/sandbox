@@ -1,46 +1,46 @@
-# READMEx
+# README
 
 x
 
-## CONTENTS
+## Contents
 
-- [What is this repository for?](#what-is-this-repository-for)
-- [Who is this repository for?](#who-is-this-repository-for)
-- [Environment configuration information](#environment-configuration-information)
-  - [IDE setup instructions](#ide-setup-instructions)
-  - [Configuration files](#configuration-files)
-- [Testing](#testing)
-  - [Configuration file validation test](#configuration-file-validation-test)
-  - [Build and test docker instructions](#build-and-test-docker-instructions)
-    - [Build container](#build-container)
-    - [Tag container](#tag-container)
-    - [Push container](#push-container)
-    - [Push container with credentials](#push-container-with-credentials)
-    - [Connect to container directly](#connect-to-container-directly)
-  - [Check file count](#check-file-count)
-- [Useful links](#useful-links)
-- [Includes](#includes)
-- [System Requirements](#system-requirements)
-- [Document management](#document-management)
-  - [Files](#files)
-  - [Version history](#version-history)
-- [Contact information](#contact-information)
-- [Copyright](#copyright)
+  - [What is this repository for?](#what-is-this-repository-for)
+  - [Who is this repository for?](#who-is-this-repository-for)
+  - [Environment configuration information](#environment-configuration-information)
+    - [IDE setup instructions](#ide-setup-instructions)
+    - [Configuration files](#configuration-files)
+  - [Testing](#testing)
+    - [Configuration file validation test](#configuration-file-validation-test)
+    - [Build and test docker instructions](#build-and-test-docker-instructions)
+      - [Build container](#build-container)
+      - [Tag container](#tag-container)
+      - [Push container](#push-container)
+      - [Push container with credentials](#push-container-with-credentials)
+      - [Connect to container directly](#connect-to-container-directly)
+    - [Check file count](#check-file-count)
+  - [Useful links](#useful-links)
+  - [Includes](#includes)
+  - [System Requirements](#system-requirements)
+  - [Document management](#document-management)
+    - [Files](#files)
+    - [Version history](#version-history)
+  - [Contact information](#contact-information)
+  - [Copyright](#copyright)
 
-## WHAT IS THIS REPOSITORY FOR?
+## What is this repository for?
 
 The purpose of this repository is to provide a markdownlint-cli2 container with the purpose of linting markdown files as
 part of a CD/CI implementation.
 
-## WHO IS THIS REPOSITORY FOR?
+## Who is this repository for?
 
 This document and repository is for use by NinjaMonkeyGames staff and contractors.
 
 ---
 
-## ENVIRONMENT CONFIGURATION INFORMATION
+## Environment configuration information
 
-### IDE SETUP INSTRUCTIONS
+### IDE setup instructions
 
 **Press:**
 
@@ -51,7 +51,7 @@ CTRL + SHIFT + B
 This will install any plugins needed for the project by executing the contents of tasks.json located in the .vscode
 folder.
 
-### CONFIGURATION FILES
+### Configuration files
 
 There is a '.markdownlint.yaml' file containing the markdown configuration located in the .config folder of the project
 directory. This file stores rules as to how lint markdown files.
@@ -64,9 +64,9 @@ automatically. If not you can download and install it manually.
 Please also keep the '.vscode' folder and the .git folder in tact as these contain crucial settings for the project and
 the environment.
 
-## TESTING
+## Testing
 
-### CONFIGURATION FILE VALIDATION TEST
+### Configuration file validation test
 
 The markdown-fail folder contains every single possible markdownlint-cli2 linting error. This serves as a reference for
 testing. Note that 'md0013.md' can be used to check the configuration file is being respected. The default rule is
@@ -77,7 +77,7 @@ and the problems pane in the VSC terminal should display "MD013/line-length: Lin
 If the configuration file is not working it will either say "MD013/line-length: Line length [Expected: 80; Actual: 121]"
 or it will say nothing at all.
 
-### CHECK FILE COUNT
+### Check file count
 
 You can also run the command listed below to ensure that both the configuration file is correct and that the version of
 markdownlint is also correct. The results should show:
@@ -94,90 +94,90 @@ Please remember to check the output tab also. This should be free from errors.
 'markdownlint-cli2.dockerfile' contains a script with instructions on how to build the docker container. The build
 instructions can be seen below.
 
-### BUILD AND TEST DOCKER INSTRUCTIONS
+### Build and test docker instructions
 
 These are list of commands you can execute in order to build, tag, upload/push and test the project directly from the
 terminal.
 
-#### BUILD CONTAINER
+#### Build container
 
 ```shell
 docker build -t "markdownlint-cli2" -f "Dockerfile" .
 ```
 
-#### TAG CONTAINER
+#### Tag container
 
 ```shell
 docker tag markdownlint-cli2 monkeyknuckles/markdownlint-cli2:latest
 ```
 
-#### PUSH CONTAINER
+#### Push container
 
 ```shell
 docker push monkeyknuckles/markdownlint-cli2:latest
 ```
 
-#### PUSH CONTAINER WITH CREDENTIALS
+#### Push container with credentials
 
 ```shell
 docker buildx build --sbom=true --provenance=true --tag monkeyknuckles/'markdownlint-cli2' --push .
 ```
 
-#### CONNECT TO CONTAINER DIRECTLY
+#### Connect to container directly
 
 ```shell
 docker run -it markdownlint-cli2
 ```
 
-## USEFUL LINKS
+## Useful links
 
-- **Project links:**
+  - **Project links:**
 
-  - **Project Docker pull address:**  docker pull **monkeyknuckles/markdownlint-cli2**
+    - **Project Docker pull address:**  docker pull **monkeyknuckles/markdownlint-cli2**
 
-  - **Project Docker landing page:**  <https://hub.docker.com/r/monkeyknuckles/markdownlint-cli2>
-  - **Project clone address:**        <https://github.com/NinjaMonkeyGames/markdownlint-cli2.git>
-  - **Project landing page:**         <https://github.com/NinjaMonkeyGames/markdownlint-cli2>
-  - **Project wiki page:**            [coming soon...]
+    - **Project Docker landing page:**  <https://hub.docker.com/r/monkeyknuckles/markdownlint-cli2>
+    - **Project clone address:**        <https://github.com/NinjaMonkeyGames/markdownlint-cli2.git>
+    - **Project landing page:**         <https://github.com/NinjaMonkeyGames/markdownlint-cli2>
+    - **Project wiki page:**            [coming soon...]
 
-- **3rd Party links:**
+  - **3rd Party links:**
 
-  - **Node source pull address:**     docker pull node:22.9.0
+    - **Node source pull address:**     docker pull node:22.9.0
 
-  - **Markdownlint-cli2:**            <https://github.com/DavidAnson/markdownlint-cli2.git>
-  - **Markdownlint:**                 <https://github.com/DavidAnson/markdownlint>
-  - **NPM:**                          <https://www.npmjs.com/package/markdownlint-cli2>
-  - **VSC plugin:**                   <https://github.com/DavidAnson/vscode-markdownlint>
-  - **CommonMark standard**           <https://commonmark.org/>
-
----
-
-## INCLUDES
-
-- Alpine Linux        Alpine Linux v3.20.3
-- NodeJS              v22.12.0
-- NPM                 v10.9.1
-- Markdownlint-cli2   v0.17.2
-- Markdownlint        v0.37.4
+    - **Markdownlint-cli2:**            <https://github.com/DavidAnson/markdownlint-cli2.git>
+    - **Markdownlint:**                 <https://github.com/DavidAnson/markdownlint>
+    - **NPM:**                          <https://www.npmjs.com/package/markdownlint-cli2>
+    - **VSC plugin:**                   <https://github.com/DavidAnson/vscode-markdownlint>
+    - **CommonMark standard**           <https://commonmark.org/>
 
 ---
 
-## SYSTEM REQUIREMENTS
+## Includes
+
+  - Alpine Linux        Alpine Linux v3.20.3
+  - NodeJS              v22.12.0
+  - NPM                 v10.9.1
+  - Markdownlint-cli2   v0.17.0
+  - Markdownlint        v0.37.2
+
+---
+
+## System Requirements
 
 You must install all of the plugins in extensions.json. You must all install the following on your system:
 
-- NodeJS (23.3.0)
-- Microsoft Visual Studio Code (1.94.2)
-- Dockerhub Desktop (4.34.3 (170107))
-- Microsoft Windows 11
+  - NodeJS (23.3.0)
+  - Microsoft Visual Studio Code (1.94.2)
+  - Dockerhub Desktop (4.34.3 (170107))
+  - Microsoft Windows 11
 
 ---
 
-## DOCUMENT MANAGEMENT
+## Document management
 
 Update this section every single time a file has either moved, renamed, deleted, created or modified.
 
-### FILES
+### Files
 
 | Folder / File Name                           | Description Of File Or Folder Contents                                |
 |----------------------------------------------|-----------------------------------------------------------------------|
@@ -209,7 +209,7 @@ Update this section every single time a file has either moved, renamed, deleted,
 | README.md                                    | This file contains various pieces of information about the project.   |
 | ~~sbom.json~~                                | ~~Software bill of materials.~~                                       |
 
-### VERSION HISTORY
+### Version history
 
 This project uses a sequential versioning system. Please update this with every single commit.
 
@@ -217,7 +217,7 @@ This project uses a sequential versioning system. Please update this with every 
 |----------------|-----------------------------------------------------------------------------------------------------|
 | 0.0.0.0        | Base files included. (markdownlint-cli2 setup with config file).                                    |
 
-## CONTACT INFORMATION
+## Contact information
 
 Author: Daniel Mallett (Monkey Knuckles)
 
@@ -229,6 +229,6 @@ Any bugs should be raised as an [issue](https://github.com/NinjaMonkeyGames/mark
 
 ---
 
-## COPYRIGHT
+## Copyright
 
 *Ninja Monkey Games Copyright © 2024 All rights reserved.*

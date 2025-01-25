@@ -474,7 +474,7 @@ There are 49 Different rules. These rules are prefixed with 'MD' followed by a t
 
 1.  "customRules": 
 2.  [
-3.    "../custom-markdownlint-rules/capitalised-headings.js"
+3.    "./custom-markdownlint-rules/capitalised-headings.js"
 4.  ],
 ```
 
@@ -621,7 +621,7 @@ Maintains the repository integrity buy ensuring conventional commit standards ar
 
 Contains linting rules pertaining to the conventional commit standards.
 
-##### Commitlint configuration syntax table: [commitlint.config.js]
+##### Settings table: [commit.config.js]
 
 This table displays the keywords found in 'commitlint.config.js' with an explanation of their function.
 
@@ -2106,7 +2106,7 @@ Contains YAML that will instruct GitHub Actions to lint markdown files.
 # Lint All Markdown Files
     
 1.   - name: Run markdownlint-cli2
-2.     run: markdownlint-cli2 "**/*.md" "#node_modules" "#markdown-fail"
+2.     run: markdownlint-cli2 "**/*.md" "#node_modules"
 ```
 
 ##### Lint all markdown files : [lint-markdown.yaml] - [CODE DESCRIPTION]
@@ -2333,17 +2333,35 @@ Keeps a list of extensions needed to develop the project.
 
 Stores a list of extensions that the developer will be prompted to install when opening the project for the first time.
 
-ℹ️ *The following file has been written in table form for legibility purposes.*
+#### Asset Code Breakdown : [extensions.json]
 
-#### Extension packages table : [extensions.json]
+1. Prompts user to install markdownlint VSC plugin.
 
-| Package name          | Recommendation string                 |
-|-----------------------|---------------------------------------|
-| markdownlint          | DavidAnson.vscode-markdownlint        |
-| cSpell                | streetsidesoftware.code-spell-checker |
-| commitlint            | joshbolduc.commitlint                 |
-| Docker                | ms-azuretools.vscode-docker           |
-| WSL                   | ms-vscode-remote.remote-wsl           |
+##### Prompts user to installed required project plugins : [extensions.json] - [CODE]
+
+```json
+1. {
+    // Prompts User To Installed Required Project Plugins
+    
+2.    "recommendations":
+3.    [
+4.        "DavidAnson.vscode-markdownlint"        // Prompt install for markdownlint plugin
+5.        "streetsidesoftware.code-spell-checker" // Prompt install for cSpell
+6.    ]
+7. }
+```
+
+##### Prompts user to installed required project plugins : [extensions.json] - [CODE-DESCRIPTION]
+
+```markdown
+1. '{' open JSON file for writing.
+2. recommendations: prompts user to install listed IDE extensions.
+3. '[' opens list.
+4. Includes markdownlint by David Anson.
+5. Includes cSpell code spell checker plugin by streetsidesoftware.
+6. ']' closes list.
+7. '}' close JSON file for writing.
+```
 
 ---
 
@@ -3262,7 +3280,6 @@ Provides an overall description of the project and other useful information.
 | Secret | Encrypted key stored as an environment variable.                               |
 | VSC    | Microsoft Visual Studio Code.                                                  |
 | WCAG   | Web Content Accessibility Guidelines.                                          |
-| WSL    | Windows Subsystem for Linux.                                                   |
 | YAML   | Yet another markup language. Scripts that control CI/CD pipelines.             |
 
 ---

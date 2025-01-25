@@ -9,10 +9,7 @@
     
     "recommendations":
     [
-        "DavidAnson.vscode-markdownlint",        // Prompt install for markdownlint plugin
-        "streetsidesoftware.code-spell-checker", // Prompt install for cSpell
-        "joshbolduc.commitlint",                 // Prompt install for commitlint
-        "ms-azuretools.vscode-docker",           // Prompt install for Docker
-        "ms-vscode-remote.remote-wsl"            // Prompt install for WSL
+        "DavidAnson.vscode-markdownlint",       // Prompt install for markdownlint plugin
+        "streetsidesoftware.code-spell-checker" // Prompt install for cSpell
     ]
 }

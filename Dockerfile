@@ -14,7 +14,7 @@
 
 # Use Alpine image with Node.js 22
 
-FROM node:23-alpine3.20
+FROM node:23-alpine
 
 # Set the working directory to app
 
@@ -22,7 +22,7 @@ WORKDIR /app
 
 # Copy the markdownlint configuration file to the container
 
-COPY .config/.markdownlint-cli2.jsonc /app/.markdownlint-cli2.jsonc
+COPY .config/.markdownlint-cli2.jsonc /app/.config/.markdownlint-cli2.jsonc
 
 # Install markdownlint-cli2 globally
 
