@@ -2106,7 +2106,7 @@ Contains YAML that will instruct GitHub Actions to lint markdown files.
 # Lint All Markdown Files
     
 1.   - name: Run markdownlint-cli2
-2.     run: markdownlint-cli2 "**/*.md" "#node_modules" "#markdown-fail" --config .config/.              markdownlint-cli2.jsonc
+2.     run: markdownlint-cli2 "**/*.md" "#node_modules" "#markdown-fail"
 ```
 
 ##### Lint all markdown files : [lint-markdown.yaml] - [CODE DESCRIPTION]

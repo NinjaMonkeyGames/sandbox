@@ -22,7 +22,7 @@ WORKDIR /app
 
 # Copy the markdownlint configuration file to the container
 
-COPY .config/.markdownlint.jsonc /app/.config/.markdownlint-cli2.jsonc
+COPY .config/.markdownlint-cli2.jsonc /app/.markdownlint-cli2.jsonc
 
 # Install markdownlint-cli2 globally
 
