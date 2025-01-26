@@ -5,10 +5,10 @@
 {
   // Custom rules
 
-  "customRules":
-  [
-    "capitalised-headings.js"
-  ],
+  //"customRules":
+  //[
+  //  "capitalised-headings.js"
+  //],
   
   // Main markdownlint-cli2 configuration
 
