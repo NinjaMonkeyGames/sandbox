@@ -45,5 +45,5 @@ jobs:
     # Lint All Markdown Files
         
       - name: Run markdownlint-cli2
-        run: markdownlint-cli2 "test.md" "#node_modules" --config .markdownlindt-cli2.jsonc
+        run: markdownlint-cli2 "test.md" "#node_modules" --config .markdownlint-cli2.jsonc
  
