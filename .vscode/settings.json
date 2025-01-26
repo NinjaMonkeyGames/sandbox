@@ -56,7 +56,7 @@
 
     "markdownlint.config": 
     {
-        "extends": ".markdownlint-cli2.jsonc" // Sets location of '.markdownlint.jsonc' config file
+        "extends": "./.markdownlint-cli2.jsonc" // Sets location of '.markdownlint.jsonc' config file
 
     },
 
