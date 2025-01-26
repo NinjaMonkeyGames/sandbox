@@ -8,18 +8,18 @@ All notable changes to this project will be documented in this file.
 
 ### ADDED
 
-- Created '.artefacts' folder.
-- Created 'logo.png'.
-- Created 'monkey-knuckles-avatar.png'.
-- Created '.config' folder.
-- Created 'custom-markdownlint-rules'.
-- Created 'capitalised-headings.js'.
-- Created '.markdownlint-cli2.jsonc'.
-- Created ''.
-- Created ''.
-- Created ''.
-- Created ''.
-- Created ''.
-- Created ''.
-- Created ''.
-- Created ''.
+    - Created '.artefacts' folder.
+    - Created 'logo.png'.
+    - Created 'monkey-knuckles-avatar.png'.
+    - Created '.config' folder.
+    - Created 'custom-markdownlint-rules'.
+    - Created 'capitalised-headings.js'.
+    - Created '.markdownlint-cli2.jsonc'.
+    - Created ''.
+    - Created ''.
+    - Created ''.
+    - Created ''.
+    - Created ''.
+    - Created ''.
+    - Created ''.
+    - Created ''.
