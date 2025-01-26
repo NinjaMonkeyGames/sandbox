@@ -5,7 +5,7 @@
 {
   // Custom rules
 
-  "customRules": 
+  "customRules":
   [
     "./.config/custom-markdownlint-rules/capitalised-headings.js"
   ],
