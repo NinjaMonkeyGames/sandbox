@@ -16,8 +16,6 @@ repository and how to update the documentation correctly.
 
 ## TABLE OF CONTENTS
 
-< Place holder for the table of contents (TOC) to be generated once the document is complete >
-
 [!TOC]
 
 ---
