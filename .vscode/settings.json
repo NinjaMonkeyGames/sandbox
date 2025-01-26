@@ -56,7 +56,7 @@
 
     "markdownlint.config": 
     {
-        "extends": "./.markdownlint-cli2.jsonc" // Sets location of '.markdownlint.jsonc' config file
+        "extends": ".config/.markdownlint-cli2.jsonc" // Sets location of '.markdownlint.jsonc' config file
 
     },
 
@@ -64,6 +64,14 @@
 
     "markdownlint.customRules": 
     [
-        "./capitalised-headings.js", // Sets locations of 'capitalised-heading.js'
+        ".config/custom-markdownlint-rules/capitalised-headings.js", // Sets locations of 'capitalised-heading.js'
+    ],
+
+    
+    // cSpell Configuration Options
+
+    "cSpell.import": 
+    [
+        "./.config/cspell.json"
     ],
 }

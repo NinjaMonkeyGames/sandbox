@@ -1,0 +1,33 @@
+{
+    "version": "0.2",
+    "language": "en-GB",
+    "dictionaries": [
+        "en-gb"
+    ],
+    "words": [
+        "addgroup",
+        "adduser",
+        "appgroup",
+        "appuser",
+        "Buildx",
+        "CENTERED",
+        "CHANGLELOG",
+        "CPSELL",
+        "Dockerhub",
+        "eledgeability",
+        "globalconfig",
+        "keybinding",
+        "linted",
+        "markdownlint",
+        "monkeyknuckles",
+        "therefor",
+        "Titlecase",
+        "WCAG"
+    ],
+    "ignoreWords": [],
+    "ignorePaths": [
+        "**/node_modules/**",
+        "**/dist/**",
+        "**/build/**"
+    ]
+}

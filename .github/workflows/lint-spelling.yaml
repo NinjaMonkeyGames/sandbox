@@ -1,0 +1,39 @@
+########################################################################################################################
+#                                                     LINT SPELLING                                                    #
+########################################################################################################################
+
+# 1. Set workflow title label.
+# 2. Perform Actions On Successful Push or Pull Request.
+# 3. Setup Spellchecking Job.
+# 4. Checkout Code.
+# 5. Run cSpell to Check All Project Files.
+
+# Set Workflow Title Label
+
+name: Spellcheck - cspell
+
+# Perform Actions On Successful Push or Pull Request
+
+on: [push, pull_request]
+
+# Setup Spellchecking Job
+
+jobs:
+  spellcheck:
+    runs-on: ubuntu-latest
+    
+    container:
+      image: monkeyknuckles/sandbox:latest
+      options: --user root
+
+    steps:
+    
+    # Checkout Code
+
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+    # Run cspell to Check All Project Files
+
+      - name: Run cspell
+        run: cspell --color --gitignore --no-cache --config .config/cspell.json "**/*"
