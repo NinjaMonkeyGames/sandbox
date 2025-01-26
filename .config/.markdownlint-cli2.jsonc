@@ -7,7 +7,7 @@
 
   "customRules":
   [
-    "./capitalised-headings.js"
+    "capitalised-headings.js"
   ],
   
   // Main markdownlint-cli2 configuration
