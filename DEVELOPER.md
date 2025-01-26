@@ -139,7 +139,8 @@ Store artefacts that are used throughout the CI/CD process but not necessarily a
 
 #### Asset Contents Description : [.artefacts]
 
-The '.artefacts' folder contains files such as logos, logs and other files that are used throughout the [CI/CD](#glossary) pipeline process.
+The '.artefacts' folder contains files such as logos, logs and other files that are used throughout the
+[CI/CD](#glossary) pipeline process.
 
 ---
 
