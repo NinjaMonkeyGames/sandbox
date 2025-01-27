@@ -135,7 +135,8 @@ C:\Users\mailm\Documents\GitHub\sandbox
 
 #### Asset Purpose : [.artefacts]
 
-Store artefacts that are used throughout the CI/CD process but not necessarily a part of the project itself. This keeps everything internal to the CI/CD process.
+Store artefacts that are used throughout the CI/CD process but not necessarily a part of the project itself. This keeps
+everything internal to the CI/CD process.
 
 #### Asset Contents Description : [.artefacts]
 
@@ -295,7 +296,8 @@ Provide extra linting for markdownlint-cli2.
 
 #### Asset Contents Description : [capitalised-headings.js]
 
-This function is a custom markdownlint-cli2 script that will check level one and two headings to ensure they are capitalised in-line with NMG policy.
+This function is a custom markdownlint-cli2 script that will check level one and two headings to ensure they are
+capitalised in-line with NMG policy.
 
 #### Asset Code Breakdown : [capitalised-headings.js]
 
@@ -697,7 +699,8 @@ To maintain a professional, constant, error free style throughout all project do
 
 Contains a reference to a British English dictionary and a list of exception words.
 
-ℹ️ *The exact contents of this file have not been included here as this configuration simply sets language to British English and lists extra spellings to include on top of that.*
+ℹ️ *The exact contents of this file have not been included here as this configuration simply sets language to British
+English and lists extra spellings to include on top of that.*
 
 ---
 
@@ -727,7 +730,8 @@ Allows Git source control to function.
 
 ⚠️ *Modify these files with caution!*
 
- ℹ *The individual files in this directory will not be listed here because they are managed by Git therefore you should defer to the [Git Documentation][4].*
+ ℹ *The individual files in this directory will not be listed here because they are managed by Git therefore you should
+ defer to the [Git Documentation][4].*
 
 ---
 
@@ -755,7 +759,8 @@ GitHub Actions relies on this folder for workflow functionality.
 
 #### Asset Contents Description : [.github]
 
-Stores files related to the GitHub [CI/CD](#glossary) pipeline workflow such as linting configurations and GitHub YAML forms.
+Stores files related to the GitHub [CI/CD](#glossary) pipeline workflow such as linting configurations and GitHub YAML
+forms.
 
 ---
 
@@ -902,7 +907,8 @@ This section of YAML script provides meta data for the form but is not an elemen
 1.  - type: markdown
 2.    attributes:
 3.      value: |
-4.        Thanks for taking the time to report this issue! Please fill out the form below to           provide detailed information about the bug.
+4.        Thanks for taking the time to report this issue! Please fill out the form below to provide detailed 
+          information about the bug.
 ```
 
 ##### Introduction text attribute table : [bug-report-template.yaml] - [CODE DESCRIPTION]
@@ -915,7 +921,8 @@ This section of YAML script provides meta data for the form but is not an elemen
 
 ```markdown
 Fig 1.4
-Thanks for taking the time to report this issue! Please fill out the form below to provide detailed information about the bug.
+Thanks for taking the time to report this issue! Please fill out the form below to provide detailed information about 
+the bug.
 ```
 
 ##### Email input : [bug-report-template.yaml] - [CODE]
@@ -1218,16 +1225,16 @@ Thanks for taking the time to report this issue! Please fill out the form below 
 
 ##### Additional information attribute table : [bug-report-template.yaml] - [CODE DESCRIPTION]
 
-| Attribute Description | Attribute Value                               |
-|-----------------------|-----------------------------------------------|
-| type                  | textarea                                      |
-| id                    | additional-information                        |
-| attributes            | List attributes                               |
-| label                 | Additional Information                        |
-| description           | Provide any additional information or context that might help us resolve the issue                                                       |
-| placeholder           | Additional context, error messages, or anything else that may be helpful.                                                                |
-| validations           | Check if form is valid                        |
-| required              | true                                          |
+| Attribute Description | Attribute Value                                                                     |
+|-----------------------|-------------------------------------------------------------------------------------|
+| type                  | textarea                                                                            |
+| id                    | additional-information                                                              |
+| attributes            | List attributes                                                                     |
+| label                 | Additional Information                                                              |
+| description           | Provide any additional information or context that might help us resolve the issue  |
+| placeholder           | Additional context, error messages, or anything else that may be helpful.           |
+| validations           | Check if form is valid                                                              |
+| required              | true                                                                                |
 
 ```markdown
 ##### Agree to terms attribute table : [bug-report-template.yaml] - [CODE]
@@ -1239,11 +1246,11 @@ Thanks for taking the time to report this issue! Please fill out the form below 
 2.     id: terms
 3.     attributes:
 4.       label: Code of Conduct
-5.       description: By submitting this bug report, you agree to follow our [Code of     6.       Conduct](./CODE_OF_CONDUCT.md).
-7.       options:
-8.         - label: I agree to follow this project's Code of conduct.
-9.     validations:
-10.       required: true
+5.       description: By submitting this bug report, you agree to follow our [Code of Conduct](./CODE_OF_CONDUCT.md).
+6.       options:
+7.         - label: I agree to follow this project's Code of conduct.
+8.     validations:
+9.       required: true
 ```
 
 ##### Agree to terms attribute table : [bug-report-template.yaml] - [CODE DESCRIPTION]
@@ -1254,7 +1261,7 @@ Thanks for taking the time to report this issue! Please fill out the form below 
 | id                    | terms                                             |
 | attributes            | List attributes                                   |
 | label                 | Code of Conduct                                   |
-| description           | By submitting this bug report, you agree to follow our [Code of  Conduct](./CODE_OF_CONDUCT.md)                                              |
+| description           | By submitting this bug report, you agree to follow ourCode of  Conduct](./CODE_OF_CONDUCT.md)|
 | options               | List of options                                   |
 | label                 | I agree to follow this project's Code of conduct. |
 | validations           | Check if form is valid                            |
@@ -1348,16 +1355,19 @@ YAML script that creates a feature submission form for GitHub issues.
 1.  - type: markdown
 2.    attributes:
 3.      value: |
-4.        Thanks for taking the time to suggest a new feature! Please fill out the form               below to provide detailed information regarding the feature you desire.
+4.        Thanks for taking the time to suggest a new feature! Please fill out the form 
+          below to provide detailed information regarding the feature you desire.
 ```
 
 ##### Introduction text attribute table : [feature-request-template.yaml] - [CODE DESCRIPTION]
 
-| Attribute Description | Attribute Value         |
-|-----------------------|-------------------------|
-| type                  | Markdown                |
-| attributes            | List attributes         |
-| value                 | Thanks for taking the time to suggest a new feature! Please fill out the form below to provide detailed information regarding the feature you desire.                                                          |
+| Attribute Description | Attribute Value                                                   |
+|-----------------------|-------------------------------------------------------------------|
+| type                  | Markdown                                                          |
+| attributes            | List attributes                                                   |
+| value                 | Thanks for taking the time to suggest a new feature! Please fill  |
+|                       | out the form below to provide detailed information regarding the  |
+|                       | feature you desire.                                               |
 
 ##### Email input : [feature-request-template.yaml] - [CODE]
 
@@ -1368,7 +1378,7 @@ YAML script that creates a feature submission form for GitHub issues.
 2.    id: contact-email
 3.    attributes:
 4.      label: Contact Email
-5.      description: Please provide an email where we can reach you if more information is           needed.
+5.      description: Please provide an email where we can reach you if more information is needed.
 6.      placeholder: info@ninjamonkeygames.com
 7.    validations:
 8.      required: true
@@ -1624,7 +1634,8 @@ YAML script that creates a feature submission form for GitHub issues.
 2.    id: additional-information
 3.    attributes:
 4.      label: Additional Information
-5.      description: Please provide any additional context, screenshots, or details that           may help us understand your request better.
+5.      description: Please provide any additional context, screenshots, or details that may help us understand your 
+                    request better.
 6.      placeholder: Any extra details or resources that might help.
 7.    validations:
 8.      required: false
@@ -1638,7 +1649,8 @@ YAML script that creates a feature submission form for GitHub issues.
 | id                    | additional-information                                          |
 | attributes            | List attributes                                                 |
 | label                 | Additional Information                                          |
-| description           | Please provide any additional context, screenshots, or details that may help us understand your request better.                                          |
+| description           | Please provide any additional context, screenshots, or details  |
+|                       | that may help us understand your request better.                |
 | placeholder           | Any extra details or resources that might help.                 |
 | validations           | Check if form is valid                                          |
 | required              | false                                                           |
@@ -1652,7 +1664,7 @@ YAML script that creates a feature submission form for GitHub issues.
 2.    id: terms
 3.    attributes:
 4.      label: Code of Conduct
-5.      description: By submitting this feature request, you agree to follow our [Code of          Conduct](https://example.com).
+5.      description: By submitting this feature request, you agree to follow our [Code of Conduct](https://example.com).
 6.      options:
 7.        - label: I agree to follow this project's Code of Conduct
 8.    validations:
@@ -1667,7 +1679,8 @@ YAML script that creates a feature submission form for GitHub issues.
 | id                    | terms                                                           |
 | attributes            | List attributes                                                 |
 | label                 | Code of Conduct                                                 |
-| description           | By submitting this feature request, you agree to follow our [Code of Conduct](https://example.com).                                                         |
+| description           | By submitting this feature request, you agree to follow our     |
+|                       | [Code of Conduct](https://example.com).                         |
 | options               | List of options                                                 |
 | label                 | I agree to follow this project's Code of Conduct.               |
 | validations           | Check if form is valid                                          |
@@ -2569,9 +2582,9 @@ Stores the majority of IDE based configurations.
 
 ##### Markdownlint-Cli2 Configuration options : [settings.json] - [CODE DESCRIPTION]
 
-| Setting                | Value      | Description                                        |
-|------------------------|------------|----------------------------------------------------|
-| markdownlint.config [extends] | .config/.markdownlint-cli2.jsonc | Sets location of '.markdownlint.jsonc' config file                                                          |
+| Setting                | Value      | Description                                                                    |
+|------------------------|------------|--------------------------------------------------------------------------------|
+| markdownlint.config [extends] | .config/.markdownlint-cli2.jsonc | Sets location of '.markdownlint.jsonc' config file|
 
 ##### Custom markdownlint rules : [settings.json] - [CODE]
 
@@ -2586,9 +2599,9 @@ Stores the majority of IDE based configurations.
 
 ##### Custom markdownlint rules : [settings.json] - [CODE DESCRIPTION]
 
-| Setting                | Value      | Description                                        |
-|------------------------|------------|----------------------------------------------------|
-| markdownlint.customRules | .config/custom-markdownlint-rules/capitalised-headings.js | Sets locations of 'capitalised-heading.js' |
+| Setting                | Value      | Description                                                                    |
+|------------------------|------------|--------------------------------------------------------------------------------|
+| markdownlint.customRules | .config/custom-markdownlint-rules/capitalised-headings.js | Sets custom rule location     |
 
 ##### cSpell Configuration Options : [settings.json] - [CODE]
 
@@ -2805,7 +2818,8 @@ Contains as file for each markdownlint test.
 
 Each file contains fail test code taken from the [markdownlint manual][8].
 
-ℹ *These tests can be used to compare to the markdown configuration file in order to make sure everything is setup correctly.*
+ℹ *These tests can be used to compare to the markdown configuration file in order to make sure everything is setup
+correctly.*
 
 ---
 
@@ -3189,11 +3203,13 @@ COPY .config/.markdownlint.jsonc /app/.config/.markdownlint.jsonc
 
 #### Asset Purpose : [package-lock.json]
 
-Keeps all package dependency versions pinned. This ensures the environment is the same for all developers and minimises errors.
+Keeps all package dependency versions pinned. This ensures the environment is the same for all developers and minimises
+errors.
 
 #### Asset Contents Description : [package-lock.json]
 
-package-lock.json: A file automatically generated by npm to lock the exact versions of dependencies (and their sub-dependencies) installed. It ensures consistent installs across environments by tracking the precise dependency tree.
+package-lock.json: A file automatically generated by npm to lock the exact versions of dependencies (and their
+sub-dependencies) installed. It ensures consistent installs across environments by tracking the precise dependency tree.
 
 ---
 
@@ -3217,11 +3233,13 @@ package-lock.json: A file automatically generated by npm to lock the exact versi
 
 #### Asset Purpose : [package.json]
 
-Keeps all package dependency versions pinned. This ensures the environment is the same for all developers and minimises errors.
+Keeps all package dependency versions pinned. This ensures the environment is the same for all developers and minimises
+errors.
 
 #### Asset Contents Description : [package.json]
 
-A file that defines a Node.js project. It includes metadata about the project (e.g., name, version, description) and lists dependencies, scripts, and configuration for the project.
+A file that defines a Node.js project. It includes metadata about the project (e.g., name, version, description) and
+lists dependencies, scripts, and configuration for the project.
 
 ---
 
@@ -3245,7 +3263,8 @@ A file that defines a Node.js project. It includes metadata about the project (e
 
 #### Asset Purpose : [readme.md]
 
-Provides general information about the project to enable users and developers to get an overview of what the project is about and how it's structured.
+Provides general information about the project to enable users and developers to get an overview of what the project is
+about and how it's structured.
 
 #### Asset Contents Description : [readme.md]
 
