@@ -39,6 +39,8 @@ jobs:
       - name: Copy markdownlint config
         run: cp /app/.config/.markdownlint-cli2.jsonc $GITHUB_WORKSPACE
 
+    # Copy custom rules to the workspace
+
       - name: Copy markdownlint custom rules
         run: cp /app/.config/custom-markdownlint-rules/capitalised-headings.js $GITHUB_WORKSPACE
 

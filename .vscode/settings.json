@@ -52,7 +52,7 @@
         "**/node_modules": false,           // Include (Exclude) node_modules folder
     },
 
-    // Markdownlint-Cli2 Configuration Options
+    // Markdownlint-Cli2 Configuration Options (This is a tempory fix as markdownlint does not respect the config alternate location)
 
     "markdownlint.config": 
     {
@@ -200,6 +200,7 @@
         ".config/custom-markdownlint-rules/capitalised-headings.js", // Sets locations of 'capitalised-heading.js'
     ],
 
+    "markdow"
     
     // cSpell Configuration Options
 

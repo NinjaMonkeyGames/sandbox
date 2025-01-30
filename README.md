@@ -33,7 +33,7 @@ directory. This file stores rules as to how lint markdown files.
 
 Type 'npm install' to download markdownlint-cli2 from 'package.json'.
 
-You should also install the markdownlint [VSC plugin](#useful-links). You should be prompted to install the plugin
+You should also install the markdownlint VSC plugin. You should be prompted to install the plugin
 automatically. If not you can download and install it manually.
 
 Please also keep the '.vscode' folder and the .git folder in tact as these contain crucial settings for the project and
@@ -106,34 +106,34 @@ docker run -it markdownlint-cli2
 
 ## USEFUL_LINKS
 
-- **Project links:**
+  - **Project links:**
 
-  - **Project Docker pull address:**  docker pull **monkeyknuckles/markdownlint-cli2**
+    - **Project Docker pull address:**  docker pull **monkeyknuckles/markdownlint-cli2**
 
-  - **Project Docker landing page:**  <https://hub.docker.com/r/monkeyknuckles/markdownlint-cli2>
-  - **Project clone address:**        <https://github.com/NinjaMonkeyGames/markdownlint-cli2.git>
-  - **Project landing page:**         <https://github.com/NinjaMonkeyGames/markdownlint-cli2>
-  - **Project wiki page:**            [coming soon...]
+    - **Project Docker landing page:**  <https://hub.docker.com/r/monkeyknuckles/markdownlint-cli2>
+    - **Project clone address:**        <https://github.com/NinjaMonkeyGames/markdownlint-cli2.git>
+    - **Project landing page:**         <https://github.com/NinjaMonkeyGames/markdownlint-cli2>
+    - **Project wiki page:**            [coming soon...]
 
-- **3rd Party links:**
+  - **3rd Party links:**
 
-  - **Node source pull address:**     docker pull node:22.9.0
+    - **Node source pull address:**     docker pull node:22.9.0
 
-  - **Markdownlint-cli2:**            <https://github.com/DavidAnson/markdownlint-cli2.git>
-  - **Markdownlint:**                 <https://github.com/DavidAnson/markdownlint>
-  - **NPM:**                          <https://www.npmjs.com/package/markdownlint-cli2>
-  - **VSC plugin:**                   <https://github.com/DavidAnson/vscode-markdownlint>
-  - **CommonMark standard**           <https://commonmark.org/>
+    - **Markdownlint-cli2:**            <https://github.com/DavidAnson/markdownlint-cli2.git>
+    - **Markdownlint:**                 <https://github.com/DavidAnson/markdownlint>
+    - **NPM:**                          <https://www.npmjs.com/package/markdownlint-cli2>
+    - **VSC plugin:**                   <https://github.com/DavidAnson/vscode-markdownlint>
+    - **CommonMark standard**           <https://commonmark.org/>
 
 ---
 
 ## INCLUDES
 
-- Alpine Linux        Alpine Linux v3.20.3
-- NodeJS              v22.12.0
-- NPM                 v10.9.1
-- Markdownlint-cli2   v0.17.0
-- Markdownlint        v0.37.2
+  - Alpine Linux        Alpine Linux v3.20.3
+  - NodeJS              v22.12.0
+  - NPM                 v10.9.1
+  - Markdownlint-cli2   v0.17.0
+  - Markdownlint        v0.37.2
 
 ---
 
@@ -141,10 +141,10 @@ docker run -it markdownlint-cli2
 
 You must install all of the plugins in extensions.json. You must all install the following on your system:
 
-- NodeJS (23.3.0)
-- Microsoft Visual Studio Code (1.94.2)
-- Dockerhub Desktop (4.34.3 (170107))
-- Microsoft Windows 11
+  - NodeJS (23.3.0)
+  - Microsoft Visual Studio Code (1.94.2)
+  - Dockerhub Desktop (4.34.3 (170107))
+  - Microsoft Windows 11
 
 ---
 
