@@ -507,9 +507,19 @@ function buildListItems($directory, $isRoot = true) {
             <!-- References & Sign-off -->
             <div class="card">
                 <h2>References & Sign-off</h2>
-                <div>
-                    <label for="references">References (Issue #)</label>
-                    <input type="text" id="references" value="5" placeholder="e.g., 5, 6, 7">
+                <div class="flex-row">
+                    <div>
+                        <label for="reference-type">Reference Type</label>
+                        <select id="reference-type">
+                            <option value="Reference">Reference</option>
+                            <option value="Fix">Fixes</option>
+                            <option value="Close">Closes</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="references">Issue #</label>
+                        <input type="text" id="references" value="5" placeholder="e.g., 5, 6, 7">
+                    </div>
                 </div>
                 <div>
                     <label for="sign-off-name">Signed-off-by Name</label>
@@ -545,6 +555,7 @@ function buildListItems($directory, $isRoot = true) {
             const commitType = getById('commit-type');
             const scope = getById('scope');
             const description = getById('description');
+            const referenceType = getById('reference-type');
             const references = getById('references');
             const signOffName = getById('sign-off-name');
             const signOffEmail = getById('sign-off-email');
@@ -784,8 +795,16 @@ function buildListItems($directory, $isRoot = true) {
                 appendFileListAndDescriptions('Add', filesByAction.Add, descriptionsByAction.Add, justificationsByAction.Add);
                 appendFileListAndDescriptions('Delete', filesByAction.Delete, descriptionsByAction.Delete, justificationsByAction.Delete);
                 
-                if (references.value.trim() !== '') {
-                    message += `References #${references.value.trim()}\n\n`;
+                const refs = references.value.trim();
+                if (refs !== '') {
+                    const refType = referenceType.value;
+                    const referencePrefix = refType === 'Reference' ? 'References' : refType;
+                    // Handle multiple comma-separated issues
+                    const issueNumbers = refs.split(',').map(num => num.trim()).filter(num => num !== '');
+                    issueNumbers.forEach(issue => {
+                        message += `${referencePrefix} #${issue}\n`;
+                    });
+                    message += '\n';
                 }
 
                 if (signOffName.value.trim() !== '' && signOffEmail.value.trim() !== '') {
