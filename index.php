@@ -15,6 +15,46 @@ function getDirectoryTree($directory) {
     return $items;
 }
 
+// Function to parse a Markdown file and return its headings as a nested HTML list
+function getMarkdownHeadings($filePath) {
+    $content = file_get_contents($filePath);
+    $lines = explode("\n", $content);
+
+    $stack = []; // Stack to keep track of open lists and their levels
+    $html = '';
+
+    foreach ($lines as $line) {
+        if (preg_match('/^(#+)\s(.+)/', $line, $matches)) {
+            $headingLevel = strlen($matches[1]);
+            $headingText = htmlspecialchars(trim($matches[2]));
+
+            // Close any lists from higher levels
+            while (!empty($stack) && $stack[count($stack) - 1] >= $headingLevel) {
+                array_pop($stack);
+                $html .= '</li></ul>';
+            }
+
+            // If the current level is higher, open a new list
+            if (empty($stack) || $stack[count($stack) - 1] < $headingLevel) {
+                $html .= '<ul class="nested-headings">';
+                $stack[] = $headingLevel;
+            } else {
+                $html .= '</li>'; // Close the previous list item
+            }
+            
+            $html .= '<li class="heading" data-path="' . htmlspecialchars($filePath) . '" data-level="' . $headingLevel . '" data-text="' . $headingText . '">' . $headingText;
+        }
+    }
+    
+    // Close any remaining open lists
+    while (!empty($stack)) {
+        array_pop($stack);
+        $html .= '</li></ul>';
+    }
+    
+    return $html;
+}
+
 // Recursive function to build the nested list with proper hierarchy
 function buildListItems($directory, $isRoot = true) {
     $items = getDirectoryTree($directory);
@@ -26,10 +66,21 @@ function buildListItems($directory, $isRoot = true) {
         $path = htmlspecialchars($directory . DIRECTORY_SEPARATOR . $name);
         $class = $isFolder ? 'folder' : 'file';
         $icon = $isFolder ? '&#x1F4C1;' : '&#x1F4C4;'; // Folder or File emoji icon
+        
+        $isMarkdown = !$isFolder && pathinfo($name, PATHINFO_EXTENSION) === 'md';
+        if ($isMarkdown) {
+            $class .= ' markdown';
+            $icon = '&#x1F4DC;'; // Document emoji icon
+        }
+
         $html .= '<li class="' . $class . '" data-path="' . $path . '">';
         $html .= '<span class="name">' . $icon . ' ' . htmlspecialchars($name) . '</span>';
+        
         if ($isFolder) {
             $html .= buildListItems($directory . DIRECTORY_SEPARATOR . $name, false);
+        } else if ($isMarkdown) {
+            // Pre-generate markdown headings and hide them. Removed the "hidden" class from here.
+            $html .= '<div class="markdown-headings">' . getMarkdownHeadings($path) . '</div>';
         }
         $html .= '</li>';
     }
@@ -289,15 +340,58 @@ function buildListItems($directory, $isRoot = true) {
         .file-explorer ul li.selected {
             background-color: #e0e0e0;
         }
+
         .file-explorer .folder > ul {
             display: none;
         }
         .file-explorer .folder.expanded > ul {
             display: block;
         }
+        .file-explorer .markdown-headings {
+            display: none;
+        }
+        .file-explorer .markdown.expanded > .markdown-headings {
+            display: block;
+        }
         .selected-files-list {
             margin-top: 1rem;
         }
+        
+        /* New styles for nested headings */
+        .nested-headings {
+            list-style-type: none;
+            padding-left: 15px;
+        }
+        
+        .heading > ul {
+            display: none;
+        }
+        
+        .heading.expanded > ul {
+            display: block; /* Show child lists when parent is expanded */
+        }
+        
+        .heading {
+            position: relative;
+        }
+
+        .heading::before {
+            content: '+';
+            position: absolute;
+            left: -15px;
+            top: 2px;
+            color: #6b7280;
+            font-weight: bold;
+            display: block;
+        }
+
+        .heading.expanded::before {
+            content: '-';
+        }
+        .heading:not(:has(ul))::before {
+            content: '';
+        }
+
     </style>
 </head>
 <body>
@@ -365,10 +459,10 @@ function buildListItems($directory, $isRoot = true) {
                                     <div>
                                         <label for="file-action-type-0">Action</label>
                                         <select id="file-action-type-0">
-                                            <option value="Fixed" selected>Fixed</option>
-                                            <option value="Updated">Updated</option>
-                                            <option value="Added">Added</option>
-                                            <option value="Deleted">Deleted</option>
+                                            <option value="Fix" selected>Fix</option>
+                                            <option value="Update">Update</option>
+                                            <option value="Add">Add</option>
+                                            <option value="Delete">Delete</option>
                                         </select>
                                     </div>
                                     <div style="flex: 2;">
@@ -460,7 +554,7 @@ function buildListItems($directory, $isRoot = true) {
                 entry.classList.add('file-entry');
                 entry.setAttribute('data-id', id);
 
-                const actionType = 'Fixed';
+                const actionType = 'Fix';
                 const lowercaseAction = actionType.toLowerCase();
 
                 entry.innerHTML = `
@@ -472,10 +566,10 @@ function buildListItems($directory, $isRoot = true) {
                         <div>
                             <label for="file-action-type-${id}">Action</label>
                             <select id="file-action-type-${id}">
-                                <option value="Fixed" selected>Fixed</option>
-                                <option value="Updated">Updated</option>
-                                <option value="Added">Added</option>
-                                <option value="Deleted">Deleted</option>
+                                <option value="Fix" selected>Fix</option>
+                                <option value="Update">Update</option>
+                                <option value="Add">Add</option>
+                                <option value="Delete">Delete</option>
                             </select>
                         </div>
                         <div style="flex: 2;">
@@ -547,6 +641,23 @@ function buildListItems($directory, $isRoot = true) {
                 }
             };
             
+            // This function builds the full path for a markdown heading, including all its parents
+            const getMarkdownHierarchy = (headingItem) => {
+                const filePath = headingItem.getAttribute('data-path');
+                const headingText = headingItem.getAttribute('data-text');
+                const hierarchy = [headingText];
+                
+                let parentListItem = headingItem.closest('ul.nested-headings').parentNode;
+
+                // Traverse up the parent headings
+                while (parentListItem && parentListItem.classList.contains('heading')) {
+                    hierarchy.unshift(parentListItem.getAttribute('data-text'));
+                    parentListItem = parentListItem.closest('ul.nested-headings')?.parentNode;
+                }
+                
+                return `${filePath} :: ${hierarchy.join(' :: ')}`;
+            };
+
             // Handle the PHP-generated file explorer
             const handlePhpFileExplorer = () => {
                 const phpExplorer = fileEntriesContainer.querySelector('.file-explorer');
@@ -555,34 +666,72 @@ function buildListItems($directory, $isRoot = true) {
                         const clickedItem = event.target.closest('li');
                         if (!clickedItem) return;
 
-                        // Toggle expanded state for folders
+                        const fileList = getById('file-list-0');
+                        const filePath = clickedItem.getAttribute('data-path');
+
+                        // Handle folder expansion
                         if (clickedItem.classList.contains('folder')) {
                             clickedItem.classList.toggle('expanded');
                             return;
                         }
 
-                        // Add/remove file from the selected list
-                        const fileList = getById('file-list-0');
-                        const filePath = clickedItem.getAttribute('data-path');
-                        // Use the full file path for the list item content
+                        // Handle markdown file heading expansion/collapse
+                        if (clickedItem.classList.contains('markdown')) {
+                            // Toggle the expanded class to show/hide the headings
+                            clickedItem.classList.toggle('expanded');
+                            return;
+                        }
                         
-                        let isAlreadySelected = false;
-                        for (const item of fileList.children) {
-                            if (item.textContent === filePath) {
-                                isAlreadySelected = true;
-                                item.remove();
-                                break;
+                        // Handle heading click events
+                        if (clickedItem.classList.contains('heading')) {
+                            const childList = clickedItem.querySelector('ul.nested-headings');
+                            if (childList) {
+                                // If it has a child list, just toggle its visibility
+                                clickedItem.classList.toggle('expanded');
+                            } else {
+                                // If it has no child list, treat it as a selectable leaf node
+                                const combinedPath = getMarkdownHierarchy(clickedItem);
+
+                                let isAlreadySelected = false;
+                                for (const item of fileList.children) {
+                                    if (item.textContent === combinedPath) {
+                                        isAlreadySelected = true;
+                                        item.remove();
+                                        break;
+                                    }
+                                }
+                                
+                                if (!isAlreadySelected) {
+                                    const li = document.createElement('li');
+                                    li.textContent = combinedPath;
+                                    fileList.appendChild(li);
+                                }
+                                renderFileList(Array.from(fileList.children).map(li => li.textContent), fileList);
                             }
+                            // Stop event propagation to prevent the parent markdown from collapsing
+                            event.stopPropagation();
+                            return;
                         }
 
-                        if (!isAlreadySelected) {
-                            const li = document.createElement('li');
-                            li.textContent = filePath;
-                            fileList.appendChild(li);
-                        }
+                        // Handle regular file selection
+                        if (clickedItem.classList.contains('file')) {
+                             // Use the full file path for the list item content
+                            let isAlreadySelected = false;
+                            for (const item of fileList.children) {
+                                if (item.textContent === filePath) {
+                                    isAlreadySelected = true;
+                                    item.remove();
+                                    break;
+                                }
+                            }
 
-                        // Update selected file list visibility
-                        renderFileList(Array.from(fileList.children).map(li => li.textContent), fileList);
+                            if (!isAlreadySelected) {
+                                const li = document.createElement('li');
+                                li.textContent = filePath;
+                                fileList.appendChild(li);
+                            }
+                            renderFileList(Array.from(fileList.children).map(li => li.textContent), fileList);
+                        }
                     });
                 }
             };
@@ -605,18 +754,17 @@ function buildListItems($directory, $isRoot = true) {
             
             generateBtn.addEventListener('click', () => {
                 let message = `${commitType.value}(${scope.value}): ${description.value}\n\n`;
-                const filesByAction = { Fixed: [], Updated: [], Added: [], Deleted: [] };
-                const descriptionsByAction = { Fixed: [], Updated: [], Added: [], Deleted: [] };
-                const justificationsByAction = { Fixed: [], Updated: [], Added: [], Deleted: [] };
+                const filesByAction = { Fix: [], Update: [], Add: [], Delete: [] };
+                const descriptionsByAction = { Fix: [], Update: [], Add: [], Delete: [] };
+                const justificationsByAction = { Fix: [], Update: [], Add: [], Delete: [] };
 
                 // Iterate over each dynamic file entry
                 fileEntriesContainer.querySelectorAll('.file-entry').forEach(entry => {
-                    const id = entry.getAttribute('data-id');
-                    const actionType = getById(`file-action-type-${id}`).value;
-                    const fileListElement = getById(`file-list-${id}`);
+                    const actionType = entry.querySelector('select[id^="file-action-type-"]').value;
+                    const whatText = entry.querySelector('textarea[id^="what-text-"]').value.trim();
+                    const whyText = entry.querySelector('textarea[id^="why-text-"]').value.trim();
+                    const fileListElement = entry.querySelector('.file-list');
                     const files = Array.from(fileListElement.children).map(li => li.textContent);
-                    const whatText = getById(`what-text-${id}`).value.trim();
-                    const whyText = getById(`why-text-${id}`).value.trim();
                     
                     if (files.length > 0) {
                         filesByAction[actionType].push(...files);
@@ -647,10 +795,10 @@ function buildListItems($directory, $isRoot = true) {
                     }
                 };
 
-                appendFileListAndDescriptions('Fixed', filesByAction.Fixed, descriptionsByAction.Fixed, justificationsByAction.Fixed);
-                appendFileListAndDescriptions('Updated', filesByAction.Updated, descriptionsByAction.Updated, justificationsByAction.Updated);
-                appendFileListAndDescriptions('Added', filesByAction.Added, descriptionsByAction.Added, justificationsByAction.Added);
-                appendFileListAndDescriptions('Deleted', filesByAction.Deleted, descriptionsByAction.Deleted, justificationsByAction.Deleted);
+                appendFileListAndDescriptions('Fix', filesByAction.Fix, descriptionsByAction.Fix, justificationsByAction.Fix);
+                appendFileListAndDescriptions('Update', filesByAction.Update, descriptionsByAction.Update, justificationsByAction.Update);
+                appendFileListAndDescriptions('Add', filesByAction.Add, descriptionsByAction.Add, justificationsByAction.Add);
+                appendFileListAndDescriptions('Delete', filesByAction.Delete, descriptionsByAction.Delete, justificationsByAction.Delete);
                 
                 if (references.value.trim() !== '') {
                     message += `References #${references.value.trim()}\n\n`;
