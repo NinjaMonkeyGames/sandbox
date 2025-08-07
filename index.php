@@ -271,9 +271,13 @@ function buildListItems($directory, $isRoot = true) {
             90% { opacity: 1; }
             100% { opacity: 0; }
         }
+        
+        .alert-box.error {
+            background-color: #ef4444;
+        }
 
         /* New styles for dynamic entries */
-        .file-entry {
+        .file-entry, .reference-entry {
             display: flex;
             flex-direction: column;
             gap: 1rem;
@@ -282,12 +286,12 @@ function buildListItems($directory, $isRoot = true) {
             border-radius: 0.5rem;
             background-color: #ffffff;
         }
-        .file-entry-header {
+        .file-entry-header, .reference-entry-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .file-entry-header h3 {
+        .file-entry-header h3, .reference-entry-header h3 {
             font-size: 1rem;
             margin: 0;
         }
@@ -302,7 +306,7 @@ function buildListItems($directory, $isRoot = true) {
         .remove-btn:hover {
             background-color: #dc2626;
         }
-        .add-file-action-btn {
+        .add-file-action-btn, .add-reference-btn {
             background-color: #f9fafb;
             color: #374151;
             border: 1px dashed #d1d5db;
@@ -313,7 +317,7 @@ function buildListItems($directory, $isRoot = true) {
             font-weight: 500;
             transition: all 0.15s ease-in-out;
         }
-        .add-file-action-btn:hover {
+        .add-file-action-btn:hover, .add-reference-btn:hover {
             background-color: #e5e7eb;
         }
         
@@ -406,10 +410,11 @@ function buildListItems($directory, $isRoot = true) {
                 <div class="flex-row">
                     <div>
                         <label for="commit-type">Type</label>
-                        <select id="commit-type">
+                        <select id="commit-type" required>
+                            <option value="" selected disabled hidden>Select a type...</option>
                             <option value="feat">feat: A new feature</option>
                             <option value="fix">fix: A bug fix</option>
-                            <option value="docs" selected>docs: Documentation changes</option>
+                            <option value="docs">docs: Documentation changes</option>
                             <option value="style">style: Code style changes</option>
                             <option value="refactor">refactor: Code change</option>
                             <option value="perf">perf: Performance improvements</option>
@@ -422,8 +427,9 @@ function buildListItems($directory, $isRoot = true) {
                     </div>
                     <div>
                         <label for="scope">Scope</label>
-                        <select id="scope">
-                            <option value="core" selected>core</option>
+                        <select id="scope" required>
+                            <option value="" selected disabled hidden>Select a scope...</option>
+                            <option value="core">core</option>
                             <option value="api">api</option>
                             <option value="ui">ui</option>
                             <option value="auth">auth</option>
@@ -437,7 +443,7 @@ function buildListItems($directory, $isRoot = true) {
                     </div>
                     <div>
                         <label for="description">Description</label>
-                        <input type="text" id="description" value="update developer documentation" placeholder="Short summary of the change">
+                        <input type="text" id="description" value="" placeholder="Short summary of the change" required>
                     </div>
                 </div>
             </div>
@@ -468,7 +474,7 @@ function buildListItems($directory, $isRoot = true) {
                                 <div class="flex-row">
                                     <div>
                                         <label for="file-action-type-{id}">Action</label>
-                                        <select id="file-action-type-{id}">
+                                        <select id="file-action-type-{id}" required>
                                             <option value="Fix" selected>Fix</option>
                                             <option value="Update">Update</option>
                                             <option value="Add">Add</option>
@@ -486,11 +492,11 @@ function buildListItems($directory, $isRoot = true) {
                                 </div>
                                 <div>
                                     <label for="what-text-{id}" id="what-label-{id}">What?</label>
-                                    <textarea id="what-text-{id}" placeholder="Describe what was fixed..." rows="2"></textarea>
+                                    <textarea id="what-text-{id}" placeholder="Describe what was fixed..." rows="2" required></textarea>
                                 </div>
                                 <div>
                                     <label for="why-text-{id}" id="why-label-{id}">Why?</label>
-                                    <textarea id="why-text-{id}" placeholder="Explain why this fix was necessary..." rows="2"></textarea>
+                                    <textarea id="why-text-{id}" placeholder="Explain why this fix was necessary..." rows="2" required></textarea>
                                 </div>
                             </div>
                         ';
@@ -507,27 +513,40 @@ function buildListItems($directory, $isRoot = true) {
             <!-- References & Sign-off -->
             <div class="card">
                 <h2>References & Sign-off</h2>
-                <div class="flex-row">
-                    <div>
-                        <label for="reference-type">Reference Type</label>
-                        <select id="reference-type">
-                            <option value="Reference">Reference</option>
-                            <option value="Fix">Fixes</option>
-                            <option value="Close">Closes</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="references">Issue #</label>
-                        <input type="text" id="references" value="5" placeholder="e.g., 5, 6, 7">
+                <div id="reference-entries-container" class="flex-col gap-4">
+                    <div class="reference-entry" data-id="0">
+                        <div class="reference-entry-header">
+                            <h3>Reference #1</h3>
+                            <button class="remove-btn" style="display: none;">Remove</button>
+                        </div>
+                        <div class="flex-row">
+                            <div>
+                                <label for="reference-type-0">Reference Type</label>
+                                <select id="reference-type-0" required>
+                                    <option value="Reference">Reference</option>
+                                    <option value="Fixes">Fixes</option>
+                                    <option value="Closes">Closes</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="references-0">Issue #</label>
+                                <input type="text" id="references-0" value="" placeholder="e.g., 5, 6, 7" required>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div>
-                    <label for="sign-off-name">Signed-off-by Name</label>
-                    <input type="text" id="sign-off-name" value="Daniel Mallett" placeholder="Your Name">
-                </div>
-                <div>
-                    <label for="sign-off-email">Signed-off-by Email</label>
-                    <input type="email" id="sign-off-email" value="daniel.mallett@ninjamonkeygames.com" placeholder="your.email@example.com">
+                <button id="add-reference-btn" class="add-reference-btn" style="margin-top: 1rem;">
+                    + Add Reference
+                </button>
+                <div style="margin-top: 2rem;">
+                    <div>
+                        <label for="sign-off-name">Signed-off-by Name</label>
+                        <input type="text" id="sign-off-name" value="Daniel Mallett" placeholder="Your Name" required>
+                    </div>
+                    <div style="margin-top: 1rem;">
+                        <label for="sign-off-email">Signed-off-by Email</label>
+                        <input type="email" id="sign-off-email" value="daniel.mallett@ninjamonkeygames.com" placeholder="your.email@example.com" required>
+                    </div>
                 </div>
             </div>
 
@@ -555,8 +574,6 @@ function buildListItems($directory, $isRoot = true) {
             const commitType = getById('commit-type');
             const scope = getById('scope');
             const description = getById('description');
-            const referenceType = getById('reference-type');
-            const references = getById('references');
             const signOffName = getById('sign-off-name');
             const signOffEmail = getById('sign-off-email');
             const outputMessage = getById('output-message');
@@ -565,11 +582,37 @@ function buildListItems($directory, $isRoot = true) {
             
             const fileEntriesContainer = getById('file-entries-container');
             const addFileActionBtn = getById('add-file-action-btn');
-            
+            const referenceEntriesContainer = getById('reference-entries-container');
+            const addReferenceBtn = getById('add-reference-btn');
+
             // Store the PHP-generated file explorer HTML template
             const fileEntryTemplateHtml = `<?php echo addslashes(str_replace("\n", "", str_replace("'", "\'", $fileEntryTemplate))); ?>`;
-
-            let entryId = 1;
+            
+            const referenceEntryTemplateHtml = `
+                <div class="reference-entry" data-id="{id}">
+                    <div class="reference-entry-header">
+                        <h3>Reference #{displayId}</h3>
+                        <button class="remove-btn">Remove</button>
+                    </div>
+                    <div class="flex-row">
+                        <div>
+                            <label for="reference-type-{id}">Reference Type</label>
+                            <select id="reference-type-{id}" required>
+                                <option value="Reference">Reference</option>
+                                <option value="Fixes">Fixes</option>
+                                <option value="Closes">Closes</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="references-{id}">Issue #</label>
+                            <input type="text" id="references-{id}" value="" placeholder="e.g., 5, 6, 7" required>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            let fileEntryIdCounter = 1;
+            let referenceEntryIdCounter = 1;
 
             // This function builds the full path for a markdown heading, including all its parents
             const getMarkdownHierarchy = (headingItem) => {
@@ -676,7 +719,7 @@ function buildListItems($directory, $isRoot = true) {
 
             // This function handles the dynamic creation of new file entries.
             const createFileEntry = () => {
-                const id = entryId++;
+                const id = fileEntryIdCounter++;
                 const newEntryHtml = fileEntryTemplateHtml.replace(/{id}/g, id).replace(/{displayId}/g, id + 1);
                 const tempDiv = document.createElement('div');
                 tempDiv.innerHTML = newEntryHtml;
@@ -702,10 +745,26 @@ function buildListItems($directory, $isRoot = true) {
                 
                 attachFileExplorerListeners(newEntry);
             };
+            
+            // This function handles the dynamic creation of new reference entries.
+            const createReferenceEntry = () => {
+                const id = referenceEntryIdCounter++;
+                const newEntryHtml = referenceEntryTemplateHtml.replace(/{id}/g, id).replace(/{displayId}/g, id + 1);
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = newEntryHtml;
+                const newEntry = tempDiv.firstElementChild;
+                
+                referenceEntriesContainer.appendChild(newEntry);
+
+                getBySelector('.remove-btn', newEntry).addEventListener('click', () => {
+                    newEntry.remove();
+                });
+            };
 
             // Call initial setup functions
             attachFileExplorerListeners(getById('file-entries-container').firstElementChild);
             addFileActionBtn.addEventListener('click', createFileEntry);
+            addReferenceBtn.addEventListener('click', createReferenceEntry);
 
             // Add event listener for the initial PHP-generated entry
             const initialEntry = getBySelector('.file-entry[data-id="0"]');
@@ -743,9 +802,93 @@ function buildListItems($directory, $isRoot = true) {
 
                 return wrappedText;
             };
+
+            // Validation function
+            const validateForm = () => {
+                const requiredFields = [
+                    commitType,
+                    scope,
+                    description,
+                    signOffName,
+                    signOffEmail
+                ];
+
+                for (const field of requiredFields) {
+                    if (field.value.trim() === '') {
+                        field.focus();
+                        return { valid: false, message: `Please fill out the '${field.id}' field.` };
+                    }
+                }
+
+                const fileEntries = getAllBySelector('.file-entry');
+                if (fileEntries.length === 0) {
+                    return { valid: false, message: 'Please add at least one file action.' };
+                }
+
+                for (const entry of fileEntries) {
+                    const fileListElement = getBySelector('.file-list', entry);
+                    if (fileListElement.children.length === 0) {
+                        entry.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        return { valid: false, message: 'Please select at least one file for each file action.' };
+                    }
+
+                    const whatTextarea = getBySelector('textarea[id^="what-text-"]', entry);
+                    if (whatTextarea.value.trim() === '') {
+                        whatTextarea.focus();
+                        return { valid: false, message: `Please fill out the 'What?' field for file action.` };
+                    }
+
+                    const whyTextarea = getBySelector('textarea[id^="why-text-"]', entry);
+                    if (whyTextarea.value.trim() === '') {
+                        whyTextarea.focus();
+                        return { valid: false, message: `Please fill out the 'Why?' field for file action.` };
+                    }
+                }
+
+                // Validate dynamic reference entries
+                const referenceEntries = getAllBySelector('.reference-entry');
+                if (referenceEntries.length === 0) {
+                     return { valid: false, message: 'Please add at least one reference.' };
+                }
+                for (const entry of referenceEntries) {
+                    const referencesInput = getBySelector('input[id^="references-"]', entry);
+                    if (referencesInput.value.trim() === '') {
+                        referencesInput.focus();
+                        return { valid: false, message: `Please fill out the 'Issue #' field for reference.` };
+                    }
+                }
+
+                return { valid: true, message: '' };
+            };
             
+            const displayAlert = (message, isError) => {
+                const alertBox = document.createElement('div');
+                alertBox.textContent = message;
+                alertBox.classList.add('alert-box');
+                if (isError) {
+                    alertBox.classList.add('error');
+                }
+                document.body.appendChild(alertBox);
+                setTimeout(() => {
+                    alertBox.remove();
+                }, 3000);
+            };
+
             generateBtn.addEventListener('click', () => {
-                let message = `${commitType.value}(${scope.value}): ${description.value}\n\n`;
+                const validationResult = validateForm();
+                
+                if (!validationResult.valid) {
+                    displayAlert(validationResult.message, true);
+                    return;
+                }
+                
+                const typeVal = commitType.value.trim();
+                const scopeVal = scope.value.trim();
+                const descriptionVal = description.value.trim();
+                
+                let header = `${typeVal}(${scopeVal}): ${descriptionVal}`;
+                let message = `${header}\n\n`;
+
                 const filesByAction = { Fix: [], Update: [], Add: [], Delete: [] };
                 const descriptionsByAction = { Fix: [], Update: [], Add: [], Delete: [] };
                 const justificationsByAction = { Fix: [], Update: [], Add: [], Delete: [] };
@@ -795,20 +938,21 @@ function buildListItems($directory, $isRoot = true) {
                 appendFileListAndDescriptions('Add', filesByAction.Add, descriptionsByAction.Add, justificationsByAction.Add);
                 appendFileListAndDescriptions('Delete', filesByAction.Delete, descriptionsByAction.Delete, justificationsByAction.Delete);
                 
-                const refs = references.value.trim();
-                if (refs !== '') {
-                    const refType = referenceType.value;
-                    const referencePrefix = refType === 'Reference' ? 'References' : refType;
-                    // Handle multiple comma-separated issues
-                    const issueNumbers = refs.split(',').map(num => num.trim()).filter(num => num !== '');
-                    issueNumbers.forEach(issue => {
-                        message += `${referencePrefix} #${issue}\n`;
-                    });
-                    message += '\n';
-                }
+                // Append dynamic references
+                getAllBySelector('.reference-entry').forEach(entry => {
+                    const refType = getBySelector('select[id^="reference-type-"]', entry).value;
+                    const refs = getBySelector('input[id^="references-"]', entry).value.trim();
+
+                    if (refs !== '') {
+                        const issueNumbers = refs.split(',').map(num => num.trim()).filter(num => num !== '');
+                        issueNumbers.forEach(issue => {
+                            message += `${refType} #${issue}\n`;
+                        });
+                    }
+                });
 
                 if (signOffName.value.trim() !== '' && signOffEmail.value.trim() !== '') {
-                    message += `Signed-off-by: ${signOffName.value.trim()} <${signOffEmail.value.trim()}>`;
+                    message += `\nSigned-off-by: ${signOffName.value.trim()} <${signOffEmail.value.trim()}>`;
                 }
 
                 outputMessage.textContent = message;
@@ -823,13 +967,7 @@ function buildListItems($directory, $isRoot = true) {
                 document.execCommand('copy');
                 document.body.removeChild(textarea);
 
-                const alertBox = document.createElement('div');
-                alertBox.textContent = 'Commit message copied to clipboard!';
-                alertBox.classList.add('alert-box');
-                document.body.appendChild(alertBox);
-                setTimeout(() => {
-                    alertBox.remove();
-                }, 3000);
+                displayAlert('Commit message copied to clipboard!', false);
             });
         });
     </script>
