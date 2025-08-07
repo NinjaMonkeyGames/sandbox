@@ -220,6 +220,11 @@ function buildListItems($directory, $isRoot = true) {
         .btn:hover {
             transform: scale(1.02);
         }
+        
+        .btn-sm {
+            padding: 0.5rem;
+            font-size: 0.875rem;
+        }
 
         .btn-generate {
             background-color: #10b981;
@@ -319,6 +324,11 @@ function buildListItems($directory, $isRoot = true) {
         }
         .add-file-action-btn:hover, .add-reference-btn:hover {
             background-color: #e5e7eb;
+        }
+        .add-file-action-btn[disabled], .add-reference-btn[disabled] {
+            cursor: not-allowed;
+            opacity: 0.5;
+            background-color: #f3f4f6;
         }
         
         /* File Explorer Styles */
@@ -475,10 +485,7 @@ function buildListItems($directory, $isRoot = true) {
                                     <div>
                                         <label for="file-action-type-{id}">Action</label>
                                         <select id="file-action-type-{id}" required>
-                                            <option value="Fix" selected>Fix</option>
-                                            <option value="Update">Update</option>
-                                            <option value="Add">Add</option>
-                                            <option value="Delete">Delete</option>
+                                            <!-- Options will be populated by JavaScript -->
                                         </select>
                                     </div>
                                     <div style="flex: 2;">
@@ -509,31 +516,32 @@ function buildListItems($directory, $isRoot = true) {
                     + Add File Action
                 </button>
             </div>
+            
+            <!-- GitHub API Integration for References -->
+            <div class="card">
+                <h2>GitHub API Configuration</h2>
+                <div>
+                    <label for="repo-owner">Repository Owner</label>
+                    <input type="text" id="repo-owner" value="NinjaMonkeyGames" placeholder="e.g., github">
+                </div>
+                <div style="margin-top: 1rem;">
+                    <label for="repo-name">Repository Name</label>
+                    <input type="text" id="repo-name" value="full-stack-development-template" placeholder="e.g., docs">
+                </div>
+                <div style="margin-top: 1rem;">
+                    <label for="github-token">Personal Access Token (Optional)</label>
+                    <input type="text" id="github-token" placeholder="Leave empty for public repos">
+                </div>
+                <button id="fetch-issues-btn" class="btn btn-generate btn-sm" style="margin-top: 1rem;">
+                    Fetch Issues
+                </button>
+            </div>
 
             <!-- References & Sign-off -->
             <div class="card">
                 <h2>References & Sign-off</h2>
                 <div id="reference-entries-container" class="flex-col gap-4">
-                    <div class="reference-entry" data-id="0">
-                        <div class="reference-entry-header">
-                            <h3>Reference #1</h3>
-                            <button class="remove-btn" style="display: none;">Remove</button>
-                        </div>
-                        <div class="flex-row">
-                            <div>
-                                <label for="reference-type-0">Reference Type</label>
-                                <select id="reference-type-0" required>
-                                    <option value="Reference">Reference</option>
-                                    <option value="Fixes">Fixes</option>
-                                    <option value="Closes">Closes</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label for="references-0">Issue #</label>
-                                <input type="text" id="references-0" value="" placeholder="e.g., 5, 6, 7" required>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- The first reference entry is created dynamically by JS -->
                 </div>
                 <button id="add-reference-btn" class="add-reference-btn" style="margin-top: 1rem;">
                     + Add Reference
@@ -585,6 +593,15 @@ function buildListItems($directory, $isRoot = true) {
             const referenceEntriesContainer = getById('reference-entries-container');
             const addReferenceBtn = getById('add-reference-btn');
 
+            // GitHub API config fields
+            const repoOwner = getById('repo-owner');
+            const repoName = getById('repo-name');
+            const githubToken = getById('github-token');
+            const fetchIssuesBtn = getById('fetch-issues-btn');
+
+            let issueList = []; // Global array to store fetched issues
+            const allActionTypes = ['Fix', 'Update', 'Add', 'Delete'];
+
             // Store the PHP-generated file explorer HTML template
             const fileEntryTemplateHtml = `<?php echo addslashes(str_replace("\n", "", str_replace("'", "\'", $fileEntryTemplate))); ?>`;
             
@@ -605,14 +622,84 @@ function buildListItems($directory, $isRoot = true) {
                         </div>
                         <div>
                             <label for="references-{id}">Issue #</label>
-                            <input type="text" id="references-{id}" value="" placeholder="e.g., 5, 6, 7" required>
+                            <select id="references-{id}" required>
+                                <option value="" selected disabled>Loading issues...</option>
+                            </select>
                         </div>
                     </div>
                 </div>
             `;
             
             let fileEntryIdCounter = 1;
-            let referenceEntryIdCounter = 1;
+            let referenceEntryIdCounter = 0;
+
+            // Function to fetch issues from the GitHub API
+            const fetchIssues = async () => {
+                const owner = repoOwner.value.trim();
+                const name = repoName.value.trim();
+                const token = githubToken.value.trim();
+                
+                if (owner === '' || name === '') {
+                    displayAlert('Please provide a repository owner and name.', true);
+                    return;
+                }
+
+                const url = `https://api.github.com/repos/${owner}/${name}/issues?state=open`;
+                
+                const headers = {
+                    'Accept': 'application/vnd.github.v3+json'
+                };
+                if (token !== '') {
+                    headers['Authorization'] = `token ${token}`;
+                }
+                
+                try {
+                    const response = await fetch(url, { headers });
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || 'Failed to fetch issues.');
+                    }
+                    const issues = await response.json();
+                    
+                    issueList = issues.map(issue => ({
+                        number: issue.number,
+                        title: issue.title
+                    }));
+                    
+                    // Update all existing and future comboboxes
+                    getAllBySelector('select[id^="references-"]').forEach(selectElement => {
+                        populateIssueCombobox(selectElement);
+                    });
+
+                    displayAlert('Successfully fetched open issues.', false);
+
+                } catch (error) {
+                    console.error('Error fetching issues:', error);
+                    issueList = [];
+                    getAllBySelector('select[id^="references-"]').forEach(selectElement => {
+                        populateIssueCombobox(selectElement);
+                        selectElement.innerHTML = `<option value="" selected disabled>Could not load issues.</option>`;
+                    });
+                    displayAlert(`Error fetching issues: ${error.message}`, true);
+                }
+            };
+            
+            // Function to populate a single combobox with the fetched issues
+            const populateIssueCombobox = (selectElement) => {
+                selectElement.innerHTML = '<option value="" selected disabled>Select an issue...</option>';
+                selectElement.disabled = false;
+                if (issueList.length === 0) {
+                    selectElement.innerHTML = '<option value="" selected disabled>No open issues found.</option>';
+                    selectElement.disabled = true;
+                } else {
+                    issueList.forEach(issue => {
+                        const option = document.createElement('option');
+                        option.value = issue.number;
+                        option.textContent = `#${issue.number}: ${issue.title}`;
+                        selectElement.appendChild(option);
+                    });
+                }
+            };
 
             // This function builds the full path for a markdown heading, including all its parents
             const getMarkdownHierarchy = (headingItem) => {
@@ -717,8 +804,61 @@ function buildListItems($directory, $isRoot = true) {
                 });
             };
 
+            const getUsedActionTypes = () => {
+                const usedTypes = new Set();
+                getAllBySelector('select[id^="file-action-type-"]').forEach(select => {
+                    if (select.value) {
+                        usedTypes.add(select.value);
+                    }
+                });
+                return usedTypes;
+            };
+
+            const updateActionTypeSelects = () => {
+                const usedTypes = getUsedActionTypes();
+                const availableTypes = allActionTypes.filter(type => !usedTypes.has(type));
+
+                getAllBySelector('select[id^="file-action-type-"]').forEach(select => {
+                    const selectedValue = select.value;
+                    const isNewEntry = !selectedValue;
+                    
+                    select.innerHTML = '';
+                    
+                    if (isNewEntry) {
+                        select.innerHTML = '<option value="" selected disabled hidden>Select an action...</option>';
+                    }
+                    
+                    allActionTypes.forEach(type => {
+                        const isSelected = type === selectedValue;
+                        const isAvailable = !usedTypes.has(type) || isSelected;
+                        
+                        if (isAvailable) {
+                            const option = document.createElement('option');
+                            option.value = type;
+                            option.textContent = type;
+                            if (isSelected) {
+                                option.selected = true;
+                            }
+                            select.appendChild(option);
+                        }
+                    });
+                });
+
+                if (usedTypes.size >= allActionTypes.length) {
+                    addFileActionBtn.disabled = true;
+                } else {
+                    addFileActionBtn.disabled = false;
+                }
+            };
+            
             // This function handles the dynamic creation of new file entries.
             const createFileEntry = () => {
+                const usedTypes = getUsedActionTypes();
+                if (usedTypes.size >= allActionTypes.length) {
+                    displayAlert('Cannot add more file actions. All types are in use.', true);
+                    return;
+                }
+
                 const id = fileEntryIdCounter++;
                 const newEntryHtml = fileEntryTemplateHtml.replace(/{id}/g, id).replace(/{displayId}/g, id + 1);
                 const tempDiv = document.createElement('div');
@@ -737,13 +877,16 @@ function buildListItems($directory, $isRoot = true) {
                     const lowercaseAction = action.toLowerCase();
                     whatTextarea.placeholder = `Describe what was ${lowercaseAction}...`;
                     whyTextarea.placeholder = `Explain why this ${lowercaseAction} was necessary...`;
+                    updateActionTypeSelects();
                 });
 
                 getBySelector('.remove-btn', newEntry).addEventListener('click', () => {
                     newEntry.remove();
+                    updateActionTypeSelects();
                 });
                 
                 attachFileExplorerListeners(newEntry);
+                updateActionTypeSelects();
             };
             
             // This function handles the dynamic creation of new reference entries.
@@ -756,28 +899,43 @@ function buildListItems($directory, $isRoot = true) {
                 
                 referenceEntriesContainer.appendChild(newEntry);
 
+                // Populate the new combobox
+                const newCombobox = getBySelector('select[id^="references-"]', newEntry);
+                populateIssueCombobox(newCombobox);
+                
                 getBySelector('.remove-btn', newEntry).addEventListener('click', () => {
                     newEntry.remove();
                 });
             };
 
-            // Call initial setup functions
+            // Initial setup functions
             attachFileExplorerListeners(getById('file-entries-container').firstElementChild);
+            createReferenceEntry(); // Create the first reference entry on load
             addFileActionBtn.addEventListener('click', createFileEntry);
             addReferenceBtn.addEventListener('click', createReferenceEntry);
+            fetchIssuesBtn.addEventListener('click', fetchIssues);
 
             // Add event listener for the initial PHP-generated entry
             const initialEntry = getBySelector('.file-entry[data-id="0"]');
             const initialFileActionType = getBySelector('select[id="file-action-type-0"]', initialEntry);
             const initialWhatTextarea = getBySelector('textarea[id="what-text-0"]', initialEntry);
             const initialWhyTextarea = getBySelector('textarea[id="why-text-0"]', initialEntry);
+            
+            // Initial setup of the first file entry
+            const initialSelectedType = 'Fix';
+            initialFileActionType.innerHTML = `<option value="${initialSelectedType}" selected>${initialSelectedType}</option>`;
 
             initialFileActionType.addEventListener('change', (e) => {
                 const action = e.target.value;
                 const lowercaseAction = action.toLowerCase();
                 initialWhatTextarea.placeholder = `Describe what was ${lowercaseAction}...`;
                 initialWhyTextarea.placeholder = `Explain why this ${lowercaseAction} was necessary...`;
+                updateActionTypeSelects();
             });
+            
+            // Call this on initial load to set up the button and first dropdown
+            updateActionTypeSelects();
+
 
             // New function to wrap text at a specified character limit
             const wrapText = (text, maxLength, prefix = '', indent = '  ') => {
@@ -851,10 +1009,10 @@ function buildListItems($directory, $isRoot = true) {
                      return { valid: false, message: 'Please add at least one reference.' };
                 }
                 for (const entry of referenceEntries) {
-                    const referencesInput = getBySelector('input[id^="references-"]', entry);
+                    const referencesInput = getBySelector('select[id^="references-"]', entry);
                     if (referencesInput.value.trim() === '') {
                         referencesInput.focus();
-                        return { valid: false, message: `Please fill out the 'Issue #' field for reference.` };
+                        return { valid: false, message: `Please select an issue for the reference.` };
                     }
                 }
 
@@ -889,9 +1047,9 @@ function buildListItems($directory, $isRoot = true) {
                 let header = `${typeVal}(${scopeVal}): ${descriptionVal}`;
                 let message = `${header}\n\n`;
 
-                const filesByAction = { Fix: [], Update: [], Add: [], Delete: [] };
-                const descriptionsByAction = { Fix: [], Update: [], Add: [], Delete: [] };
-                const justificationsByAction = { Fix: [], Update: [], Add: [], Delete: [] };
+                const filesByAction = { Add: [], Fix: [], Update: [], Delete: [] };
+                const descriptionsByAction = { Add: [], Fix: [], Update: [], Delete: [] };
+                const justificationsByAction = { Add: [], Fix: [], Update: [], Delete: [] };
 
                 // Iterate over each dynamic file entry
                 getAllBySelector('.file-entry').forEach(entry => {
@@ -912,7 +1070,7 @@ function buildListItems($directory, $isRoot = true) {
                     }
                 });
 
-                // Append the lists and descriptions to the message
+                // Append the lists and descriptions to the message in the new order
                 const appendFileListAndDescriptions = (title, files, descriptions, justifications) => {
                     if (files.length > 0) {
                         message += `${title}:\n\n`;
@@ -932,22 +1090,19 @@ function buildListItems($directory, $isRoot = true) {
                         }
                     }
                 };
-
+                
+                appendFileListAndDescriptions('Add', filesByAction.Add, descriptionsByAction.Add, justificationsByAction.Add);
                 appendFileListAndDescriptions('Fix', filesByAction.Fix, descriptionsByAction.Fix, justificationsByAction.Fix);
                 appendFileListAndDescriptions('Update', filesByAction.Update, descriptionsByAction.Update, justificationsByAction.Update);
-                appendFileListAndDescriptions('Add', filesByAction.Add, descriptionsByAction.Add, justificationsByAction.Add);
                 appendFileListAndDescriptions('Delete', filesByAction.Delete, descriptionsByAction.Delete, justificationsByAction.Delete);
-                
+
                 // Append dynamic references
                 getAllBySelector('.reference-entry').forEach(entry => {
                     const refType = getBySelector('select[id^="reference-type-"]', entry).value;
-                    const refs = getBySelector('input[id^="references-"]', entry).value.trim();
+                    const refs = getBySelector('select[id^="references-"]', entry).value.trim();
 
                     if (refs !== '') {
-                        const issueNumbers = refs.split(',').map(num => num.trim()).filter(num => num !== '');
-                        issueNumbers.forEach(issue => {
-                            message += `${refType} #${issue}\n`;
-                        });
+                        message += `${refType} #${refs}\n`;
                     }
                 });
 
