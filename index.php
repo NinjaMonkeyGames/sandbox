@@ -655,7 +655,9 @@ function buildListItems($directory, $isRoot = true) {
                     parentListItem = parentListItem.closest('ul.nested-headings')?.parentNode;
                 }
                 
-                return `${filePath} :: ${hierarchy.join(' :: ')}`;
+                // The new logic to remove the top level heading from the display
+                const displayedHierarchy = hierarchy.slice(1).join(' :: ');
+                return `${filePath} :: ${displayedHierarchy}`;
             };
 
             // Handle the PHP-generated file explorer
@@ -751,6 +753,30 @@ function buildListItems($directory, $isRoot = true) {
                 initialWhatTextarea.placeholder = `Describe what was ${lowercaseAction}...`;
                 initialWhyTextarea.placeholder = `Explain why this ${lowercaseAction} was necessary...`;
             });
+
+            // New function to wrap text at a specified character limit
+            const wrapText = (text, maxLength, prefix = '', indent = '  ') => {
+                let wrappedText = '';
+                let currentLine = prefix;
+                const words = text.split(' ');
+
+                words.forEach((word, index) => {
+                    // Check if adding the word exceeds the line length
+                    if ((currentLine + ' ' + word).trim().length > maxLength && currentLine.trim().length > 0) {
+                        wrappedText += currentLine.trim() + '\n';
+                        currentLine = indent + word;
+                    } else {
+                        currentLine = currentLine.trim() === '' ? prefix + word : currentLine + ' ' + word;
+                    }
+
+                    // Handle the last word
+                    if (index === words.length - 1) {
+                        wrappedText += currentLine.trim();
+                    }
+                });
+
+                return wrappedText;
+            };
             
             generateBtn.addEventListener('click', () => {
                 let message = `${commitType.value}(${scope.value}): ${description.value}\n\n`;
@@ -781,16 +807,19 @@ function buildListItems($directory, $isRoot = true) {
                 const appendFileListAndDescriptions = (title, files, descriptions, justifications) => {
                     if (files.length > 0) {
                         message += `${title}:\n\n`;
-                        files.forEach(file => message += `- ${file}\n`);
+                        files.forEach(file => {
+                            // Use the new wrapText function with a 72-character limit and a custom prefix
+                            message += wrapText(file, 72, '- ', '  ') + '\n';
+                        });
                         message += '\n';
 
                         if (descriptions.length > 0) {
                              message += `What was ${title.toLowerCase()}?\n\n`;
-                             descriptions.forEach(desc => message += `${desc}\n\n`);
+                             descriptions.forEach(desc => message += wrapText(desc, 72) + '\n\n');
                         }
                         if (justifications.length > 0) {
                             message += `Why was ${title.toLowerCase()}?\n\n`;
-                            justifications.forEach(just => message += `${just}\n\n`);
+                            justifications.forEach(just => message += wrapText(just, 72) + '\n\n');
                         }
                     }
                 };
