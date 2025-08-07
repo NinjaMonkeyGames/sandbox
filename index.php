@@ -1,4 +1,36 @@
 <?php
+// PHP logic to handle POST requests for file writing
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    header('Content-Type: application/json');
+
+    $postData = file_get_contents('php://input');
+    $request = json_decode($postData, true);
+
+    if (isset($request['commitMessage'])) {
+        $commitMessage = $request['commitMessage'];
+        $filePath = '.git/EDIT_COMMITMSG';
+
+        // Check if the .git directory exists before attempting to write
+        if (!is_dir('.git')) {
+            echo json_encode(['success' => false, 'error' => 'The current directory is not a Git repository.']);
+            exit;
+        }
+
+        try {
+            if (file_put_contents($filePath, $commitMessage) !== false) {
+                echo json_encode(['success' => true]);
+            } else {
+                echo json_encode(['success' => false, 'error' => 'Failed to write to file. Check file permissions.']);
+            }
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+        }
+    } else {
+        echo json_encode(['success' => false, 'error' => 'Invalid request. Missing commitMessage.']);
+    }
+    exit;
+}
+
 // PHP functions to get and build the directory tree
 function getDirectoryTree($directory) {
     $items = [];
@@ -122,25 +154,19 @@ function buildListItems($directory, $isRoot = true) {
             gap: 2rem;
         }
 
-        @media (min-width: 768px) {
-            .container {
-                flex-direction: row;
-            }
-        }
-
-        .form-section, .output-section {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-
         .card {
             background-color: #f9fafb;
             padding: 1.5rem;
             border-radius: 0.75rem;
             box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
             border: 1px solid #e5e7eb;
+        }
+        
+        .card-header {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #374151;
+            margin-bottom: 1.5rem;
         }
 
         h1 {
@@ -150,13 +176,7 @@ function buildListItems($directory, $isRoot = true) {
             margin-bottom: 1.5rem;
             color: #111827;
         }
-
-        h2 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #374151;
-        }
-
+        
         label {
             display: block;
             font-size: 0.875rem;
@@ -410,166 +430,166 @@ function buildListItems($directory, $isRoot = true) {
 </head>
 <body>
     <div class="container">
-        <!-- Form Section -->
-        <div class="form-section">
-            <h1>Commit Message Generator</h1>
-            
-            <!-- Commit Header -->
-            <div class="card">
-                <h2>Commit Header</h2>
-                <div class="flex-row">
-                    <div>
-                        <label for="commit-type">Type</label>
-                        <select id="commit-type" required>
-                            <option value="" selected disabled hidden>Select a type...</option>
-                            <option value="feat">feat: A new feature</option>
-                            <option value="fix">fix: A bug fix</option>
-                            <option value="docs">docs: Documentation changes</option>
-                            <option value="style">style: Code style changes</option>
-                            <option value="refactor">refactor: Code change</option>
-                            <option value="perf">perf: Performance improvements</option>
-                            <option value="test">test: Adding or updating tests</option>
-                            <option value="build">build: Build system changes</option>
-                            <option value="ci">ci: CI configuration changes</option>
-                            <option value="chore">chore: Other changes</option>
-                            <option value="revert">revert: Reverts a previous commit</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="scope">Scope</label>
-                        <select id="scope" required>
-                            <option value="" selected disabled hidden>Select a scope...</option>
-                            <option value="core">core</option>
-                            <option value="api">api</option>
-                            <option value="ui">ui</option>
-                            <option value="auth">auth</option>
-                            <option value="db">db</option>
-                            <option value="deps">deps</option>
-                            <option value="tests">tests</option>
-                            <option value="config">config</option>
-                            <option value="security">security</option>
-                            <option value="rebase">rebase</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="description">Description</label>
-                        <input type="text" id="description" value="" placeholder="Short summary of the change" required>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Dynamic File Actions Section -->
-            <div class="card">
-                <h2>File Changes</h2>
-                <div id="file-entries-container" class="flex-col gap-4">
-                    <?php
-                        // The base directory to start from
-                        $startDirectory = '.';
-
-                        // The file explorer HTML, pre-generated by PHP
-                        $fileExplorerHtml = '
-                            <div class="file-explorer">
-                                <ul>' . buildListItems($startDirectory) . '</ul>
-                            </div>
-                        ';
-                        
-                        // The HTML for a single file entry, used for both the first and dynamic ones
-                        // This uses placeholders for the ID which will be replaced by JavaScript
-                        $fileEntryTemplate = '
-                            <div class="file-entry" data-id="{id}">
-                                <div class="file-entry-header">
-                                    <h3>File Action #{displayId}</h3>
-                                    <button class="remove-btn">Remove</button>
-                                </div>
-                                <div class="flex-row">
-                                    <div>
-                                        <label for="file-action-type-{id}">Action</label>
-                                        <select id="file-action-type-{id}" required>
-                                            <!-- Options will be populated by JavaScript -->
-                                        </select>
-                                    </div>
-                                    <div style="flex: 2;">
-                                        <label>File Explorer</label>
-                                        ' . $fileExplorerHtml . '
-                                    </div>
-                                </div>
-                                <div class="selected-files-list">
-                                    <h4>Selected Files:</h4>
-                                    <ul id="file-list-{id}" class="file-list"></ul>
-                                </div>
-                                <div>
-                                    <label for="what-text-{id}" id="what-label-{id}">What?</label>
-                                    <textarea id="what-text-{id}" placeholder="Describe what was fixed..." rows="2" required></textarea>
-                                </div>
-                                <div>
-                                    <label for="why-text-{id}" id="why-label-{id}">Why?</label>
-                                    <textarea id="why-text-{id}" placeholder="Explain why this fix was necessary..." rows="2" required></textarea>
-                                </div>
-                            </div>
-                        ';
-
-                        // Echo the first file entry with ID 0
-                        echo str_replace(['{id}', '{displayId}'], ['0', '1'], $fileEntryTemplate);
-                    ?>
-                </div>
-                <button id="add-file-action-btn" class="add-file-action-btn" style="margin-top: 1rem;">
-                    + Add File Action
-                </button>
-            </div>
-            
-            <!-- GitHub API Integration for References -->
-            <div class="card">
-                <h2>GitHub API Configuration</h2>
+        <h1>Commit Message Generator</h1>
+        
+        <!-- Commit Header -->
+        <div class="card">
+            <div class="card-header">Commit Header</div>
+            <div class="flex-row">
                 <div>
-                    <label for="repo-owner">Repository Owner</label>
-                    <input type="text" id="repo-owner" value="NinjaMonkeyGames" placeholder="e.g., github">
+                    <label for="commit-type">Type</label>
+                    <select id="commit-type" required>
+                        <option value="" selected disabled hidden>Select a type...</option>
+                        <option value="feat">feat: A new feature</option>
+                        <option value="fix">fix: A bug fix</option>
+                        <option value="docs">docs: Documentation changes</option>
+                        <option value="style">style: Code style changes</option>
+                        <option value="refactor">refactor: Code change</option>
+                        <option value="perf">perf: Performance improvements</option>
+                        <option value="test">test: Adding or updating tests</option>
+                        <option value="build">build: Build system changes</option>
+                        <option value="ci">ci: CI configuration changes</option>
+                        <option value="chore">chore: Other changes</option>
+                        <option value="revert">revert: Reverts a previous commit</option>
+                    </select>
                 </div>
-                <div style="margin-top: 1rem;">
-                    <label for="repo-name">Repository Name</label>
-                    <input type="text" id="repo-name" value="full-stack-development-template" placeholder="e.g., docs">
+                <div>
+                    <label for="scope">Scope</label>
+                    <select id="scope" required>
+                        <option value="" selected disabled hidden>Select a scope...</option>
+                        <option value="core">core</option>
+                        <option value="api">api</option>
+                        <option value="ui">ui</option>
+                        <option value="auth">auth</option>
+                        <option value="db">db</option>
+                        <option value="deps">deps</option>
+                        <option value="tests">tests</option>
+                        <option value="config">config</option>
+                        <option value="security">security</option>
+                        <option value="rebase">rebase</option>
+                    </select>
                 </div>
-                <div style="margin-top: 1rem;">
-                    <label for="github-token">Personal Access Token (Optional)</label>
-                    <input type="text" id="github-token" placeholder="Leave empty for public repos">
+                <div>
+                    <label for="description">Description</label>
+                    <input type="text" id="description" value="" placeholder="Short summary of the change" required>
                 </div>
-                <button id="fetch-issues-btn" class="btn btn-generate btn-sm" style="margin-top: 1rem;">
-                    Fetch Issues
-                </button>
             </div>
+        </div>
 
-            <!-- References & Sign-off -->
-            <div class="card">
-                <h2>References & Sign-off</h2>
-                <div id="reference-entries-container" class="flex-col gap-4">
-                    <!-- The first reference entry is created dynamically by JS -->
-                </div>
-                <button id="add-reference-btn" class="add-reference-btn" style="margin-top: 1rem;">
-                    + Add Reference
-                </button>
-                <div style="margin-top: 2rem;">
-                    <div>
-                        <label for="sign-off-name">Signed-off-by Name</label>
-                        <input type="text" id="sign-off-name" value="Daniel Mallett" placeholder="Your Name" required>
-                    </div>
-                    <div style="margin-top: 1rem;">
-                        <label for="sign-off-email">Signed-off-by Email</label>
-                        <input type="email" id="sign-off-email" value="daniel.mallett@ninjamonkeygames.com" placeholder="your.email@example.com" required>
-                    </div>
-                </div>
+        <!-- Dynamic File Actions Section -->
+        <div class="card">
+            <div class="card-header">File Changes</div>
+            <div id="file-entries-container" class="flex-col gap-4">
+                <?php
+                    // The base directory to start from
+                    $startDirectory = '.';
+
+                    // The file explorer HTML, pre-generated by PHP
+                    $fileExplorerHtml = '
+                        <div class="file-explorer">
+                            <ul>' . buildListItems($startDirectory) . '</ul>
+                        </div>
+                    ';
+                    
+                    // The HTML for a single file entry, used for both the first and dynamic ones
+                    // This uses placeholders for the ID which will be replaced by JavaScript
+                    $fileEntryTemplate = '
+                        <div class="file-entry" data-id="{id}">
+                            <div class="file-entry-header">
+                                <h3>File Action #{displayId}</h3>
+                                <button class="remove-btn">Remove</button>
+                            </div>
+                            <div class="flex-row">
+                                <div>
+                                    <label for="file-action-type-{id}">Action</label>
+                                    <select id="file-action-type-{id}" required>
+                                        <!-- Options will be populated by JavaScript -->
+                                    </select>
+                                </div>
+                                <div style="flex: 2;">
+                                    <label>File Explorer</label>
+                                    ' . $fileExplorerHtml . '
+                                </div>
+                            </div>
+                            <div class="selected-files-list">
+                                <h4>Selected Files:</h4>
+                                <ul id="file-list-{id}" class="file-list"></ul>
+                            </div>
+                            <div>
+                                <label for="what-text-{id}" id="what-label-{id}">What?</label>
+                                <textarea id="what-text-{id}" placeholder="Describe what was fixed..." rows="2" required></textarea>
+                            </div>
+                            <div>
+                                <label for="why-text-{id}" id="why-label-{id}">Why?</label>
+                                <textarea id="why-text-{id}" placeholder="Explain why this fix was necessary..." rows="2" required></textarea>
+                            </div>
+                        </div>
+                    ';
+
+                    // Echo the first file entry with ID 0
+                    echo str_replace(['{id}', '{displayId}'], ['0', '1'], $fileEntryTemplate);
+                ?>
             </div>
-
-            <button id="generate-btn" class="btn btn-generate">
-                Generate Commit Message
+            <button id="add-file-action-btn" class="add-file-action-btn" style="margin-top: 1rem;">
+                + Add File Action
+            </button>
+        </div>
+        
+        <!-- GitHub API Integration for References -->
+        <div class="card">
+            <div class="card-header">GitHub API Configuration</div>
+            <div>
+                <label for="repo-owner">Repository Owner</label>
+                <input type="text" id="repo-owner" value="NinjaMonkeyGames" placeholder="e.g., github">
+            </div>
+            <div style="margin-top: 1rem;">
+                <label for="repo-name">Repository Name</label>
+                <input type="text" id="repo-name" value="full-stack-development-template" placeholder="e.g., docs">
+            </div>
+            <div style="margin-top: 1rem;">
+                <label for="github-token">Personal Access Token (Optional)</label>
+                <input type="text" id="github-token" placeholder="Leave empty for public repos">
+            </div>
+            <button id="fetch-issues-btn" class="btn btn-generate btn-sm" style="margin-top: 1rem;">
+                Fetch Issues
             </button>
         </div>
 
-        <!-- Output Section -->
-        <div class="output-section">
-            <h2 class="hidden md:block">Generated Message</h2>
-            <pre id="output-message">Click "Generate Commit Message" to see the output here.</pre>
+        <!-- References & Sign-off -->
+        <div class="card">
+            <div class="card-header">References & Sign-off</div>
+            <div id="reference-entries-container" class="flex-col gap-4">
+                <!-- The first reference entry is created dynamically by JS -->
+            </div>
+            <button id="add-reference-btn" class="add-reference-btn" style="margin-top: 1rem;">
+                + Add Reference
+            </button>
+            <div style="margin-top: 2rem;">
+                <div>
+                    <label for="sign-off-name">Signed-off-by Name</label>
+                    <input type="text" id="sign-off-name" value="Daniel Mallett" placeholder="Your Name" required>
+                </div>
+                <div style="margin-top: 1rem;">
+                    <label for="sign-off-email">Signed-off-by Email</label>
+                    <input type="email" id="sign-off-email" value="daniel.mallett@ninjamonkeygames.com" placeholder="your.email@example.com" required>
+                </div>
+            </div>
+        </div>
+
+        <!-- Generate/Copy buttons -->
+        <div class="flex-row" style="gap: 1rem;">
+            <button id="generate-btn" class="btn btn-generate">
+                Generate Commit Message
+            </button>
             <button id="copy-btn" class="btn btn-copy">
                 Copy to Clipboard
             </button>
+        </div>
+
+        <!-- Output Section with 'Preview' title -->
+        <div class="card">
+            <div class="card-header"><b>Preview</b></div>
+            <pre id="output-message">Click "Generate Commit Message" to see the output here.</pre>
         </div>
     </div>
     
@@ -1032,7 +1052,7 @@ function buildListItems($directory, $isRoot = true) {
                 }, 3000);
             };
 
-            generateBtn.addEventListener('click', () => {
+            generateBtn.addEventListener('click', async () => {
                 const validationResult = validateForm();
                 
                 if (!validationResult.valid) {
@@ -1111,6 +1131,27 @@ function buildListItems($directory, $isRoot = true) {
                 }
 
                 outputMessage.textContent = message;
+
+                // Send the commit message to the server for file writing
+                try {
+                    const response = await fetch(window.location.href, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ commitMessage: message })
+                    });
+
+                    const result = await response.json();
+                    if (result.success) {
+                        displayAlert('Commit message written to .git/EDIT_COMMITMSG!', false);
+                    } else {
+                        displayAlert(`Error: ${result.error}`, true);
+                    }
+                } catch (error) {
+                    console.error('Error writing file via API:', error);
+                    displayAlert('An unexpected error occurred while writing the file.', true);
+                }
             });
 
             copyBtn.addEventListener('click', () => {
@@ -1124,6 +1165,9 @@ function buildListItems($directory, $isRoot = true) {
 
                 displayAlert('Commit message copied to clipboard!', false);
             });
+            
+            // Call fetchIssues on page load
+            fetchIssues();
         });
     </script>
 </body>
