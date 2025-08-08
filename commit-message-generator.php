@@ -8,7 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (isset($request['commitMessage'])) {
         $commitMessage = $request['commitMessage'];
-        $filePath = '.git/EDIT_COMMITMSG';
+        $filePath = '.git/COMMIT_EDITMSG'; // Updated file path
 
         // Check if the .git directory exists before attempting to write
         if (!is_dir('.git')) {
@@ -673,6 +673,11 @@ function buildListItems($directory, $isRoot = true) {
             const allActionTypes = ['Fix', 'Update', 'Add', 'Delete'];
 
             // Store the PHP-generated file explorer HTML template
+            const fileExplorerHtml = `
+                <div class="file-explorer">
+                    <ul><?php echo addslashes(str_replace("\n", "", str_replace("'", "\'", buildListItems('.')))); ?></ul>
+                </div>
+            `;
             const fileEntryTemplate = `
                 <div class="file-entry" data-id="{id}">
                     <div class="file-entry-header">
@@ -688,9 +693,7 @@ function buildListItems($directory, $isRoot = true) {
                         </div>
                         <div style="flex: 2;">
                             <label>File Explorer</label>
-                            <div class="file-explorer">
-                                <ul><?php echo addslashes(str_replace("\n", "", str_replace("'", "\'", buildListItems('.')))); ?></ul>
-                            </div>
+                            ${fileExplorerHtml}
                         </div>
                     </div>
                     <div class="selected-files-list">
@@ -700,13 +703,13 @@ function buildListItems($directory, $isRoot = true) {
                     <div>
                         <label for="what-text-{id}" id="what-label-{id}">What?</label>
                         <textarea id="what-text-{id}" placeholder="Describe what was changed..." rows="2" required></textarea>
-                    </div>
-                    <div>
-                        <label for="why-text-{id}" id="why-label-{id}">Why?</label>
-                        <textarea id="why-text-{id}" placeholder="Explain why this change was necessary..." rows="2" required></textarea>
-                    </div>
-                </div>
-            `;
+                            </div>
+                            <div>
+                                <label for="why-text-{id}" id="why-label-{id}">Why?</label>
+                                <textarea id="why-text-{id}" placeholder="Explain why this change was necessary..." rows="2" required></textarea>
+                            </div>
+                        </div>
+                    `;
             
             const referenceEntryTemplateHtml = `
                 <div class="reference-entry" data-id="{id}">
@@ -751,8 +754,8 @@ function buildListItems($directory, $isRoot = true) {
                         sanitizedValue += char;
                     }
                 }
-                // Convert to lowercase and update the input value
-                description.value = sanitizedValue.toLowerCase();
+                // Update the input value without forcing lowercase
+                description.value = sanitizedValue;
             };
 
             // Function to update the character counter and enforce the limit
@@ -1046,30 +1049,37 @@ function buildListItems($directory, $isRoot = true) {
                     default: return 'changed'; // Fallback for other types or initial state
                 }
             };
-
+            
+            // CORRECTED: This function now correctly populates the dropdowns.
             const updateActionTypeSelects = () => {
+                const fileEntries = getAllBySelector('.file-entry');
                 const usedTypes = getUsedActionTypes();
-                const availableTypes = allActionTypes.filter(type => !usedTypes.has(type));
 
-                getAllBySelector('select[id^="file-action-type-"]').forEach(select => {
+                fileEntries.forEach(entry => {
+                    const select = getBySelector('select[id^="file-action-type-"]', entry);
                     const selectedValue = select.value;
-                    const isNewEntry = !selectedValue;
                     
+                    // Clear existing options
                     select.innerHTML = '';
                     
-                    if (isNewEntry || !selectedValue) {
-                        select.innerHTML = '<option value="" selected disabled hidden>Select an action...</option>';
-                    }
-                    
+                    // Add a default disabled option
+                    const defaultOption = document.createElement('option');
+                    defaultOption.value = "";
+                    defaultOption.textContent = "Select an action...";
+                    defaultOption.selected = true;
+                    defaultOption.disabled = true;
+                    defaultOption.hidden = true;
+                    select.appendChild(defaultOption);
+
+                    // Add the available options
                     allActionTypes.forEach(type => {
-                        const isSelected = type === selectedValue;
-                        const isAvailable = !usedTypes.has(type) || isSelected;
-                        
+                        // An option is available if it's the currently selected value, or if it hasn't been used elsewhere.
+                        const isAvailable = (type === selectedValue) || !usedTypes.has(type);
                         if (isAvailable) {
                             const option = document.createElement('option');
                             option.value = type;
                             option.textContent = type;
-                            if (isSelected) {
+                            if (type === selectedValue) {
                                 option.selected = true;
                             }
                             select.appendChild(option);
@@ -1077,6 +1087,7 @@ function buildListItems($directory, $isRoot = true) {
                     });
                 });
 
+                // Disable the add button if all action types are in use
                 if (usedTypes.size >= allActionTypes.length) {
                     addFileActionBtn.disabled = true;
                 } else {
@@ -1093,7 +1104,9 @@ function buildListItems($directory, $isRoot = true) {
                 }
 
                 const id = fileEntryIdCounter++;
+                // Using a template literal for cleaner string interpolation
                 const newEntryHtml = fileEntryTemplate.replace(/{id}/g, id).replace(/{displayId}/g, id + 1);
+                
                 const tempDiv = document.createElement('div');
                 tempDiv.innerHTML = newEntryHtml;
                 const newEntry = tempDiv.firstElementChild;
@@ -1183,7 +1196,22 @@ function buildListItems($directory, $isRoot = true) {
             // Add real-time wrapping to the initial textareas
             getById('what-text-0').addEventListener('input', realTimeWrap);
             getById('why-text-0').addEventListener('input', realTimeWrap);
-
+            
+            // Function to convert a string to sentence case and append a period if one is missing
+            const toSentenceCase = (str) => {
+                if (!str || typeof str !== 'string') return '';
+                let result = str.toLowerCase().replace(/(^|\.\s*?)([a-z])/g, (match, p1, p2) => p1 + p2.toUpperCase());
+                
+                // Trim trailing whitespace to handle cases like "sentence   ."
+                result = result.trim();
+                
+                // Check if the last character is a punctuation mark
+                const lastChar = result.charAt(result.length - 1);
+                if (lastChar !== '.' && lastChar !== '!' && lastChar !== '?') {
+                    result += '.';
+                }
+                return result;
+            };
 
             // New function to wrap text at a specified character limit, now handles long words
             const wrapText = (text, maxLength, prefix = '', indent = '  ') => {
@@ -1292,16 +1320,16 @@ function buildListItems($directory, $isRoot = true) {
 
                 // Validate dynamic reference entries
                 const referenceEntries = getAllBySelector('.reference-entry');
-                if (referenceEntries.length === 0) {
-                     return { valid: false, message: 'Please add at least one reference.' };
-                }
-                for (const entry of referenceEntries) {
-                    const referencesInput = getBySelector('select[id^="references-"]', entry);
-                    if (referencesInput.value.trim() === '') {
-                        referencesInput.focus();
-                        return { valid: false, message: `Please select an issue for the reference.` };
+                if (referenceEntries.length > 0) {
+                    for (const entry of referenceEntries) {
+                        const referencesInput = getBySelector('select[id^="references-"]', entry);
+                        if (referencesInput.value.trim() === '') {
+                            referencesInput.focus();
+                            return { valid: false, message: `Please select an issue for the reference.` };
+                        }
                     }
                 }
+
 
                 return { valid: true, message: '' };
             };
@@ -1341,8 +1369,8 @@ function buildListItems($directory, $isRoot = true) {
                 // Iterate over each dynamic file entry
                 getAllBySelector('.file-entry').forEach(entry => {
                     const actionType = getBySelector('select[id^="file-action-type-"]', entry).value;
-                    const whatText = getBySelector('textarea[id^="what-text-"]', entry).value.trim();
-                    const whyText = getBySelector('textarea[id^="why-text-"]', entry).value.trim();
+                    const whatText = toSentenceCase(getBySelector('textarea[id^="what-text-"]', entry).value.trim());
+                    const whyText = toSentenceCase(getBySelector('textarea[id^="why-text-"]', entry).value.trim());
                     const fileListElement = getBySelector('.file-list', entry);
                     const files = Array.from(fileListElement.children).map(li => getBySelector('span', li).textContent);
                     
@@ -1361,19 +1389,18 @@ function buildListItems($directory, $isRoot = true) {
                 const appendFileListAndDescriptions = (title, files, descriptions, justifications) => {
                     if (files.length > 0) {
                         message += `### ${title}\n\n`;
-                        message += 'Files:\n';
+                        message += 'Files:\n\n'; // This was changed from `\n` to `\n\n` to fix the extra carriage return
                         files.forEach(file => {
-                            // Use the new wrapText function with a 72-character limit and a custom prefix
-                            message += wrapText(file, 72, '- ', '  ') + '\n';
+                            // Changed to not include a bullet point prefix
+                            message += wrapText(file, 72, '', '') + '\n';
                         });
-                        message += '\n';
-
+                        
                         if (descriptions.length > 0) {
-                             message += `What was ${getPastTense(title)}?\n\n`;
+                             message += `\nWhat was ${getPastTense(title)}?\n\n`;
                              descriptions.forEach(desc => message += wrapText(desc, 72) + '\n\n');
                         }
                         if (justifications.length > 0) {
-                            message += `Why was it ${getPastTense(title)}?\n\n`;
+                            message += `\nWhy was it ${getPastTense(title)}?\n\n`;
                             justifications.forEach(just => message += wrapText(just, 72) + '\n\n');
                         }
                     }
@@ -1412,7 +1439,7 @@ function buildListItems($directory, $isRoot = true) {
 
                     const result = await response.json();
                     if (result.success) {
-                        displayAlert('Commit message written to .git/EDIT_COMMITMSG!', false);
+                        displayAlert('Commit message written to .git/COMMIT_EDITMSG!', false);
                     } else {
                         displayAlert(`Error: ${result.error}`, true);
                     }
