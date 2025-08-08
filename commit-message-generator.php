@@ -530,7 +530,7 @@ function buildListItems($directory, $isRoot = true) {
                                 <div>
                                     <label for="file-action-type-{id}">Action</label>
                                     <select id="file-action-type-{id}" required>
-                                        <!-- Options will be populated by JavaScript -->
+                                        <option value="" selected disabled hidden>Select an action...</option>
                                     </select>
                                 </div>
                                 <div style="flex: 2;">
@@ -544,11 +544,11 @@ function buildListItems($directory, $isRoot = true) {
                             </div>
                             <div>
                                 <label for="what-text-{id}" id="what-label-{id}">What?</label>
-                                <textarea id="what-text-{id}" placeholder="Describe what was fixed..." rows="2" required></textarea>
+                                <textarea id="what-text-{id}" placeholder="Describe what was changed..." rows="2" required></textarea>
                             </div>
                             <div>
                                 <label for="why-text-{id}" id="why-label-{id}">Why?</label>
-                                <textarea id="why-text-{id}" placeholder="Explain why this fix was necessary..." rows="2" required></textarea>
+                                <textarea id="why-text-{id}" placeholder="Explain why this change was necessary..." rows="2" required></textarea>
                             </div>
                         </div>
                     ';
@@ -883,7 +883,7 @@ function buildListItems($directory, $isRoot = true) {
                     case 'update': return 'updated';
                     case 'delete': return 'deleted';
                     case 'fix': return 'fixed';
-                    default: return action; // Fallback for other types
+                    default: return 'changed'; // Fallback for other types or initial state
                 }
             };
 
@@ -897,7 +897,7 @@ function buildListItems($directory, $isRoot = true) {
                     
                     select.innerHTML = '';
                     
-                    if (isNewEntry) {
+                    if (isNewEntry || !selectedValue) {
                         select.innerHTML = '<option value="" selected disabled hidden>Select an action...</option>';
                     }
                     
@@ -996,26 +996,23 @@ function buildListItems($directory, $isRoot = true) {
             // Add event listener for the initial PHP-generated entry
             const initialEntry = getBySelector('.file-entry[data-id="0"]');
             const initialFileActionType = getBySelector('select[id="file-action-type-0"]', initialEntry);
-            const initialWhatTextarea = getBySelector('textarea[id="what-text-0"]', initialEntry);
-            const initialWhatLabel = getBySelector('label[id="what-label-0"]', initialEntry);
-            const initialWhyTextarea = getBySelector('textarea[id="why-text-0"]', initialEntry);
-            const initialWhyLabel = getBySelector('label[id="why-label-0"]', initialEntry);
             
-            // Initial setup of the first file entry
-            const initialSelectedType = 'Fix';
-            initialFileActionType.innerHTML = `<option value="${initialSelectedType}" selected>${initialSelectedType}</option>`;
-
             initialFileActionType.addEventListener('change', (e) => {
                 const action = e.target.value;
                 const pastTenseAction = getPastTense(action);
-                initialWhatTextarea.placeholder = `Describe what was ${pastTenseAction}...`;
-                initialWhatLabel.textContent = `What was ${pastTenseAction}?`;
-                initialWhyTextarea.placeholder = `Explain why this ${pastTenseAction} was necessary...`;
-                initialWhyLabel.textContent = `Why was it ${pastTenseAction}?`;
+                const whatTextarea = getBySelector('textarea[id="what-text-0"]', initialEntry);
+                const whatLabel = getBySelector('label[id="what-label-0"]', initialEntry);
+                const whyTextarea = getBySelector('textarea[id="why-text-0"]', initialEntry);
+                const whyLabel = getBySelector('label[id="why-label-0"]', initialEntry);
+
+                whatTextarea.placeholder = `Describe what was ${pastTenseAction}...`;
+                whatLabel.textContent = `What was ${pastTenseAction}?`;
+                whyTextarea.placeholder = `Explain why this ${pastTenseAction} was necessary...`;
+                whyLabel.textContent = `Why was it ${pastTenseAction}?`;
                 updateActionTypeSelects();
             });
             
-            // Call this on initial load to set up the button and first dropdown
+            // Set up the available options for the first select on load
             updateActionTypeSelects();
 
 
@@ -1066,6 +1063,12 @@ function buildListItems($directory, $isRoot = true) {
                 }
 
                 for (const entry of fileEntries) {
+                    const actionType = getBySelector('select[id^="file-action-type-"]', entry);
+                    if (actionType.value.trim() === '') {
+                        actionType.focus();
+                        return { valid: false, message: 'Please select an action type for all file actions.' };
+                    }
+                    
                     const fileListElement = getBySelector('.file-list', entry);
                     if (fileListElement.children.length === 0) {
                         entry.scrollIntoView({ behavior: 'smooth', block: 'center' });
