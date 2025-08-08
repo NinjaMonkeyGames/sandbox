@@ -49,6 +49,9 @@ function getDirectoryTree($directory) {
 
 // Function to parse a Markdown file and return its headings as a nested HTML list
 function getMarkdownHeadings($filePath) {
+    if (!file_exists($filePath) || !is_readable($filePath)) {
+        return '';
+    }
     $content = file_get_contents($filePath);
     $lines = explode("\n", $content);
 
@@ -111,8 +114,8 @@ function buildListItems($directory, $isRoot = true) {
         if ($isFolder) {
             $html .= buildListItems($directory . DIRECTORY_SEPARATOR . $name, false);
         } else if ($isMarkdown) {
-            // Pre-generate markdown headings and hide them. Removed the "hidden" class from here.
-            $html .= '<div class="markdown-headings">' . getMarkdownHeadings($path) . '</div>';
+            // Pre-generate markdown headings and hide them.
+            $html .= '<div class="markdown-headings">' . getMarkdownHeadings($directory . DIRECTORY_SEPARATOR . $name) . '</div>';
         }
         $html .= '</li>';
     }
@@ -138,7 +141,7 @@ function buildListItems($directory, $isRoot = true) {
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            min-height: 10vh;
+            min-height: 100vh;
             padding: 1rem;
         }
 
@@ -194,6 +197,7 @@ function buildListItems($directory, $isRoot = true) {
             transition: all 0.15s ease-in-out;
             font-family: 'Inter', sans-serif;
             color: #1f2937;
+            background-color: #fff;
         }
 
         input:focus, select:focus, textarea:focus {
@@ -205,6 +209,7 @@ function buildListItems($directory, $isRoot = true) {
         .description-container {
             display: flex;
             flex-direction: column;
+            flex: 2;
         }
         
         .description-container label {
@@ -225,7 +230,7 @@ function buildListItems($directory, $isRoot = true) {
 
         .flex-row {
             display: flex;
-            gap: 0.5rem;
+            gap: 1rem;
         }
 
         .flex-row > div {
@@ -314,6 +319,7 @@ function buildListItems($directory, $isRoot = true) {
 
         pre {
             white-space: pre-wrap;
+            word-wrap: break-word;
             padding: 1rem;
             background-color: #f3f4f6;
             border-radius: 0.5rem;
@@ -333,7 +339,7 @@ function buildListItems($directory, $isRoot = true) {
             color: #ffffff;
             padding: 0.5rem 1rem;
             border-radius: 0.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1-px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             z-index: 50;
             animation: fadeInOut 3s forwards;
         }
@@ -349,7 +355,7 @@ function buildListItems($directory, $isRoot = true) {
             background-color: #ef4444;
         }
 
-        /* New styles for dynamic entries */
+        /* Styles for dynamic entries */
         .file-entry, .reference-entry {
             display: flex;
             flex-direction: column;
@@ -419,10 +425,21 @@ function buildListItems($directory, $isRoot = true) {
             border-radius: 3px;
             user-select: none;
         }
-        /* Added hover effect to all list items for better visual feedback */
-        .file-explorer ul li:hover {
-            background-color: #e0e0e0;
+        .file-explorer ul li:hover > .name,
+        .file-explorer ul li:hover > span {
+            background-color: #f3f4f6;
         }
+
+        .file-explorer .selected > .name,
+        .file-explorer .selected > span {
+            background-color: #dbeafe; /* A light blue highlight */
+            font-weight: 600;
+            border-radius: 3px;
+            padding-left: 3px;
+            padding-right: 3px;
+            margin-left: -3px; /* Offset padding to maintain alignment */
+        }
+
         .file-explorer .folder > ul {
             display: none;
         }
@@ -457,7 +474,6 @@ function buildListItems($directory, $isRoot = true) {
             position: relative;
         }
         
-        /* Style for the expand/collapse icon on folder and heading items */
         .folder > .name::before, .heading > span::before {
             content: '+';
             position: absolute;
@@ -480,7 +496,6 @@ function buildListItems($directory, $isRoot = true) {
     <div class="container">
         <h1>Commit Message Generator</h1>
         
-        <!-- Commit Header -->
         <div class="card">
             <div class="card-header">Commit Header</div>
             <div class="flex-row">
@@ -525,23 +540,12 @@ function buildListItems($directory, $isRoot = true) {
             </div>
         </div>
 
-        <!-- Dynamic File Actions Section -->
         <div class="card">
             <div class="card-header">File Changes</div>
-            <div id="file-entries-container" class="flex-col gap-4">
+            <div id="file-entries-container" style="display: flex; flex-direction: column; gap: 1rem;">
                 <?php
-                    // The base directory to start from
                     $startDirectory = '.';
-
-                    // The file explorer HTML, pre-generated by PHP
-                    $fileExplorerHtml = '
-                        <div class="file-explorer">
-                            <ul>' . buildListItems($startDirectory) . '</ul>
-                        </div>
-                    ';
-                    
-                    // The HTML for a single file entry, used for both the first and dynamic ones
-                    // This uses placeholders for the ID which will be replaced by JavaScript
+                    $fileExplorerHtml = '<div class="file-explorer"><ul>' . buildListItems($startDirectory) . '</ul></div>';
                     $fileEntryTemplate = '
                         <div class="file-entry" data-id="{id}">
                             <div class="file-entry-header">
@@ -561,7 +565,7 @@ function buildListItems($directory, $isRoot = true) {
                                 </div>
                             </div>
                             <div class="selected-files-list">
-                                <h4>Selected Files:</h4>
+                                <h4>Selected File:</h4>
                                 <ul id="file-list-{id}" class="file-list"></ul>
                             </div>
                             <div>
@@ -574,8 +578,6 @@ function buildListItems($directory, $isRoot = true) {
                             </div>
                         </div>
                     ';
-
-                    // Echo the first file entry with ID 0
                     echo str_replace(['{id}', '{displayId}'], ['0', '1'], $fileEntryTemplate);
                 ?>
             </div>
@@ -584,7 +586,6 @@ function buildListItems($directory, $isRoot = true) {
             </button>
         </div>
         
-        <!-- GitHub API Integration for References -->
         <div class="card">
             <div class="card-header">GitHub API Configuration</div>
             <div>
@@ -597,18 +598,16 @@ function buildListItems($directory, $isRoot = true) {
             </div>
             <div style="margin-top: 1rem;">
                 <label for="github-token">Personal Access Token (Optional)</label>
-                <input type="text" id="github-token" placeholder="Leave empty for public repos">
+                <input type="password" id="github-token" placeholder="Leave empty for public repos">
             </div>
             <button id="fetch-issues-btn" class="btn btn-generate btn-sm" style="margin-top: 1rem;">
                 Fetch Issues
             </button>
         </div>
 
-        <!-- References & Sign-off -->
         <div class="card">
             <div class="card-header">References & Sign-off</div>
-            <div id="reference-entries-container" class="flex-col gap-4">
-                <!-- The first reference entry is created dynamically by JS -->
+            <div id="reference-entries-container" style="display: flex; flex-direction: column; gap: 1rem;">
             </div>
             <button id="add-reference-btn" class="add-reference-btn" style="margin-top: 1rem;">
                 + Add Reference
@@ -625,7 +624,6 @@ function buildListItems($directory, $isRoot = true) {
             </div>
         </div>
 
-        <!-- Generate/Copy buttons -->
         <div class="flex-row" style="gap: 1rem;">
             <button id="generate-btn" class="btn btn-generate">
                 Generate Commit Message
@@ -635,7 +633,6 @@ function buildListItems($directory, $isRoot = true) {
             </button>
         </div>
 
-        <!-- Output Section with 'Preview' title -->
         <div class="card">
             <div class="card-header"><b>Preview</b></div>
             <pre id="output-message">Click "Generate Commit Message" to see the output here.</pre>
@@ -663,19 +660,17 @@ function buildListItems($directory, $isRoot = true) {
             const referenceEntriesContainer = getById('reference-entries-container');
             const addReferenceBtn = getById('add-reference-btn');
 
-            // GitHub API config fields
             const repoOwner = getById('repo-owner');
             const repoName = getById('repo-name');
             const githubToken = getById('github-token');
             const fetchIssuesBtn = getById('fetch-issues-btn');
 
-            let issueList = []; // Global array to store fetched issues
+            let issueList = [];
             const allActionTypes = ['Fix', 'Update', 'Add', 'Delete'];
 
-            // Store the PHP-generated file explorer HTML template
             const fileExplorerHtml = `
                 <div class="file-explorer">
-                    <ul><?php echo addslashes(str_replace("\n", "", str_replace("'", "\'", buildListItems('.')))); ?></ul>
+                    <ul><?php echo addslashes(str_replace(["\r", "\n"], '', buildListItems('.'))); ?></ul>
                 </div>
             `;
             const fileEntryTemplate = `
@@ -697,19 +692,19 @@ function buildListItems($directory, $isRoot = true) {
                         </div>
                     </div>
                     <div class="selected-files-list">
-                        <h4>Selected Files:</h4>
+                        <h4>Selected File:</h4>
                         <ul id="file-list-{id}" class="file-list"></ul>
                     </div>
                     <div>
                         <label for="what-text-{id}" id="what-label-{id}">What?</label>
                         <textarea id="what-text-{id}" placeholder="Describe what was changed..." rows="2" required></textarea>
-                            </div>
-                            <div>
-                                <label for="why-text-{id}" id="why-label-{id}">Why?</label>
-                                <textarea id="why-text-{id}" placeholder="Explain why this change was necessary..." rows="2" required></textarea>
-                            </div>
-                        </div>
-                    `;
+                    </div>
+                    <div>
+                        <label for="why-text-{id}" id="why-label-{id}">Why?</label>
+                        <textarea id="why-text-{id}" placeholder="Explain why this change was necessary..." rows="2" required></textarea>
+                    </div>
+                </div>
+            `;
             
             const referenceEntryTemplateHtml = `
                 <div class="reference-entry" data-id="{id}">
@@ -726,7 +721,7 @@ function buildListItems($directory, $isRoot = true) {
                                 <option value="Closes">Closes</option>
                             </select>
                         </div>
-                        <div>
+                        <div style="flex:2;">
                             <label for="references-{id}">Issue #</label>
                             <select id="references-{id}" required>
                                 <option value="" selected disabled>Loading issues...</option>
@@ -741,42 +736,43 @@ function buildListItems($directory, $isRoot = true) {
             const MAX_TITLE_LENGTH = 50;
             const MAX_BODY_WRAP_LENGTH = 72;
             
-            // Function to sanitize the description input by converting to lowercase
-            // and removing characters outside the standard printable ASCII range.
+            const toSentenceCase = (str) => {
+                if (!str) return '';
+                let result = str.trim();
+                // Don't convert to lowercase here, just capitalize the first letter
+                result = result.charAt(0).toUpperCase() + result.slice(1);
+                if (!/[.!?]$/.test(result)) result += '.';
+                return result;
+            };
+            
             const sanitizeDescription = () => {
+                const start = description.selectionStart;
+                const end = description.selectionEnd;
                 const inputValue = description.value;
                 let sanitizedValue = '';
                 for (let i = 0; i < inputValue.length; i++) {
                     const char = inputValue[i];
                     const charCode = char.charCodeAt(0);
-                    // Check for printable ASCII characters (from space ' ' to tilde '~')
                     if (charCode >= 32 && charCode <= 126) {
                         sanitizedValue += char;
                     }
                 }
-                // Update the input value without forcing lowercase
-                description.value = sanitizedValue;
+                // Enforce lowercase
+                description.value = sanitizedValue.toLowerCase();
+                description.setSelectionRange(start, end);
             };
 
-            // Function to update the character counter and enforce the limit
             const updateCharCounter = () => {
-                // Ensure input is sanitized before calculation
-                sanitizeDescription();
-
+                sanitizeDescription(); // This now also enforces lowercase
                 const typeVal = commitType.value;
                 const scopeVal = scope.value;
                 const descriptionVal = description.value;
-                
-                // Calculate the length of the fixed part of the header
-                // The format is "type(scope): description"
-                const fixedLength = typeVal.length + (scopeVal ? scopeVal.length + 2 : 0) + (scopeVal && descriptionVal ? 2 : 0);
+                const fixedLength = typeVal.length + (scopeVal ? scopeVal.length + 2 : 0) + (descriptionVal ? 2 : 0);
                 const totalLength = fixedLength + descriptionVal.length;
                 
-                let remaining = MAX_TITLE_LENGTH - totalLength;
                 charCounter.textContent = `${totalLength} / ${MAX_TITLE_LENGTH}`;
                 
                 if (totalLength > MAX_TITLE_LENGTH) {
-                    // Trim the description to fit
                     const maxDescriptionLength = MAX_TITLE_LENGTH - fixedLength;
                     description.value = descriptionVal.substring(0, Math.max(0, maxDescriptionLength));
                     charCounter.classList.add('error');
@@ -786,12 +782,10 @@ function buildListItems($directory, $isRoot = true) {
                 }
             };
 
-            // Event listeners for real-time character counting and limiting
             commitType.addEventListener('change', updateCharCounter);
             scope.addEventListener('change', updateCharCounter);
             description.addEventListener('input', updateCharCounter);
             
-            // Function to handle real-time text wrapping in a textarea
             const realTimeWrap = (event) => {
                 const textarea = event.target;
                 const lines = textarea.value.split('\n');
@@ -802,13 +796,9 @@ function buildListItems($directory, $isRoot = true) {
                     let currentLine = '';
                     
                     for (const word of words) {
-                        // Check if the current line plus the new word will be too long
                         if (currentLine.length + (currentLine.length > 0 ? 1 : 0) + word.length > MAX_BODY_WRAP_LENGTH) {
-                            // If the word itself is too long, break it
                             if (word.length > MAX_BODY_WRAP_LENGTH) {
-                                if (currentLine.length > 0) {
-                                    newText.push(currentLine);
-                                }
+                                if (currentLine.length > 0) newText.push(currentLine);
                                 let tempWord = word;
                                 while (tempWord.length > MAX_BODY_WRAP_LENGTH) {
                                     newText.push(tempWord.substring(0, MAX_BODY_WRAP_LENGTH));
@@ -816,52 +806,37 @@ function buildListItems($directory, $isRoot = true) {
                                 }
                                 currentLine = tempWord;
                             } else {
-                                // Just break the line and start a new one
                                 newText.push(currentLine);
                                 currentLine = word;
                             }
                         } else {
-                            // Append the word to the current line
                             currentLine += (currentLine.length > 0 ? ' ' : '') + word;
                         }
                     }
-                    if (currentLine.length > 0) {
-                        newText.push(currentLine);
-                    }
+                    if (currentLine.length > 0) newText.push(currentLine);
                 });
                 
-                // Get current cursor position to preserve it after wrapping
                 const cursorPosition = textarea.selectionStart;
                 const originalText = textarea.value;
-
-                // Update the textarea value
                 textarea.value = newText.join('\n');
-                
-                // Recalculate cursor position
-                const newTextLines = newText.join('\n');
-                let newCursorPosition = newTextLines.length < originalText.length ? cursorPosition - (originalText.length - newTextLines.length) : cursorPosition;
+                const newTextValue = newText.join('\n');
+                let newCursorPosition = cursorPosition - (originalText.length - newTextValue.length);
                 textarea.setSelectionRange(newCursorPosition, newCursorPosition);
             };
 
-            // Function to fetch issues from the GitHub API
             const fetchIssues = async () => {
                 const owner = repoOwner.value.trim();
                 const name = repoName.value.trim();
                 const token = githubToken.value.trim();
                 
-                if (owner === '' || name === '') {
+                if (!owner || !name) {
                     displayAlert('Please provide a repository owner and name.', true);
                     return;
                 }
 
                 const url = `https://api.github.com/repos/${owner}/${name}/issues?state=open`;
-                
-                const headers = {
-                    'Accept': 'application/vnd.github.v3+json'
-                };
-                if (token !== '') {
-                    headers['Authorization'] = `token ${token}`;
-                }
+                const headers = { 'Accept': 'application/vnd.github.v3+json' };
+                if (token) headers['Authorization'] = `token ${token}`;
                 
                 try {
                     const response = await fetch(url, { headers });
@@ -870,37 +845,24 @@ function buildListItems($directory, $isRoot = true) {
                         throw new Error(errorData.message || 'Failed to fetch issues.');
                     }
                     const issues = await response.json();
-                    
-                    issueList = issues.map(issue => ({
-                        number: issue.number,
-                        title: issue.title
-                    }));
-                    
-                    // Update all existing and future comboboxes
-                    getAllBySelector('select[id^="references-"]').forEach(selectElement => {
-                        populateIssueCombobox(selectElement);
-                    });
-
+                    issueList = issues.map(issue => ({ number: issue.number, title: issue.title }));
+                    getAllBySelector('select[id^="references-"]').forEach(populateIssueCombobox);
                     displayAlert('Successfully fetched open issues.', false);
-
                 } catch (error) {
                     console.error('Error fetching issues:', error);
                     issueList = [];
-                    getAllBySelector('select[id^="references-"]').forEach(selectElement => {
-                        populateIssueCombobox(selectElement);
-                        selectElement.innerHTML = `<option value="" selected disabled>Could not load issues.</option>`;
+                    getAllBySelector('select[id^="references-"]').forEach(select => {
+                        select.innerHTML = `<option value="" selected disabled>Could not load issues.</option>`;
                     });
                     displayAlert(`Error fetching issues: ${error.message}`, true);
                 }
             };
             
-            // Function to populate a single combobox with the fetched issues
             const populateIssueCombobox = (selectElement) => {
                 selectElement.innerHTML = '<option value="" selected disabled>Select an issue...</option>';
-                selectElement.disabled = false;
+                selectElement.disabled = issueList.length === 0;
                 if (issueList.length === 0) {
                     selectElement.innerHTML = '<option value="" selected disabled>No open issues found.</option>';
-                    selectElement.disabled = true;
                 } else {
                     issueList.forEach(issue => {
                         const option = document.createElement('option');
@@ -911,120 +873,90 @@ function buildListItems($directory, $isRoot = true) {
                 }
             };
 
-            // This function builds the full path for a markdown heading, including all its parents
             const getMarkdownHierarchy = (headingItem) => {
-                const filePath = headingItem.getAttribute('data-path');
-                const headingText = headingItem.getAttribute('data-text');
+                const filePath = headingItem.dataset.path;
+                const headingText = headingItem.dataset.text;
                 const hierarchy = [headingText];
-                
                 let parentListItem = headingItem.closest('ul.nested-headings')?.parentNode;
-
-                // Traverse up the parent headings
                 while (parentListItem && parentListItem.classList.contains('heading')) {
-                    hierarchy.unshift(parentListItem.getAttribute('data-text'));
+                    hierarchy.unshift(parentListItem.dataset.text);
                     parentListItem = parentListItem.closest('ul.nested-headings')?.parentNode;
                 }
-                
-                // Remove the top-level heading from the displayed hierarchy
                 const displayedHierarchy = hierarchy.slice(1).join(' :: ');
                 return `${filePath} :: ${displayedHierarchy}`;
             };
             
-            // Function to handle rendering a file list
             const renderFileList = (files, listElement) => {
                 listElement.innerHTML = '';
+                const parentContainer = listElement.closest('.selected-files-list');
                 if (files.length === 0) {
-                    listElement.style.display = 'none';
+                    if(parentContainer) parentContainer.style.display = 'none';
                 } else {
-                    listElement.style.display = 'block';
+                    if(parentContainer) parentContainer.style.display = 'block';
                     files.forEach(file => {
                         const li = document.createElement('li');
                         const fileNameSpan = document.createElement('span');
                         fileNameSpan.textContent = file;
-
                         const removeBtn = document.createElement('button');
                         removeBtn.innerHTML = '&times;';
                         removeBtn.classList.add('remove-file-btn');
                         removeBtn.title = `Remove '${file}'`;
-
-                        removeBtn.addEventListener('click', (event) => {
-                            event.stopPropagation(); // Prevent the parent li from being triggered
+                        removeBtn.onclick = (event) => {
+                            event.stopPropagation();
                             li.remove();
-                            
-                            // Re-hide the list if it's empty
                             if (listElement.children.length === 0) {
-                                listElement.style.display = 'none';
+                                if(parentContainer) parentContainer.style.display = 'none';
                             }
-                        });
-                        
-                        li.appendChild(fileNameSpan);
-                        li.appendChild(removeBtn);
+                        };
+                        li.append(fileNameSpan, removeBtn);
                         listElement.appendChild(li);
                     });
                 }
             };
             
-            // Function to attach event listeners to a file explorer
             const attachFileExplorerListeners = (entryElement) => {
                 const fileExplorer = getBySelector('.file-explorer', entryElement);
                 const fileList = getBySelector('.file-list', entryElement);
                 
+                const handleSelection = (clickedItem, path) => {
+                    const isDeselecting = clickedItem.classList.contains('selected');
+                    const previouslySelected = fileExplorer.querySelector('li.selected');
+                    if (previouslySelected) {
+                        previouslySelected.classList.remove('selected');
+                    }
+                    if (isDeselecting) {
+                        renderFileList([], fileList);
+                    } else {
+                        clickedItem.classList.add('selected');
+                        renderFileList([path], fileList);
+                    }
+                };
+            
                 fileExplorer.addEventListener('click', (event) => {
                     const clickedItem = event.target.closest('li');
                     if (!clickedItem) return;
-
-                    const currentFiles = Array.from(fileList.children).map(li => getBySelector('span', li).textContent);
-                    
-                    // Handle folder expansion and selection
-                    if (clickedItem.classList.contains('folder')) {
-                        const filePath = clickedItem.getAttribute('data-path');
-                        const isAlreadySelected = currentFiles.includes(filePath);
-                        clickedItem.classList.toggle('expanded');
-                        
-                        if (!isAlreadySelected) {
-                            currentFiles.push(filePath);
-                            renderFileList(currentFiles, fileList);
-                        } else {
-                            const newFiles = currentFiles.filter(item => item !== filePath);
-                            renderFileList(newFiles, fileList);
-                        }
-                        event.stopPropagation();
-                        return;
-                    }
-
-                    // Handle markdown file heading expansion/collapse
-                    if (clickedItem.classList.contains('markdown')) {
-                        clickedItem.classList.toggle('expanded');
-                        return;
-                    }
-                    
-                    // Handle heading click events
+                    event.stopPropagation();
+            
                     if (clickedItem.classList.contains('heading')) {
-                        const childList = clickedItem.querySelector('ul.nested-headings');
-                        
-                        // Always add the heading to the list
                         const combinedPath = getMarkdownHierarchy(clickedItem);
-                        if (!currentFiles.includes(combinedPath)) {
-                            currentFiles.push(combinedPath);
-                            renderFileList(currentFiles, fileList);
-                        }
-                        
-                        // Toggle expansion if there are sub-headings
-                        if (childList) {
+                        handleSelection(clickedItem, combinedPath);
+                        if (clickedItem.querySelector('ul.nested-headings')) {
                             clickedItem.classList.toggle('expanded');
                         }
-                        event.stopPropagation();
                         return;
                     }
-
-                    // Handle regular file selection
-                    if (clickedItem.classList.contains('file')) {
-                        const filePath = clickedItem.getAttribute('data-path');
-                        const isAlreadySelected = currentFiles.includes(filePath);
-                        if (!isAlreadySelected) {
-                            currentFiles.push(filePath);
-                            renderFileList(currentFiles, fileList);
-                        }
+                    if (clickedItem.classList.contains('file') && !clickedItem.classList.contains('markdown')) {
+                        handleSelection(clickedItem, clickedItem.dataset.path);
+                        return;
+                    }
+                    if (clickedItem.classList.contains('markdown')) {
+                        handleSelection(clickedItem, clickedItem.dataset.path);
+                        clickedItem.classList.toggle('expanded');
+                        return;
+                    }
+                    if (clickedItem.classList.contains('folder')) {
+                        handleSelection(clickedItem, clickedItem.dataset.path);
+                        clickedItem.classList.toggle('expanded');
                     }
                 });
             };
@@ -1032,417 +964,220 @@ function buildListItems($directory, $isRoot = true) {
             const getUsedActionTypes = () => {
                 const usedTypes = new Set();
                 getAllBySelector('select[id^="file-action-type-"]').forEach(select => {
-                    if (select.value) {
-                        usedTypes.add(select.value);
-                    }
+                    if (select.value) usedTypes.add(select.value);
                 });
                 return usedTypes;
             };
 
-            // Helper function to get the past tense of a verb
             const getPastTense = (action) => {
-                switch(action.toLowerCase()) {
-                    case 'add': return 'added';
-                    case 'update': return 'updated';
-                    case 'delete': return 'deleted';
-                    case 'fix': return 'fixed';
-                    default: return 'changed'; // Fallback for other types or initial state
-                }
+                const tenses = { add: 'added', update: 'updated', delete: 'deleted', fix: 'fixed' };
+                return tenses[action.toLowerCase()] || 'changed';
             };
             
-            // CORRECTED: This function now correctly populates the dropdowns.
             const updateActionTypeSelects = () => {
-                const fileEntries = getAllBySelector('.file-entry');
                 const usedTypes = getUsedActionTypes();
-
-                fileEntries.forEach(entry => {
+                getAllBySelector('.file-entry').forEach(entry => {
                     const select = getBySelector('select[id^="file-action-type-"]', entry);
                     const selectedValue = select.value;
-                    
-                    // Clear existing options
-                    select.innerHTML = '';
-                    
-                    // Add a default disabled option
-                    const defaultOption = document.createElement('option');
-                    defaultOption.value = "";
-                    defaultOption.textContent = "Select an action...";
-                    defaultOption.selected = true;
-                    defaultOption.disabled = true;
-                    defaultOption.hidden = true;
-                    select.appendChild(defaultOption);
-
-                    // Add the available options
+                    select.innerHTML = '<option value="" selected disabled hidden>Select an action...</option>';
                     allActionTypes.forEach(type => {
-                        // An option is available if it's the currently selected value, or if it hasn't been used elsewhere.
-                        const isAvailable = (type === selectedValue) || !usedTypes.has(type);
-                        if (isAvailable) {
+                        if (type === selectedValue || !usedTypes.has(type)) {
                             const option = document.createElement('option');
                             option.value = type;
                             option.textContent = type;
-                            if (type === selectedValue) {
-                                option.selected = true;
-                            }
+                            if (type === selectedValue) option.selected = true;
                             select.appendChild(option);
                         }
                     });
                 });
-
-                // Disable the add button if all action types are in use
-                if (usedTypes.size >= allActionTypes.length) {
-                    addFileActionBtn.disabled = true;
-                } else {
-                    addFileActionBtn.disabled = false;
-                }
+                addFileActionBtn.disabled = usedTypes.size >= allActionTypes.length;
             };
             
-            // This function handles the dynamic creation of new file entries.
             const createFileEntry = () => {
-                const usedTypes = getUsedActionTypes();
-                if (usedTypes.size >= allActionTypes.length) {
+                if (getUsedActionTypes().size >= allActionTypes.length) {
                     displayAlert('Cannot add more file actions. All types are in use.', true);
                     return;
                 }
-
                 const id = fileEntryIdCounter++;
-                // Using a template literal for cleaner string interpolation
                 const newEntryHtml = fileEntryTemplate.replace(/{id}/g, id).replace(/{displayId}/g, id + 1);
-                
                 const tempDiv = document.createElement('div');
                 tempDiv.innerHTML = newEntryHtml;
                 const newEntry = tempDiv.firstElementChild;
-                
                 fileEntriesContainer.appendChild(newEntry);
+                setupFileEntry(newEntry);
+            };
 
-                // Re-attach event listeners for the new elements
-                const fileActionType = getBySelector('select[id^="file-action-type-"]', newEntry);
-                const whatTextarea = getBySelector('textarea[id^="what-text-"]', newEntry);
-                const whatLabel = getBySelector('label[id^="what-label-"]', newEntry);
-                const whyTextarea = getBySelector('textarea[id^="why-text-"]', newEntry);
-                const whyLabel = getBySelector('label[id^="why-label-"]', newEntry);
+            const setupFileEntry = (entry) => {
+                const fileActionType = getBySelector('select[id^="file-action-type-"]', entry);
+                const whatTextarea = getBySelector('textarea[id^="what-text-"]', entry);
+                const whatLabel = getBySelector('label[id^="what-label-"]', entry);
+                const whyTextarea = getBySelector('textarea[id^="why-text-"]', entry);
+                const whyLabel = getBySelector('label[id^="why-label-"]', entry);
 
                 whatTextarea.addEventListener('input', realTimeWrap);
                 whyTextarea.addEventListener('input', realTimeWrap);
 
+                // Add blur listeners to enforce sentence case
+                whatTextarea.addEventListener('blur', () => {
+                    whatTextarea.value = toSentenceCase(whatTextarea.value);
+                });
+                whyTextarea.addEventListener('blur', () => {
+                    whyTextarea.value = toSentenceCase(whyTextarea.value);
+                });
 
                 fileActionType.addEventListener('change', (e) => {
-                    const action = e.target.value;
-                    const pastTenseAction = getPastTense(action);
-                    whatTextarea.placeholder = `Describe what was ${pastTenseAction}...`;
+                    const pastTenseAction = getPastTense(e.target.value);
                     whatLabel.textContent = `What was ${pastTenseAction}?`;
-                    whyTextarea.placeholder = `Explain why this ${pastTenseAction} was necessary...`;
                     whyLabel.textContent = `Why was it ${pastTenseAction}?`;
                     updateActionTypeSelects();
                 });
 
-                getBySelector('.remove-btn', newEntry).addEventListener('click', () => {
-                    newEntry.remove();
+                getBySelector('.remove-btn', entry).addEventListener('click', () => {
+                    entry.remove();
                     updateActionTypeSelects();
                 });
                 
-                attachFileExplorerListeners(newEntry);
+                attachFileExplorerListeners(entry);
                 updateActionTypeSelects();
+                renderFileList([], getBySelector('.file-list', entry));
             };
             
-            // This function handles the dynamic creation of new reference entries.
             const createReferenceEntry = () => {
                 const id = referenceEntryIdCounter++;
                 const newEntryHtml = referenceEntryTemplateHtml.replace(/{id}/g, id).replace(/{displayId}/g, id + 1);
                 const tempDiv = document.createElement('div');
                 tempDiv.innerHTML = newEntryHtml;
                 const newEntry = tempDiv.firstElementChild;
-                
                 referenceEntriesContainer.appendChild(newEntry);
-
-                // Populate the new combobox
-                const newCombobox = getBySelector('select[id^="references-"]', newEntry);
-                populateIssueCombobox(newCombobox);
-                
-                getBySelector('.remove-btn', newEntry).addEventListener('click', () => {
-                    newEntry.remove();
-                });
+                populateIssueCombobox(getBySelector('select[id^="references-"]', newEntry));
+                getBySelector('.remove-btn', newEntry).addEventListener('click', () => newEntry.remove());
             };
 
-            // Initial setup functions
-            attachFileExplorerListeners(getById('file-entries-container').firstElementChild);
-            createReferenceEntry(); // Create the first reference entry on load
+            setupFileEntry(getBySelector('.file-entry[data-id="0"]'));
+            createReferenceEntry();
             addFileActionBtn.addEventListener('click', createFileEntry);
             addReferenceBtn.addEventListener('click', createReferenceEntry);
             fetchIssuesBtn.addEventListener('click', fetchIssues);
-
-            // Add event listener for the initial PHP-generated entry
-            const initialEntry = getBySelector('.file-entry[data-id="0"]');
-            const initialFileActionType = getBySelector('select[id="file-action-type-0"]', initialEntry);
-            
-            initialFileActionType.addEventListener('change', (e) => {
-                const action = e.target.value;
-                const pastTenseAction = getPastTense(action);
-                const whatTextarea = getBySelector('textarea[id="what-text-0"]', initialEntry);
-                const whatLabel = getBySelector('label[id="what-label-0"]', initialEntry);
-                const whyTextarea = getBySelector('textarea[id="why-text-0"]', initialEntry);
-                const whyLabel = getBySelector('label[id="why-label-0"]', initialEntry);
-
-                whatTextarea.placeholder = `Describe what was ${pastTenseAction}...`;
-                whatLabel.textContent = `What was ${pastTenseAction}?`;
-                whyTextarea.placeholder = `Explain why this ${pastTenseAction} was necessary...`;
-                whyLabel.textContent = `Why was it ${pastTenseAction}?`;
-                updateActionTypeSelects();
-            });
-            
-            // Set up the available options for the first select on load
-            updateActionTypeSelects();
-            // Call updateCharCounter initially to set the counter
             updateCharCounter();
             
-            // Add real-time wrapping to the initial textareas
-            getById('what-text-0').addEventListener('input', realTimeWrap);
-            getById('why-text-0').addEventListener('input', realTimeWrap);
-            
-            // Function to convert a string to sentence case and append a period if one is missing
-            const toSentenceCase = (str) => {
-                if (!str || typeof str !== 'string') return '';
-                let result = str.toLowerCase().replace(/(^|\.\s*?)([a-z])/g, (match, p1, p2) => p1 + p2.toUpperCase());
-                
-                // Trim trailing whitespace to handle cases like "sentence   ."
-                result = result.trim();
-                
-                // Check if the last character is a punctuation mark
-                const lastChar = result.charAt(result.length - 1);
-                if (lastChar !== '.' && lastChar !== '!' && lastChar !== '?') {
-                    result += '.';
-                }
-                return result;
-            };
-
-            // New function to wrap text at a specified character limit, now handles long words
-            const wrapText = (text, maxLength, prefix = '', indent = '  ') => {
+            const wrapText = (text, maxLength) => {
                 const lines = text.split('\n');
-                let wrappedText = '';
-
-                lines.forEach((line, index) => {
-                    let words = line.split(' ');
+                let wrappedText = [];
+                lines.forEach(line => {
                     let currentLine = '';
-                    
+                    const words = line.split(' ');
                     for (const word of words) {
-                        // Check if the word itself is longer than a single line
                         if (word.length > maxLength) {
-                            if (currentLine.length > 0) {
-                                wrappedText += currentLine.trim() + '\n';
-                            }
+                            if (currentLine) wrappedText.push(currentLine.trim());
                             let tempWord = word;
-                            while (tempWord.length > 0) {
-                                wrappedText += prefix + tempWord.substring(0, maxLength - prefix.length) + '\n';
-                                tempWord = tempWord.substring(maxLength - prefix.length);
+                            while(tempWord.length > 0) {
+                                wrappedText.push(tempWord.substring(0, maxLength));
+                                tempWord = tempWord.substring(maxLength);
                             }
                             currentLine = '';
-                            continue;
-                        }
-
-                        // Normal wrapping logic
-                        if (currentLine.length + (currentLine.length > 0 ? 1 : 0) + word.length > maxLength - prefix.length) {
-                            wrappedText += currentLine.trim() + '\n';
-                            currentLine = prefix + word;
+                        } else if (currentLine.length + word.length + 1 > maxLength) {
+                            wrappedText.push(currentLine.trim());
+                            currentLine = word;
                         } else {
-                            currentLine += (currentLine.length > 0 ? ' ' : '') + word;
+                            currentLine += (currentLine ? ' ' : '') + word;
                         }
                     }
-                    if (currentLine.length > 0) {
-                        wrappedText += currentLine.trim();
-                    }
-                    if (index < lines.length - 1) {
-                        wrappedText += '\n';
-                    }
+                    if (currentLine) wrappedText.push(currentLine.trim());
                 });
-                
-                return wrappedText;
+                return wrappedText.join('\n');
             };
 
-
-            // Validation function
             const validateForm = () => {
-                const requiredFields = [
-                    commitType,
-                    scope,
-                    description,
-                    signOffName,
-                    signOffEmail
-                ];
-
-                for (const field of requiredFields) {
-                    if (field.value.trim() === '') {
-                        field.focus();
-                        return { valid: false, message: `Please fill out the '${field.id}' field.` };
-                    }
+                const fields = {
+                    "Commit Type": commitType, "Scope": scope, "Description": description,
+                    "Sign-off Name": signOffName, "Sign-off Email": signOffEmail
+                };
+                for (const [name, field] of Object.entries(fields)) {
+                    if (!field.value.trim()) return { valid: false, message: `Please fill out the '${name}' field.` };
                 }
-
-                // New validation for commit title length
-                const header = `${commitType.value}(${scope.value}): ${description.value}`;
-                if (header.length > 50) {
-                    description.focus();
+                if ((`${commitType.value}(${scope.value}): ${description.value}`).length > 50) {
                     return { valid: false, message: 'The commit title cannot be longer than 50 characters.' };
                 }
-                
-                // Final check to ensure description is lowercase and valid characters
                 if (/[A-Z]/.test(description.value)) {
-                    description.focus();
                     return { valid: false, message: 'The description must be entirely in lowercase.' };
                 }
-
                 const fileEntries = getAllBySelector('.file-entry');
-                if (fileEntries.length === 0) {
-                    return { valid: false, message: 'Please add at least one file action.' };
-                }
-
+                if (fileEntries.length === 0) return { valid: false, message: 'Please add at least one file action.' };
                 for (const entry of fileEntries) {
-                    const actionType = getBySelector('select[id^="file-action-type-"]', entry);
-                    if (actionType.value.trim() === '') {
-                        actionType.focus();
-                        return { valid: false, message: 'Please select an action type for all file actions.' };
-                    }
-                    
-                    const fileListElement = getBySelector('.file-list', entry);
-                    if (fileListElement.children.length === 0) {
-                        entry.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        return { valid: false, message: 'Please select at least one file for each file action.' };
-                    }
-
-                    const whatTextarea = getBySelector('textarea[id^="what-text-"]', entry);
-                    if (whatTextarea.value.trim() === '') {
-                        whatTextarea.focus();
-                        return { valid: false, message: `Please fill out the 'What?' field for file action.` };
-                    }
-
-                    const whyTextarea = getBySelector('textarea[id^="why-text-"]', entry);
-                    if (whyTextarea.value.trim() === '') {
-                        whyTextarea.focus();
-                        return { valid: false, message: `Please fill out the 'Why?' field for file action.` };
-                    }
+                    if (!getBySelector('select[id^="file-action-type-"]', entry).value) return { valid: false, message: 'Please select an action type for all file actions.' };
+                    if (getBySelector('.file-list', entry).children.length === 0) return { valid: false, message: 'Please select a file for each file action.' };
+                    if (!getBySelector('textarea[id^="what-text-"]', entry).value.trim()) return { valid: false, message: `Please fill out the 'What?' field.` };
+                    if (!getBySelector('textarea[id^="why-text-"]', entry).value.trim()) return { valid: false, message: `Please fill out the 'Why?' field.` };
                 }
-
-                // Validate dynamic reference entries
-                const referenceEntries = getAllBySelector('.reference-entry');
-                if (referenceEntries.length > 0) {
-                    for (const entry of referenceEntries) {
-                        const referencesInput = getBySelector('select[id^="references-"]', entry);
-                        if (referencesInput.value.trim() === '') {
-                            referencesInput.focus();
-                            return { valid: false, message: `Please select an issue for the reference.` };
-                        }
-                    }
+                for (const entry of getAllBySelector('.reference-entry')) {
+                    if (!getBySelector('select[id^="references-"]', entry).value) return { valid: false, message: `Please select an issue for the reference.` };
                 }
-
-
-                return { valid: true, message: '' };
+                return { valid: true };
             };
             
             const displayAlert = (message, isError) => {
                 const alertBox = document.createElement('div');
                 alertBox.textContent = message;
-                alertBox.classList.add('alert-box');
-                if (isError) {
-                    alertBox.classList.add('error');
-                }
+                alertBox.className = `alert-box ${isError ? 'error' : ''}`;
                 document.body.appendChild(alertBox);
-                setTimeout(() => {
-                    alertBox.remove();
-                }, 3000);
+                setTimeout(() => alertBox.remove(), 3000);
             };
 
             generateBtn.addEventListener('click', async () => {
-                const validationResult = validateForm();
-                
-                if (!validationResult.valid) {
-                    displayAlert(validationResult.message, true);
+                const validation = validateForm();
+                if (!validation.valid) {
+                    displayAlert(validation.message, true);
                     return;
                 }
                 
-                const typeVal = commitType.value.trim();
-                const scopeVal = scope.value.trim();
-                const descriptionVal = description.value.trim();
-                
-                let header = `${typeVal}(${scopeVal}): ${descriptionVal}`;
+                let header = `${commitType.value}(${scope.value}): ${description.value.trim()}`;
                 let message = `${header}\n\n`;
 
-                const filesByAction = { Add: [], Fix: [], Update: [], Delete: [] };
-                const descriptionsByAction = { Add: [], Fix: [], Update: [], Delete: [] };
-                const justificationsByAction = { Add: [], Fix: [], Update: [], Delete: [] };
-
-                // Iterate over each dynamic file entry
+                const actions = { Add: [], Fix: [], Update: [], Delete: [] };
                 getAllBySelector('.file-entry').forEach(entry => {
                     const actionType = getBySelector('select[id^="file-action-type-"]', entry).value;
-                    const whatText = toSentenceCase(getBySelector('textarea[id^="what-text-"]', entry).value.trim());
-                    const whyText = toSentenceCase(getBySelector('textarea[id^="why-text-"]', entry).value.trim());
-                    const fileListElement = getBySelector('.file-list', entry);
-                    const files = Array.from(fileListElement.children).map(li => getBySelector('span', li).textContent);
-                    
-                    if (files.length > 0) {
-                        filesByAction[actionType].push(...files);
-                        if (whatText !== '') {
-                            descriptionsByAction[actionType].push(whatText);
-                        }
-                        if (whyText !== '') {
-                            justificationsByAction[actionType].push(whyText);
-                        }
-                    }
+                    actions[actionType].push({
+                        files: Array.from(getBySelector('.file-list', entry).children).map(li => li.querySelector('span').textContent),
+                        what: toSentenceCase(getBySelector('textarea[id^="what-text-"]', entry).value),
+                        why: toSentenceCase(getBySelector('textarea[id^="why-text-"]', entry).value)
+                    });
                 });
 
-                // Append the lists and descriptions to the message in the new order
-                const appendFileListAndDescriptions = (title, files, descriptions, justifications) => {
-                    if (files.length > 0) {
-                        message += `### ${title}\n\n`;
-                        message += 'Files:\n\n'; // This was changed from `\n` to `\n\n` to fix the extra carriage return
-                        files.forEach(file => {
-                            // Changed to not include a bullet point prefix
-                            message += wrapText(file, 72, '', '') + '\n';
-                        });
-                        
-                        if (descriptions.length > 0) {
-                             message += `\nWhat was ${getPastTense(title)}?\n\n`;
-                             descriptions.forEach(desc => message += wrapText(desc, 72) + '\n\n');
-                        }
-                        if (justifications.length > 0) {
-                            message += `\nWhy was it ${getPastTense(title)}?\n\n`;
-                            justifications.forEach(just => message += wrapText(just, 72) + '\n\n');
-                        }
-                    }
+                const appendActionDetails = (title, actionItems) => {
+                    if (actionItems.length === 0) return;
+                    message += `${title}:\n\n`;
+                    actionItems.forEach(item => {
+                        message += item.files.map(f => wrapText(f, 72)).join('\n') + '\n\n';
+                        message += `What was ${getPastTense(title)}?\n\n${wrapText(item.what, 72)}\n\n`;
+                        message += `Why was it ${getPastTense(title)}?\n\n${wrapText(item.why, 72)}\n\n`;
+                    });
                 };
                 
-                appendFileListAndDescriptions('Add', filesByAction.Add, descriptionsByAction.Add, justificationsByAction.Add);
-                appendFileListAndDescriptions('Fix', filesByAction.Fix, descriptionsByAction.Fix, justificationsByAction.Fix);
-                appendFileListAndDescriptions('Update', filesByAction.Update, descriptionsByAction.Update, justificationsByAction.Update);
-                appendFileListAndDescriptions('Delete', filesByAction.Delete, descriptionsByAction.Delete, justificationsByAction.Delete);
+                appendActionDetails('Add', actions.Add);
+                appendActionDetails('Fix', actions.Fix);
+                appendActionDetails('Update', actions.Update);
+                appendActionDetails('Delete', actions.Delete);
 
-                // Append dynamic references
                 getAllBySelector('.reference-entry').forEach(entry => {
                     const refType = getBySelector('select[id^="reference-type-"]', entry).value;
-                    const refs = getBySelector('select[id^="references-"]', entry).value.trim();
-
-                    if (refs !== '') {
-                        message += `${refType} #${refs}\n`;
-                    }
+                    const refNum = getBySelector('select[id^="references-"]', entry).value;
+                    if (refNum) message += `${refType} #${refNum}\n`;
                 });
 
-                if (signOffName.value.trim() !== '' && signOffEmail.value.trim() !== '') {
+                if (signOffName.value && signOffEmail.value) {
                     message += `\nSigned-off-by: ${signOffName.value.trim()} <${signOffEmail.value.trim()}>`;
                 }
 
                 outputMessage.textContent = message;
 
-                // Send the commit message to the server for file writing
                 try {
                     const response = await fetch(window.location.href, {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
+                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ commitMessage: message })
                     });
-
                     const result = await response.json();
-                    if (result.success) {
-                        displayAlert('Commit message written to .git/COMMIT_EDITMSG!', false);
-                    } else {
-                        displayAlert(`Error: ${result.error}`, true);
-                    }
+                    displayAlert(result.success ? 'Commit message written to .git/COMMIT_EDITMSG!' : `Error: ${result.error}`, !result.success);
                 } catch (error) {
                     console.error('Error writing file via API:', error);
                     displayAlert('An unexpected error occurred while writing the file.', true);
@@ -1455,13 +1190,15 @@ function buildListItems($directory, $isRoot = true) {
                 textarea.value = textToCopy;
                 document.body.appendChild(textarea);
                 textarea.select();
-                document.execCommand('copy');
+                try {
+                    document.execCommand('copy');
+                    displayAlert('Commit message copied to clipboard!', false);
+                } catch (err) {
+                    displayAlert('Failed to copy text.', true);
+                }
                 document.body.removeChild(textarea);
-
-                displayAlert('Commit message copied to clipboard!', false);
             });
             
-            // Call fetchIssues on page load
             fetchIssues();
         });
     </script>
