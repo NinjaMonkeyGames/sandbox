@@ -138,7 +138,7 @@ function buildListItems($directory, $isRoot = true) {
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            min-height: 100vh;
+            min-height: 10vh;
             padding: 1rem;
         }
 
@@ -200,6 +200,27 @@ function buildListItems($directory, $isRoot = true) {
             outline: none;
             border-color: #4f46e5;
             box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+        
+        .description-container {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .description-container label {
+            margin-bottom: 0;
+        }
+
+        .char-counter {
+            font-size: 0.75rem;
+            color: #6b7280;
+            align-self: flex-end;
+            margin-top: 0.25rem;
+        }
+        
+        .char-counter.error {
+            color: #ef4444;
+            font-weight: bold;
         }
 
         .flex-row {
@@ -496,9 +517,10 @@ function buildListItems($directory, $isRoot = true) {
                         <option value="rebase">rebase</option>
                     </select>
                 </div>
-                <div>
+                <div class="description-container">
                     <label for="description">Description</label>
                     <input type="text" id="description" value="" placeholder="Short summary of the change" required>
+                    <span id="char-counter" class="char-counter">0 / 50</span>
                 </div>
             </div>
         </div>
@@ -629,6 +651,7 @@ function buildListItems($directory, $isRoot = true) {
             const commitType = getById('commit-type');
             const scope = getById('scope');
             const description = getById('description');
+            const charCounter = getById('char-counter');
             const signOffName = getById('sign-off-name');
             const signOffEmail = getById('sign-off-email');
             const outputMessage = getById('output-message');
@@ -650,7 +673,40 @@ function buildListItems($directory, $isRoot = true) {
             const allActionTypes = ['Fix', 'Update', 'Add', 'Delete'];
 
             // Store the PHP-generated file explorer HTML template
-            const fileEntryTemplateHtml = `<?php echo addslashes(str_replace("\n", "", str_replace("'", "\'", $fileEntryTemplate))); ?>`;
+            const fileEntryTemplate = `
+                <div class="file-entry" data-id="{id}">
+                    <div class="file-entry-header">
+                        <h3>File Action #{displayId}</h3>
+                        <button class="remove-btn">Remove</button>
+                    </div>
+                    <div class="flex-row">
+                        <div>
+                            <label for="file-action-type-{id}">Action</label>
+                            <select id="file-action-type-{id}" required>
+                                <option value="" selected disabled hidden>Select an action...</option>
+                            </select>
+                        </div>
+                        <div style="flex: 2;">
+                            <label>File Explorer</label>
+                            <div class="file-explorer">
+                                <ul><?php echo addslashes(str_replace("\n", "", str_replace("'", "\'", buildListItems('.')))); ?></ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="selected-files-list">
+                        <h4>Selected Files:</h4>
+                        <ul id="file-list-{id}" class="file-list"></ul>
+                    </div>
+                    <div>
+                        <label for="what-text-{id}" id="what-label-{id}">What?</label>
+                        <textarea id="what-text-{id}" placeholder="Describe what was changed..." rows="2" required></textarea>
+                    </div>
+                    <div>
+                        <label for="why-text-{id}" id="why-label-{id}">Why?</label>
+                        <textarea id="why-text-{id}" placeholder="Explain why this change was necessary..." rows="2" required></textarea>
+                    </div>
+                </div>
+            `;
             
             const referenceEntryTemplateHtml = `
                 <div class="reference-entry" data-id="{id}">
@@ -679,6 +735,37 @@ function buildListItems($directory, $isRoot = true) {
             
             let fileEntryIdCounter = 1;
             let referenceEntryIdCounter = 0;
+            const MAX_TITLE_LENGTH = 50;
+            
+            // Function to update the character counter and enforce the limit
+            const updateCharCounter = () => {
+                const typeVal = commitType.value;
+                const scopeVal = scope.value;
+                const descriptionVal = description.value;
+                
+                // Calculate the length of the fixed part of the header
+                // The format is "type(scope): description"
+                const fixedLength = typeVal.length + (scopeVal ? scopeVal.length + 2 : 0) + (scopeVal && descriptionVal ? 2 : 0);
+                const totalLength = fixedLength + descriptionVal.length;
+                
+                let remaining = MAX_TITLE_LENGTH - totalLength;
+                charCounter.textContent = `${totalLength} / ${MAX_TITLE_LENGTH}`;
+                
+                if (totalLength > MAX_TITLE_LENGTH) {
+                    // Trim the description to fit
+                    const maxDescriptionLength = MAX_TITLE_LENGTH - fixedLength;
+                    description.value = descriptionVal.substring(0, Math.max(0, maxDescriptionLength));
+                    charCounter.classList.add('error');
+                    charCounter.textContent = `${MAX_TITLE_LENGTH} / ${MAX_TITLE_LENGTH}`;
+                } else {
+                    charCounter.classList.remove('error');
+                }
+            };
+
+            // Event listeners for real-time character counting and limiting
+            commitType.addEventListener('change', updateCharCounter);
+            scope.addEventListener('change', updateCharCounter);
+            description.addEventListener('input', updateCharCounter);
 
             // Function to fetch issues from the GitHub API
             const fetchIssues = async () => {
@@ -933,7 +1020,7 @@ function buildListItems($directory, $isRoot = true) {
                 }
 
                 const id = fileEntryIdCounter++;
-                const newEntryHtml = fileEntryTemplateHtml.replace(/{id}/g, id).replace(/{displayId}/g, id + 1);
+                const newEntryHtml = fileEntryTemplate.replace(/{id}/g, id).replace(/{displayId}/g, id + 1);
                 const tempDiv = document.createElement('div');
                 tempDiv.innerHTML = newEntryHtml;
                 const newEntry = tempDiv.firstElementChild;
@@ -1014,6 +1101,8 @@ function buildListItems($directory, $isRoot = true) {
             
             // Set up the available options for the first select on load
             updateActionTypeSelects();
+            // Call updateCharCounter initially to set the counter
+            updateCharCounter();
 
 
             // New function to wrap text at a specified character limit
@@ -1055,6 +1144,13 @@ function buildListItems($directory, $isRoot = true) {
                         field.focus();
                         return { valid: false, message: `Please fill out the '${field.id}' field.` };
                     }
+                }
+
+                // New validation for commit title length
+                const header = `${commitType.value}(${scope.value}): ${description.value}`;
+                if (header.length > 50) {
+                    description.focus();
+                    return { valid: false, message: 'The commit title cannot be longer than 50 characters.' };
                 }
 
                 const fileEntries = getAllBySelector('.file-entry');
