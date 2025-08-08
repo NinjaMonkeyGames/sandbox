@@ -60,28 +60,28 @@ function getMarkdownHeadings($filePath) {
             $headingLevel = strlen($matches[1]);
             $headingText = htmlspecialchars(trim($matches[2]));
 
-            // Close any lists from higher levels
+            // Close any lists from higher or equal levels
             while (!empty($stack) && $stack[count($stack) - 1] >= $headingLevel) {
-                array_pop($stack);
                 $html .= '</li></ul>';
+                array_pop($stack);
             }
 
-            // If the current level is higher, open a new list
+            // Open a new list if the current level is higher
             if (empty($stack) || $stack[count($stack) - 1] < $headingLevel) {
                 $html .= '<ul class="nested-headings">';
                 $stack[] = $headingLevel;
             } else {
-                $html .= '</li>'; // Close the previous list item
+                $html .= '</li>'; // Close the previous list item if it's at the same level
             }
             
-            $html .= '<li class="heading" data-path="' . htmlspecialchars($filePath) . '" data-level="' . $headingLevel . '" data-text="' . $headingText . '">' . $headingText;
+            $html .= '<li class="heading" data-path="' . htmlspecialchars($filePath) . '" data-level="' . $headingLevel . '" data-text="' . $headingText . '"><span>' . $headingText . '</span>';
         }
     }
     
     // Close any remaining open lists
     while (!empty($stack)) {
-        array_pop($stack);
         $html .= '</li></ul>';
+        array_pop($stack);
     }
     
     return $html;
@@ -216,12 +216,39 @@ function buildListItems($directory, $isRoot = true) {
         }
 
         .file-list {
-            list-style: disc;
-            list-style-position: inside;
+            list-style: none;
             margin-top: 1rem;
             font-size: 0.875rem;
             color: #374151;
             line-height: 1.5;
+            padding-left: 0;
+        }
+        .file-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-left: 1rem;
+            position: relative;
+        }
+        .file-list li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        .remove-file-btn {
+            background: none;
+            border: none;
+            color: #ef4444;
+            font-size: 1.25rem;
+            cursor: pointer;
+            line-height: 1;
+            font-weight: bold;
+            padding: 0 0.5rem;
+            transition: color 0.15s ease-in-out;
+        }
+        .remove-file-btn:hover {
+            color: #b91c1c;
         }
 
         .btn {
@@ -367,17 +394,14 @@ function buildListItems($directory, $isRoot = true) {
         .file-explorer ul li {
             line-height: 1.5;
             cursor: pointer;
-            user-select: none;
-        }
-        .file-explorer ul li .name {
-            display: inline-block;
             padding: 2px 5px;
             border-radius: 3px;
+            user-select: none;
         }
-        .file-explorer ul li.selected > .name {
+        /* Added hover effect to all list items for better visual feedback */
+        .file-explorer ul li:hover {
             background-color: #e0e0e0;
         }
-
         .file-explorer .folder > ul {
             display: none;
         }
@@ -411,8 +435,9 @@ function buildListItems($directory, $isRoot = true) {
         .heading {
             position: relative;
         }
-
-        .heading::before {
+        
+        /* Style for the expand/collapse icon on folder and heading items */
+        .folder > .name::before, .heading > span::before {
             content: '+';
             position: absolute;
             left: -15px;
@@ -421,20 +446,20 @@ function buildListItems($directory, $isRoot = true) {
             font-weight: bold;
             display: block;
         }
-
-        .heading.expanded::before {
+        
+        .folder.expanded > .name::before, .heading.expanded > span::before {
             content: '-';
         }
-        .heading:not(:has(ul))::before {
-            content: '';
+        .heading:not(:has(ul)) > span::before {
+             content: '';
         }
-
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Commit Message Generator</h1>
         
+        <!-- Commit Header -->
         <div class="card">
             <div class="card-header">Commit Header</div>
             <div class="flex-row">
@@ -478,6 +503,7 @@ function buildListItems($directory, $isRoot = true) {
             </div>
         </div>
 
+        <!-- Dynamic File Actions Section -->
         <div class="card">
             <div class="card-header">File Changes</div>
             <div id="file-entries-container" class="flex-col gap-4">
@@ -504,7 +530,8 @@ function buildListItems($directory, $isRoot = true) {
                                 <div>
                                     <label for="file-action-type-{id}">Action</label>
                                     <select id="file-action-type-{id}" required>
-                                        </select>
+                                        <!-- Options will be populated by JavaScript -->
+                                    </select>
                                 </div>
                                 <div style="flex: 2;">
                                     <label>File Explorer</label>
@@ -535,6 +562,7 @@ function buildListItems($directory, $isRoot = true) {
             </button>
         </div>
         
+        <!-- GitHub API Integration for References -->
         <div class="card">
             <div class="card-header">GitHub API Configuration</div>
             <div>
@@ -554,10 +582,12 @@ function buildListItems($directory, $isRoot = true) {
             </button>
         </div>
 
+        <!-- References & Sign-off -->
         <div class="card">
             <div class="card-header">References & Sign-off</div>
             <div id="reference-entries-container" class="flex-col gap-4">
-                </div>
+                <!-- The first reference entry is created dynamically by JS -->
+            </div>
             <button id="add-reference-btn" class="add-reference-btn" style="margin-top: 1rem;">
                 + Add Reference
             </button>
@@ -573,6 +603,7 @@ function buildListItems($directory, $isRoot = true) {
             </div>
         </div>
 
+        <!-- Generate/Copy buttons -->
         <div class="flex-row" style="gap: 1rem;">
             <button id="generate-btn" class="btn btn-generate">
                 Generate Commit Message
@@ -582,6 +613,7 @@ function buildListItems($directory, $isRoot = true) {
             </button>
         </div>
 
+        <!-- Output Section with 'Preview' title -->
         <div class="card">
             <div class="card-header"><b>Preview</b></div>
             <pre id="output-message">Click "Generate Commit Message" to see the output here.</pre>
@@ -744,7 +776,26 @@ function buildListItems($directory, $isRoot = true) {
                     listElement.style.display = 'block';
                     files.forEach(file => {
                         const li = document.createElement('li');
-                        li.textContent = file;
+                        const fileNameSpan = document.createElement('span');
+                        fileNameSpan.textContent = file;
+
+                        const removeBtn = document.createElement('button');
+                        removeBtn.innerHTML = '&times;';
+                        removeBtn.classList.add('remove-file-btn');
+                        removeBtn.title = `Remove '${file}'`;
+
+                        removeBtn.addEventListener('click', (event) => {
+                            event.stopPropagation(); // Prevent the parent li from being triggered
+                            li.remove();
+                            
+                            // Re-hide the list if it's empty
+                            if (listElement.children.length === 0) {
+                                listElement.style.display = 'none';
+                            }
+                        });
+                        
+                        li.appendChild(fileNameSpan);
+                        li.appendChild(removeBtn);
                         listElement.appendChild(li);
                     });
                 }
@@ -759,261 +810,427 @@ function buildListItems($directory, $isRoot = true) {
                     const clickedItem = event.target.closest('li');
                     if (!clickedItem) return;
 
-                    // Handle folder expansion
+                    const currentFiles = Array.from(fileList.children).map(li => getBySelector('span', li).textContent);
+                    
+                    // Handle folder expansion and selection
                     if (clickedItem.classList.contains('folder')) {
+                        const filePath = clickedItem.getAttribute('data-path');
+                        const isAlreadySelected = currentFiles.includes(filePath);
                         clickedItem.classList.toggle('expanded');
-                        clickedItem.classList.remove('selected');
+                        
+                        if (!isAlreadySelected) {
+                            currentFiles.push(filePath);
+                            renderFileList(currentFiles, fileList);
+                        } else {
+                            const newFiles = currentFiles.filter(item => item !== filePath);
+                            renderFileList(newFiles, fileList);
+                        }
+                        event.stopPropagation();
                         return;
                     }
 
                     // Handle markdown file heading expansion/collapse
                     if (clickedItem.classList.contains('markdown')) {
                         clickedItem.classList.toggle('expanded');
-                        clickedItem.classList.remove('selected');
                         return;
                     }
                     
-                    // Toggle 'selected' class for regular files and headings
-                    if (clickedItem.classList.contains('file') || clickedItem.classList.contains('heading')) {
-                         // Find the existing item in the file list and remove it if it exists
-                        const existingListItems = Array.from(fileList.children);
-                        const itemText = clickedItem.classList.contains('heading') ? getMarkdownHierarchy(clickedItem) : clickedItem.getAttribute('data-path');
-                        let isAlreadySelected = false;
-
-                        existingListItems.forEach(item => {
-                            if (item.textContent === itemText) {
-                                item.remove();
-                                isAlreadySelected = true;
-                                clickedItem.classList.remove('selected');
-                            }
-                        });
-
-                        // If it wasn't already in the list, add it and mark as selected
-                        if (!isAlreadySelected) {
-                            const li = document.createElement('li');
-                            li.textContent = itemText;
-                            fileList.appendChild(li);
-                            clickedItem.classList.add('selected');
+                    // Handle heading click events
+                    if (clickedItem.classList.contains('heading')) {
+                        const childList = clickedItem.querySelector('ul.nested-headings');
+                        
+                        // Always add the heading to the list
+                        const combinedPath = getMarkdownHierarchy(clickedItem);
+                        if (!currentFiles.includes(combinedPath)) {
+                            currentFiles.push(combinedPath);
+                            renderFileList(currentFiles, fileList);
                         }
                         
-                        renderFileList(Array.from(fileList.children).map(li => li.textContent), fileList);
+                        // Toggle expansion if there are sub-headings
+                        if (childList) {
+                            clickedItem.classList.toggle('expanded');
+                        }
                         event.stopPropagation();
+                        return;
+                    }
+
+                    // Handle regular file selection
+                    if (clickedItem.classList.contains('file')) {
+                        const filePath = clickedItem.getAttribute('data-path');
+                        const isAlreadySelected = currentFiles.includes(filePath);
+                        if (!isAlreadySelected) {
+                            currentFiles.push(filePath);
+                            renderFileList(currentFiles, fileList);
+                        }
                     }
                 });
             };
-            
-            // Function to add a new file entry
-            const addFileEntry = () => {
-                const newId = fileEntryIdCounter++;
-                const newEntryHtml = fileEntryTemplateHtml
-                    .replace(/{id}/g, newId)
-                    .replace(/{displayId}/g, newId + 1);
-                
-                const newEntryElement = document.createElement('div');
-                newEntryElement.innerHTML = newEntryHtml;
-                fileEntriesContainer.appendChild(newEntryElement.firstElementChild);
-                
-                // Add event listeners to the new entry's file explorer and remove button
-                const addedEntry = getBySelector(`[data-id="${newId}"]`, fileEntriesContainer);
-                attachFileExplorerListeners(addedEntry);
-                attachFileActionListeners(addedEntry);
 
-                // Add action type options to the new select box
-                const actionSelect = getById(`file-action-type-${newId}`);
-                populateFileActionTypes(actionSelect);
-            };
-
-            // Function to populate file action type dropdowns
-            const populateFileActionTypes = (selectElement) => {
-                selectElement.innerHTML = '<option value="" selected disabled hidden>Select an action...</option>';
-                allActionTypes.forEach(action => {
-                    const option = document.createElement('option');
-                    option.value = action.toLowerCase();
-                    option.textContent = action;
-                    selectElement.appendChild(option);
-                });
-            };
-            
-            // Function to attach listeners to file action entries
-            const attachFileActionListeners = (entryElement) => {
-                const removeBtn = getBySelector('.remove-btn', entryElement);
-                const actionSelect = getBySelector('select[id^="file-action-type-"]', entryElement);
-                const whatLabel = getBySelector('label[id^="what-label-"]', entryElement);
-                const whyLabel = getBySelector('label[id^="why-label-"]', entryElement);
-                const whatTextarea = getBySelector('textarea[id^="what-text-"]', entryElement);
-
-                removeBtn.addEventListener('click', () => {
-                    entryElement.remove();
-                });
-                
-                actionSelect.addEventListener('change', () => {
-                    const action = actionSelect.value;
-                    let whatText;
-                    let whyText;
-
-                    switch (action) {
-                        case 'fix':
-                            whatText = "Describe what was fixed...";
-                            whyText = "Explain why this fix was necessary...";
-                            break;
-                        case 'update':
-                            whatText = "Describe what was updated...";
-                            whyText = "Explain why this update was necessary...";
-                            break;
-                        case 'add':
-                            whatText = "Describe what was added...";
-                            whyText = "Explain why this addition was necessary...";
-                            break;
-                        case 'delete':
-                            whatText = "Describe what was deleted...";
-                            whyText = "Explain why this deletion was necessary...";
-                            break;
-                        default:
-                            whatText = "Describe the change...";
-                            whyText = "Explain why this change was necessary...";
-                            break;
+            const getUsedActionTypes = () => {
+                const usedTypes = new Set();
+                getAllBySelector('select[id^="file-action-type-"]').forEach(select => {
+                    if (select.value) {
+                        usedTypes.add(select.value);
                     }
-
-                    whatLabel.textContent = `What? (${action})`;
-                    whyLabel.textContent = `Why? (${action})`;
-                    whatTextarea.placeholder = whatText;
                 });
+                return usedTypes;
+            };
+
+            // Helper function to get the past tense of a verb
+            const getPastTense = (action) => {
+                switch(action.toLowerCase()) {
+                    case 'add': return 'added';
+                    case 'update': return 'updated';
+                    case 'delete': return 'deleted';
+                    case 'fix': return 'fixed';
+                    default: return action; // Fallback for other types
+                }
+            };
+
+            const updateActionTypeSelects = () => {
+                const usedTypes = getUsedActionTypes();
+                const availableTypes = allActionTypes.filter(type => !usedTypes.has(type));
+
+                getAllBySelector('select[id^="file-action-type-"]').forEach(select => {
+                    const selectedValue = select.value;
+                    const isNewEntry = !selectedValue;
+                    
+                    select.innerHTML = '';
+                    
+                    if (isNewEntry) {
+                        select.innerHTML = '<option value="" selected disabled hidden>Select an action...</option>';
+                    }
+                    
+                    allActionTypes.forEach(type => {
+                        const isSelected = type === selectedValue;
+                        const isAvailable = !usedTypes.has(type) || isSelected;
+                        
+                        if (isAvailable) {
+                            const option = document.createElement('option');
+                            option.value = type;
+                            option.textContent = type;
+                            if (isSelected) {
+                                option.selected = true;
+                            }
+                            select.appendChild(option);
+                        }
+                    });
+                });
+
+                if (usedTypes.size >= allActionTypes.length) {
+                    addFileActionBtn.disabled = true;
+                } else {
+                    addFileActionBtn.disabled = false;
+                }
             };
             
-            // Function to add a new reference entry
-            const addReferenceEntry = () => {
-                const newId = referenceEntryIdCounter++;
-                const newEntryHtml = referenceEntryTemplateHtml
-                    .replace(/{id}/g, newId)
-                    .replace(/{displayId}/g, newId + 1);
-                
-                const newEntryElement = document.createElement('div');
-                newEntryElement.innerHTML = newEntryHtml;
-                referenceEntriesContainer.appendChild(newEntryElement.firstElementChild);
-                
-                const addedEntry = getBySelector(`[data-id="${newId}"]`, referenceEntriesContainer);
-                attachReferenceListeners(addedEntry);
-
-                // Populate the new issue combobox if issues have been fetched
-                const newIssueSelect = getById(`references-${newId}`);
-                populateIssueCombobox(newIssueSelect);
-            };
-
-            // Function to attach listeners to reference entries
-            const attachReferenceListeners = (entryElement) => {
-                const removeBtn = getBySelector('.remove-btn', entryElement);
-                removeBtn.addEventListener('click', () => {
-                    entryElement.remove();
-                });
-            };
-
-            // Initial setup
-            const firstFileEntry = getBySelector('.file-entry');
-            attachFileExplorerListeners(firstFileEntry);
-            attachFileActionListeners(firstFileEntry);
-            const firstActionSelect = getById('file-action-type-0');
-            populateFileActionTypes(firstActionSelect);
-            addReferenceEntry(); // Add the first reference entry
-
-            // Event listeners for adding new entries
-            addFileActionBtn.addEventListener('click', addFileEntry);
-            addReferenceBtn.addEventListener('click', addReferenceEntry);
-            fetchIssuesBtn.addEventListener('click', fetchIssues);
-
-            // Function to generate the commit message
-            const generateCommitMessage = () => {
-                const type = commitType.value;
-                const selectedScope = scope.value;
-                const desc = description.value.trim();
-                const name = signOffName.value.trim();
-                const email = signOffEmail.value.trim();
-
-                if (!type || !selectedScope || !desc || !name || !email) {
-                    displayAlert('Please fill out all required fields.', true);
+            // This function handles the dynamic creation of new file entries.
+            const createFileEntry = () => {
+                const usedTypes = getUsedActionTypes();
+                if (usedTypes.size >= allActionTypes.length) {
+                    displayAlert('Cannot add more file actions. All types are in use.', true);
                     return;
                 }
 
-                let header = `${type}(${selectedScope}): ${desc}\n\n`;
-                let body = '';
-                let references = '';
-                let signOff = `Signed-off-by: ${name} <${email}>`;
+                const id = fileEntryIdCounter++;
+                const newEntryHtml = fileEntryTemplateHtml.replace(/{id}/g, id).replace(/{displayId}/g, id + 1);
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = newEntryHtml;
+                const newEntry = tempDiv.firstElementChild;
                 
-                // Process file action entries
+                fileEntriesContainer.appendChild(newEntry);
+
+                // Re-attach event listeners for the new elements
+                const fileActionType = getBySelector('select[id^="file-action-type-"]', newEntry);
+                const whatTextarea = getBySelector('textarea[id^="what-text-"]', newEntry);
+                const whatLabel = getBySelector('label[id^="what-label-"]', newEntry);
+                const whyTextarea = getBySelector('textarea[id^="why-text-"]', newEntry);
+                const whyLabel = getBySelector('label[id^="why-label-"]', newEntry);
+
+
+                fileActionType.addEventListener('change', (e) => {
+                    const action = e.target.value;
+                    const pastTenseAction = getPastTense(action);
+                    whatTextarea.placeholder = `Describe what was ${pastTenseAction}...`;
+                    whatLabel.textContent = `What was ${pastTenseAction}?`;
+                    whyTextarea.placeholder = `Explain why this ${pastTenseAction} was necessary...`;
+                    whyLabel.textContent = `Why was it ${pastTenseAction}?`;
+                    updateActionTypeSelects();
+                });
+
+                getBySelector('.remove-btn', newEntry).addEventListener('click', () => {
+                    newEntry.remove();
+                    updateActionTypeSelects();
+                });
+                
+                attachFileExplorerListeners(newEntry);
+                updateActionTypeSelects();
+            };
+            
+            // This function handles the dynamic creation of new reference entries.
+            const createReferenceEntry = () => {
+                const id = referenceEntryIdCounter++;
+                const newEntryHtml = referenceEntryTemplateHtml.replace(/{id}/g, id).replace(/{displayId}/g, id + 1);
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = newEntryHtml;
+                const newEntry = tempDiv.firstElementChild;
+                
+                referenceEntriesContainer.appendChild(newEntry);
+
+                // Populate the new combobox
+                const newCombobox = getBySelector('select[id^="references-"]', newEntry);
+                populateIssueCombobox(newCombobox);
+                
+                getBySelector('.remove-btn', newEntry).addEventListener('click', () => {
+                    newEntry.remove();
+                });
+            };
+
+            // Initial setup functions
+            attachFileExplorerListeners(getById('file-entries-container').firstElementChild);
+            createReferenceEntry(); // Create the first reference entry on load
+            addFileActionBtn.addEventListener('click', createFileEntry);
+            addReferenceBtn.addEventListener('click', createReferenceEntry);
+            fetchIssuesBtn.addEventListener('click', fetchIssues);
+
+            // Add event listener for the initial PHP-generated entry
+            const initialEntry = getBySelector('.file-entry[data-id="0"]');
+            const initialFileActionType = getBySelector('select[id="file-action-type-0"]', initialEntry);
+            const initialWhatTextarea = getBySelector('textarea[id="what-text-0"]', initialEntry);
+            const initialWhatLabel = getBySelector('label[id="what-label-0"]', initialEntry);
+            const initialWhyTextarea = getBySelector('textarea[id="why-text-0"]', initialEntry);
+            const initialWhyLabel = getBySelector('label[id="why-label-0"]', initialEntry);
+            
+            // Initial setup of the first file entry
+            const initialSelectedType = 'Fix';
+            initialFileActionType.innerHTML = `<option value="${initialSelectedType}" selected>${initialSelectedType}</option>`;
+
+            initialFileActionType.addEventListener('change', (e) => {
+                const action = e.target.value;
+                const pastTenseAction = getPastTense(action);
+                initialWhatTextarea.placeholder = `Describe what was ${pastTenseAction}...`;
+                initialWhatLabel.textContent = `What was ${pastTenseAction}?`;
+                initialWhyTextarea.placeholder = `Explain why this ${pastTenseAction} was necessary...`;
+                initialWhyLabel.textContent = `Why was it ${pastTenseAction}?`;
+                updateActionTypeSelects();
+            });
+            
+            // Call this on initial load to set up the button and first dropdown
+            updateActionTypeSelects();
+
+
+            // New function to wrap text at a specified character limit
+            const wrapText = (text, maxLength, prefix = '', indent = '  ') => {
+                let wrappedText = '';
+                let currentLine = prefix;
+                const words = text.split(' ');
+
+                words.forEach((word, index) => {
+                    // Check if adding the word exceeds the line length
+                    if ((currentLine + ' ' + word).trim().length > maxLength && currentLine.trim().length > 0) {
+                        wrappedText += currentLine.trim() + '\n';
+                        currentLine = indent + word;
+                    } else {
+                        currentLine = currentLine.trim() === '' ? prefix + word : currentLine + ' ' + word;
+                    }
+
+                    // Handle the last word
+                    if (index === words.length - 1) {
+                        wrappedText += currentLine.trim();
+                    }
+                });
+
+                return wrappedText;
+            };
+
+            // Validation function
+            const validateForm = () => {
+                const requiredFields = [
+                    commitType,
+                    scope,
+                    description,
+                    signOffName,
+                    signOffEmail
+                ];
+
+                for (const field of requiredFields) {
+                    if (field.value.trim() === '') {
+                        field.focus();
+                        return { valid: false, message: `Please fill out the '${field.id}' field.` };
+                    }
+                }
+
                 const fileEntries = getAllBySelector('.file-entry');
-                fileEntries.forEach(entry => {
+                if (fileEntries.length === 0) {
+                    return { valid: false, message: 'Please add at least one file action.' };
+                }
+
+                for (const entry of fileEntries) {
+                    const fileListElement = getBySelector('.file-list', entry);
+                    if (fileListElement.children.length === 0) {
+                        entry.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        return { valid: false, message: 'Please select at least one file for each file action.' };
+                    }
+
+                    const whatTextarea = getBySelector('textarea[id^="what-text-"]', entry);
+                    if (whatTextarea.value.trim() === '') {
+                        whatTextarea.focus();
+                        return { valid: false, message: `Please fill out the 'What?' field for file action.` };
+                    }
+
+                    const whyTextarea = getBySelector('textarea[id^="why-text-"]', entry);
+                    if (whyTextarea.value.trim() === '') {
+                        whyTextarea.focus();
+                        return { valid: false, message: `Please fill out the 'Why?' field for file action.` };
+                    }
+                }
+
+                // Validate dynamic reference entries
+                const referenceEntries = getAllBySelector('.reference-entry');
+                if (referenceEntries.length === 0) {
+                     return { valid: false, message: 'Please add at least one reference.' };
+                }
+                for (const entry of referenceEntries) {
+                    const referencesInput = getBySelector('select[id^="references-"]', entry);
+                    if (referencesInput.value.trim() === '') {
+                        referencesInput.focus();
+                        return { valid: false, message: `Please select an issue for the reference.` };
+                    }
+                }
+
+                return { valid: true, message: '' };
+            };
+            
+            const displayAlert = (message, isError) => {
+                const alertBox = document.createElement('div');
+                alertBox.textContent = message;
+                alertBox.classList.add('alert-box');
+                if (isError) {
+                    alertBox.classList.add('error');
+                }
+                document.body.appendChild(alertBox);
+                setTimeout(() => {
+                    alertBox.remove();
+                }, 3000);
+            };
+
+            generateBtn.addEventListener('click', async () => {
+                const validationResult = validateForm();
+                
+                if (!validationResult.valid) {
+                    displayAlert(validationResult.message, true);
+                    return;
+                }
+                
+                const typeVal = commitType.value.trim();
+                const scopeVal = scope.value.trim();
+                const descriptionVal = description.value.trim();
+                
+                let header = `${typeVal}(${scopeVal}): ${descriptionVal}`;
+                let message = `${header}\n\n`;
+
+                const filesByAction = { Add: [], Fix: [], Update: [], Delete: [] };
+                const descriptionsByAction = { Add: [], Fix: [], Update: [], Delete: [] };
+                const justificationsByAction = { Add: [], Fix: [], Update: [], Delete: [] };
+
+                // Iterate over each dynamic file entry
+                getAllBySelector('.file-entry').forEach(entry => {
                     const actionType = getBySelector('select[id^="file-action-type-"]', entry).value;
                     const whatText = getBySelector('textarea[id^="what-text-"]', entry).value.trim();
                     const whyText = getBySelector('textarea[id^="why-text-"]', entry).value.trim();
-                    const fileList = Array.from(getBySelector('ul.file-list', entry).children).map(li => li.textContent);
+                    const fileListElement = getBySelector('.file-list', entry);
+                    const files = Array.from(fileListElement.children).map(li => getBySelector('span', li).textContent);
                     
-                    if (whatText || whyText || fileList.length > 0) {
-                        body += `${actionType.charAt(0).toUpperCase() + actionType.slice(1)}:\n\n`;
-                        if (whatText) {
-                            body += `${whatText}\n\n`;
+                    if (files.length > 0) {
+                        filesByAction[actionType].push(...files);
+                        if (whatText !== '') {
+                            descriptionsByAction[actionType].push(whatText);
                         }
-                        if (whyText) {
-                            body += `${whyText}\n\n`;
-                        }
-                        if (fileList.length > 0) {
-                            body += `Affected files:\n`;
-                            fileList.forEach(file => {
-                                body += ` - ${file}\n`;
-                            });
-                            body += '\n';
+                        if (whyText !== '') {
+                            justificationsByAction[actionType].push(whyText);
                         }
                     }
                 });
 
-                // Process reference entries
-                const referenceEntries = getAllBySelector('.reference-entry');
-                const uniqueReferences = new Set();
-                referenceEntries.forEach(entry => {
-                    const refType = getBySelector('select[id^="reference-type-"]', entry).value;
-                    const refNumber = getBySelector('select[id^="references-"]', entry).value;
-                    if (refNumber) {
-                        const referenceString = `${refType}: #${refNumber}`;
-                        uniqueReferences.add(referenceString);
+                // Append the lists and descriptions to the message in the new order
+                const appendFileListAndDescriptions = (title, files, descriptions, justifications) => {
+                    if (files.length > 0) {
+                        message += `### ${title}\n\n`;
+                        message += 'Files:\n';
+                        files.forEach(file => {
+                            // Use the new wrapText function with a 72-character limit and a custom prefix
+                            message += wrapText(file, 72, '- ', '  ') + '\n';
+                        });
+                        message += '\n';
+
+                        if (descriptions.length > 0) {
+                             message += `What was ${getPastTense(title)}?\n\n`;
+                             descriptions.forEach(desc => message += wrapText(desc, 72) + '\n\n');
+                        }
+                        if (justifications.length > 0) {
+                            message += `Why was it ${getPastTense(title)}?\n\n`;
+                            justifications.forEach(just => message += wrapText(just, 72) + '\n\n');
+                        }
                     }
-                });
+                };
                 
-                if (uniqueReferences.size > 0) {
-                    references = Array.from(uniqueReferences).join('\n') + '\n\n';
+                appendFileListAndDescriptions('Add', filesByAction.Add, descriptionsByAction.Add, justificationsByAction.Add);
+                appendFileListAndDescriptions('Fix', filesByAction.Fix, descriptionsByAction.Fix, justificationsByAction.Fix);
+                appendFileListAndDescriptions('Update', filesByAction.Update, descriptionsByAction.Update, justificationsByAction.Update);
+                appendFileListAndDescriptions('Delete', filesByAction.Delete, descriptionsByAction.Delete, justificationsByAction.Delete);
+
+                // Append dynamic references
+                getAllBySelector('.reference-entry').forEach(entry => {
+                    const refType = getBySelector('select[id^="reference-type-"]', entry).value;
+                    const refs = getBySelector('select[id^="references-"]', entry).value.trim();
+
+                    if (refs !== '') {
+                        message += `${refType} #${refs}\n`;
+                    }
+                });
+
+                if (signOffName.value.trim() !== '' && signOffEmail.value.trim() !== '') {
+                    message += `\nSigned-off-by: ${signOffName.value.trim()} <${signOffEmail.value.trim()}>`;
                 }
 
-                outputMessage.textContent = `${header}${body}${references}${signOff}`.trim();
-            };
+                outputMessage.textContent = message;
 
-            // Event listeners for buttons
-            generateBtn.addEventListener('click', generateCommitMessage);
+                // Send the commit message to the server for file writing
+                try {
+                    const response = await fetch(window.location.href, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ commitMessage: message })
+                    });
 
-            copyBtn.addEventListener('click', () => {
-                const message = outputMessage.textContent;
-                if (message.trim() === 'Click "Generate Commit Message" to see the output here.') {
-                    displayAlert('No commit message to copy.', true);
-                    return;
+                    const result = await response.json();
+                    if (result.success) {
+                        displayAlert('Commit message written to .git/EDIT_COMMITMSG!', false);
+                    } else {
+                        displayAlert(`Error: ${result.error}`, true);
+                    }
+                } catch (error) {
+                    console.error('Error writing file via API:', error);
+                    displayAlert('An unexpected error occurred while writing the file.', true);
                 }
-                navigator.clipboard.writeText(message)
-                    .then(() => displayAlert('Commit message copied to clipboard!'))
-                    .catch(err => displayAlert('Failed to copy message.', true));
             });
 
-            // Alert box
-            const displayAlert = (message, isError = false) => {
-                let alertBox = getBySelector('.alert-box');
-                if (!alertBox) {
-                    alertBox = document.createElement('div');
-                    alertBox.classList.add('alert-box');
-                    document.body.appendChild(alertBox);
-                }
-                
-                alertBox.textContent = message;
-                alertBox.classList.toggle('error', isError);
-                alertBox.style.opacity = '1';
-                alertBox.style.animation = 'none'; // Reset animation
-                setTimeout(() => {
-                    alertBox.style.animation = 'fadeInOut 3s forwards';
-                }, 10);
-            };
+            copyBtn.addEventListener('click', () => {
+                const textToCopy = outputMessage.textContent;
+                const textarea = document.createElement('textarea');
+                textarea.value = textToCopy;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+
+                displayAlert('Commit message copied to clipboard!', false);
+            });
+            
+            // Call fetchIssues on page load
+            fetchIssues();
         });
     </script>
 </body>

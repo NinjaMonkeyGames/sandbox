@@ -19,8 +19,6 @@ consistent with its established workflow.*
   - [DOCUMENT SYMBOLS LEGEND](#document-symbols-legend)
   - [PROJECT STANDARDS](#project-standards)
     - [DOCUMENT FORMATTING](#document-formatting)
-      - [MARKDOWN DOCUMENTS](#markdown-documents)
-        - [HEADINGS](#headings)
     - [POLICY](#policy)
       - [SIGNED COMMITS](#signed-commits)
     - [CONVENTIONS](#conventions)
@@ -86,23 +84,6 @@ see our [Code of Conduct](./CODE_OF_CONDUCT.md) for guidelines on inclusive and 
 ### DOCUMENT FORMATTING
 
 This is a professional project, so clarity and consistency are essential. This section outlines the various types of documents and how they are constructed and formatted.
-
-#### MARKDOWN DOCUMENTS
-
-This section outlines the general formatting rules for all Markdown documents. It does not address the linting policy; it strictly focuses on the formatting standards for this project.
-
-##### HEADINGS
-
-| Level     | Case     |
-|-----------|----------|
-| 1         | UPPER    |
-| 2         | UPPER    |
-| 3         | UPPER    |
-| 4         | UPPER    |
-| 5         | TITLE    |
-| 6         | TITLE    |
-
-
 
 ### POLICY
 
