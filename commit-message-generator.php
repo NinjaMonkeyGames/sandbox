@@ -198,6 +198,13 @@ function buildListItems($directory, $isRoot = true) {
             font-family: 'Inter', sans-serif;
             color: #1f2937;
             background-color: #fff;
+            box-sizing: border-box; /* Ensures padding doesn't affect width */
+        }
+        
+        textarea {
+            resize: vertical; /* Allow manual vertical resizing */
+            overflow-y: hidden; /* Hide scrollbar by default, JS will manage height */
+            min-height: 4rem; /* Set a minimum height */
         }
 
         input:focus, select:focus, textarea:focus {
@@ -488,7 +495,7 @@ function buildListItems($directory, $isRoot = true) {
             content: '-';
         }
         .heading:not(:has(ul)) > span::before {
-             content: '';
+              content: '';
         }
     </style>
 </head>
@@ -570,11 +577,11 @@ function buildListItems($directory, $isRoot = true) {
                             </div>
                             <div>
                                 <label for="what-text-{id}" id="what-label-{id}">What?</label>
-                                <textarea id="what-text-{id}" placeholder="Describe what was changed..." rows="2" required></textarea>
+                                <textarea id="what-text-{id}" placeholder="Describe what was changed..." rows="4" required></textarea>
                             </div>
                             <div>
                                 <label for="why-text-{id}" id="why-label-{id}">Why?</label>
-                                <textarea id="why-text-{id}" placeholder="Explain why this change was necessary..." rows="2" required></textarea>
+                                <textarea id="why-text-{id}" placeholder="Explain why this change was necessary..." rows="4" required></textarea>
                             </div>
                         </div>
                     ';
@@ -697,11 +704,11 @@ function buildListItems($directory, $isRoot = true) {
                     </div>
                     <div>
                         <label for="what-text-{id}" id="what-label-{id}">What?</label>
-                        <textarea id="what-text-{id}" placeholder="Describe what was changed..." rows="2" required></textarea>
+                        <textarea id="what-text-{id}" placeholder="Describe what was changed..." rows="4" required></textarea>
                     </div>
                     <div>
                         <label for="why-text-{id}" id="why-label-{id}">Why?</label>
-                        <textarea id="why-text-{id}" placeholder="Explain why this change was necessary..." rows="2" required></textarea>
+                        <textarea id="why-text-{id}" placeholder="Explain why this change was necessary..." rows="4" required></textarea>
                     </div>
                 </div>
             `;
@@ -785,6 +792,11 @@ function buildListItems($directory, $isRoot = true) {
             commitType.addEventListener('change', updateCharCounter);
             scope.addEventListener('change', updateCharCounter);
             description.addEventListener('input', updateCharCounter);
+
+            const autoResizeTextarea = (textarea) => {
+                textarea.style.height = 'auto'; // Reset height
+                textarea.style.height = `${textarea.scrollHeight}px`; // Set to content height
+            };
             
             const realTimeWrap = (event) => {
                 const textarea = event.target;
@@ -1014,8 +1026,13 @@ function buildListItems($directory, $isRoot = true) {
                 const whyTextarea = getBySelector('textarea[id^="why-text-"]', entry);
                 const whyLabel = getBySelector('label[id^="why-label-"]', entry);
 
-                whatTextarea.addEventListener('input', realTimeWrap);
-                whyTextarea.addEventListener('input', realTimeWrap);
+                const handleTextareaInput = (event) => {
+                    realTimeWrap(event);
+                    autoResizeTextarea(event.target);
+                };
+
+                whatTextarea.addEventListener('input', handleTextareaInput);
+                whyTextarea.addEventListener('input', handleTextareaInput);
 
                 // Add blur listeners to enforce sentence case
                 whatTextarea.addEventListener('blur', () => {
