@@ -736,9 +736,30 @@ function buildListItems($directory, $isRoot = true) {
             let fileEntryIdCounter = 1;
             let referenceEntryIdCounter = 0;
             const MAX_TITLE_LENGTH = 50;
+            const MAX_BODY_WRAP_LENGTH = 72;
             
+            // Function to sanitize the description input by converting to lowercase
+            // and removing characters outside the standard printable ASCII range.
+            const sanitizeDescription = () => {
+                const inputValue = description.value;
+                let sanitizedValue = '';
+                for (let i = 0; i < inputValue.length; i++) {
+                    const char = inputValue[i];
+                    const charCode = char.charCodeAt(0);
+                    // Check for printable ASCII characters (from space ' ' to tilde '~')
+                    if (charCode >= 32 && charCode <= 126) {
+                        sanitizedValue += char;
+                    }
+                }
+                // Convert to lowercase and update the input value
+                description.value = sanitizedValue.toLowerCase();
+            };
+
             // Function to update the character counter and enforce the limit
             const updateCharCounter = () => {
+                // Ensure input is sanitized before calculation
+                sanitizeDescription();
+
                 const typeVal = commitType.value;
                 const scopeVal = scope.value;
                 const descriptionVal = description.value;
@@ -766,6 +787,58 @@ function buildListItems($directory, $isRoot = true) {
             commitType.addEventListener('change', updateCharCounter);
             scope.addEventListener('change', updateCharCounter);
             description.addEventListener('input', updateCharCounter);
+            
+            // Function to handle real-time text wrapping in a textarea
+            const realTimeWrap = (event) => {
+                const textarea = event.target;
+                const lines = textarea.value.split('\n');
+                let newText = [];
+                
+                lines.forEach(line => {
+                    let words = line.split(' ');
+                    let currentLine = '';
+                    
+                    for (const word of words) {
+                        // Check if the current line plus the new word will be too long
+                        if (currentLine.length + (currentLine.length > 0 ? 1 : 0) + word.length > MAX_BODY_WRAP_LENGTH) {
+                            // If the word itself is too long, break it
+                            if (word.length > MAX_BODY_WRAP_LENGTH) {
+                                if (currentLine.length > 0) {
+                                    newText.push(currentLine);
+                                }
+                                let tempWord = word;
+                                while (tempWord.length > MAX_BODY_WRAP_LENGTH) {
+                                    newText.push(tempWord.substring(0, MAX_BODY_WRAP_LENGTH));
+                                    tempWord = tempWord.substring(MAX_BODY_WRAP_LENGTH);
+                                }
+                                currentLine = tempWord;
+                            } else {
+                                // Just break the line and start a new one
+                                newText.push(currentLine);
+                                currentLine = word;
+                            }
+                        } else {
+                            // Append the word to the current line
+                            currentLine += (currentLine.length > 0 ? ' ' : '') + word;
+                        }
+                    }
+                    if (currentLine.length > 0) {
+                        newText.push(currentLine);
+                    }
+                });
+                
+                // Get current cursor position to preserve it after wrapping
+                const cursorPosition = textarea.selectionStart;
+                const originalText = textarea.value;
+
+                // Update the textarea value
+                textarea.value = newText.join('\n');
+                
+                // Recalculate cursor position
+                const newTextLines = newText.join('\n');
+                let newCursorPosition = newTextLines.length < originalText.length ? cursorPosition - (originalText.length - newTextLines.length) : cursorPosition;
+                textarea.setSelectionRange(newCursorPosition, newCursorPosition);
+            };
 
             // Function to fetch issues from the GitHub API
             const fetchIssues = async () => {
@@ -1034,6 +1107,9 @@ function buildListItems($directory, $isRoot = true) {
                 const whyTextarea = getBySelector('textarea[id^="why-text-"]', newEntry);
                 const whyLabel = getBySelector('label[id^="why-label-"]', newEntry);
 
+                whatTextarea.addEventListener('input', realTimeWrap);
+                whyTextarea.addEventListener('input', realTimeWrap);
+
 
                 fileActionType.addEventListener('change', (e) => {
                     const action = e.target.value;
@@ -1103,31 +1179,55 @@ function buildListItems($directory, $isRoot = true) {
             updateActionTypeSelects();
             // Call updateCharCounter initially to set the counter
             updateCharCounter();
+            
+            // Add real-time wrapping to the initial textareas
+            getById('what-text-0').addEventListener('input', realTimeWrap);
+            getById('why-text-0').addEventListener('input', realTimeWrap);
 
 
-            // New function to wrap text at a specified character limit
+            // New function to wrap text at a specified character limit, now handles long words
             const wrapText = (text, maxLength, prefix = '', indent = '  ') => {
+                const lines = text.split('\n');
                 let wrappedText = '';
-                let currentLine = prefix;
-                const words = text.split(' ');
 
-                words.forEach((word, index) => {
-                    // Check if adding the word exceeds the line length
-                    if ((currentLine + ' ' + word).trim().length > maxLength && currentLine.trim().length > 0) {
-                        wrappedText += currentLine.trim() + '\n';
-                        currentLine = indent + word;
-                    } else {
-                        currentLine = currentLine.trim() === '' ? prefix + word : currentLine + ' ' + word;
+                lines.forEach((line, index) => {
+                    let words = line.split(' ');
+                    let currentLine = '';
+                    
+                    for (const word of words) {
+                        // Check if the word itself is longer than a single line
+                        if (word.length > maxLength) {
+                            if (currentLine.length > 0) {
+                                wrappedText += currentLine.trim() + '\n';
+                            }
+                            let tempWord = word;
+                            while (tempWord.length > 0) {
+                                wrappedText += prefix + tempWord.substring(0, maxLength - prefix.length) + '\n';
+                                tempWord = tempWord.substring(maxLength - prefix.length);
+                            }
+                            currentLine = '';
+                            continue;
+                        }
+
+                        // Normal wrapping logic
+                        if (currentLine.length + (currentLine.length > 0 ? 1 : 0) + word.length > maxLength - prefix.length) {
+                            wrappedText += currentLine.trim() + '\n';
+                            currentLine = prefix + word;
+                        } else {
+                            currentLine += (currentLine.length > 0 ? ' ' : '') + word;
+                        }
                     }
-
-                    // Handle the last word
-                    if (index === words.length - 1) {
+                    if (currentLine.length > 0) {
                         wrappedText += currentLine.trim();
                     }
+                    if (index < lines.length - 1) {
+                        wrappedText += '\n';
+                    }
                 });
-
+                
                 return wrappedText;
             };
+
 
             // Validation function
             const validateForm = () => {
@@ -1151,6 +1251,12 @@ function buildListItems($directory, $isRoot = true) {
                 if (header.length > 50) {
                     description.focus();
                     return { valid: false, message: 'The commit title cannot be longer than 50 characters.' };
+                }
+                
+                // Final check to ensure description is lowercase and valid characters
+                if (/[A-Z]/.test(description.value)) {
+                    description.focus();
+                    return { valid: false, message: 'The description must be entirely in lowercase.' };
                 }
 
                 const fileEntries = getAllBySelector('.file-entry');
