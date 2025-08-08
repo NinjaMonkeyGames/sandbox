@@ -48,7 +48,7 @@ function build_list_items($directory, $isRoot = true) {
     foreach ($items as $name => $isFolder) {
         $path = htmlspecialchars($directory . DIRECTORY_SEPARATOR . $name);
         $class = $isFolder ? 'folder' : 'file';
-        $icon = $isFolder ? '&#x1F4C1;' : '&#x1F4C4;';
+        $icon = $isFolder ? '&#x1F4C1;' : '&#x1F4C4;'; // Corrected File Emoji
 
         $html .= '<li class="' . $class . '" data-path="' . $path . '">';
         $html .= '<span class="name">' . $icon . ' ' . htmlspecialchars($name) . '</span>';
@@ -324,8 +324,6 @@ handle_post_request();
                         <option value="" selected disabled hidden>Select type...</option>
                         <option>FOLDER</option>
                         <option>FILE</option>
-                        <option>DATABASE</option>
-                        <option>SERVICE</option>
                     </select>
                 </div>
                  <div>
@@ -376,6 +374,10 @@ handle_post_request();
                     <label for="asset-contents">Asset Contents Description</label>
                     <textarea id="asset-contents" rows="3" placeholder="Describe the contents of this asset..."></textarea>
                 </div>
+                 <div class="full-width">
+                    <label for="back-to-top-link">Back to Top Link</label>
+                    <input type="text" id="back-to-top-link" value="markdownlint-cli2-cicd-pipeline-docker-project-programmers-manual">
+                </div>
             </div>
         </div>
 
@@ -408,6 +410,7 @@ handle_post_request();
             managed: document.getElementById('managed'),
             assetPurpose: document.getElementById('asset-purpose'),
             assetContents: document.getElementById('asset-contents'),
+            backToTopLink: document.getElementById('back-to-top-link'),
             generateBtn: document.getElementById('generate-btn'),
             copyBtn: document.getElementById('copy-btn'),
             outputPreview: document.getElementById('output-preview'),
@@ -432,6 +435,34 @@ handle_post_request();
             return result;
         };
 
+        const wrapText = (text, maxLength) => {
+            if (!text) return '';
+            const lines = text.split('\n');
+            let wrappedLines = [];
+            lines.forEach(line => {
+                let currentLine = '';
+                const words = line.split(' ');
+                for (const word of words) {
+                    if (word.length > maxLength) {
+                        if (currentLine) wrappedLines.push(currentLine.trim());
+                        let tempWord = word;
+                        while(tempWord.length > 0) {
+                            wrappedLines.push(tempWord.substring(0, maxLength));
+                            tempWord = tempWord.substring(maxLength);
+                        }
+                        currentLine = '';
+                    } else if (currentLine.length + word.length + 1 > maxLength) {
+                        wrappedLines.push(currentLine.trim());
+                        currentLine = word;
+                    } else {
+                        currentLine += (currentLine ? ' ' : '') + word;
+                    }
+                }
+                if (currentLine) wrappedLines.push(currentLine.trim());
+            });
+            return wrappedLines.join('\n');
+        };
+
         // --- Core Application Logic ---
         const generateArtefactMarkdown = () => {
             const values = {
@@ -444,12 +475,14 @@ handle_post_request();
                 isManaged: D.managed.value,
                 purpose: D.assetPurpose.value.trim(),
                 contents: D.assetContents.value.trim(),
+                backToTop: D.backToTopLink.value.trim(),
             };
 
             const requiredFields = {
                 "Asset Name": values.name, "Relative Path": values.path, "Asset Type": values.type,
                 "CI Scope": values.scope, "Hidden": values.isHidden, "Include in Repository": values.inRepo,
-                "Managed": values.isManaged, "Asset Purpose": values.purpose, "Asset Contents": values.contents
+                "Managed": values.isManaged, "Asset Purpose": values.purpose, "Asset Contents": values.contents,
+                "Back to Top Link": values.backToTop,
             };
 
             for (const [key, value] of Object.entries(requiredFields)) {
@@ -478,15 +511,15 @@ handle_post_request();
 
 #### Asset Purpose : [${values.name}]
 
-${values.purpose}
+${wrapText(values.purpose, 120)}
 
 #### Asset Contents Description : [${values.name}]
 
-${values.contents}
+${wrapText(values.contents, 120)}
 
 ---
 
-[BACK TO TOP](#)
+[BACK TO TOP](#${values.backToTop})
 
 ---
             `.trim();
@@ -541,19 +574,16 @@ ${values.contents}
                 const nameParts = nameSpan.textContent.trim().split(' ');
                 const assetName = nameParts[nameParts.length - 1];
 
-                // Update form fields
                 D.assetName.value = assetName;
                 D.relativePathDisplay.textContent = fullPath;
                 D.assetType.value = isFolder ? 'FOLDER' : 'FILE';
 
-                // --- NEW LOGIC FOR HIDDEN STATUS ---
                 let hiddenStatus = 'No';
                 if (assetName.startsWith('.')) {
                     hiddenStatus = 'Yes';
                 } else {
                     const normalizedPath = fullPath.replace(/\\/g, '/');
                     const pathParts = normalizedPath.split('/');
-                    // Check all parent directories (all parts except the last one)
                     for (let i = 0; i < pathParts.length - 1; i++) {
                         if (pathParts[i].startsWith('.')) {
                             hiddenStatus = 'Inherited';
@@ -562,27 +592,22 @@ ${values.contents}
                     }
                 }
                 D.hidden.value = hiddenStatus;
-                // --- END OF NEW LOGIC ---
 
-                // Handle selection highlighting
                 const previouslySelected = D.fileExplorer.querySelector('.selected');
                 if (previouslySelected) {
                     previouslySelected.classList.remove('selected');
                 }
                 target.classList.add('selected');
                 
-                // Handle folder expansion
                 if (target.classList.contains('folder')) {
                     target.classList.toggle('expanded');
                 }
                 
-                // Close explorer after selection
                 setTimeout(() => {
                     toggleFileExplorer(true);
                 }, 100); 
             });
 
-            // Close explorer if clicking outside
             document.addEventListener('click', () => toggleFileExplorer(true));
         };
 
