@@ -324,6 +324,15 @@ function buildListItems($directory, $isRoot = true) {
             background-color: #2563eb;
         }
 
+        .btn-clear {
+            background-color: #ef4444;
+            color: #ffffff;
+        }
+
+        .btn-clear:hover {
+            background-color: #dc2626;
+        }
+
         pre {
             white-space: pre-wrap;
             word-wrap: break-word;
@@ -638,6 +647,9 @@ function buildListItems($directory, $isRoot = true) {
             <button id="copy-btn" class="btn btn-copy">
                 Copy to Clipboard
             </button>
+            <button id="clear-btn" class="btn btn-clear">
+                Clear All Fields
+            </button>
         </div>
 
         <div class="card">
@@ -661,6 +673,7 @@ function buildListItems($directory, $isRoot = true) {
             const outputMessage = getById('output-message');
             const generateBtn = getById('generate-btn');
             const copyBtn = getById('copy-btn');
+            const clearBtn = getById('clear-btn');
             
             const fileEntriesContainer = getById('file-entries-container');
             const addFileActionBtn = getById('add-file-action-btn');
@@ -1070,11 +1083,49 @@ function buildListItems($directory, $isRoot = true) {
                 getBySelector('.remove-btn', newEntry).addEventListener('click', () => newEntry.remove());
             };
 
+            const resetForm = () => {
+                // Reset simple inputs to their default or empty states
+                commitType.value = '';
+                scope.value = '';
+                description.value = '';
+                repoOwner.value = 'NinjaMonkeyGames';
+                repoName.value = 'full-stack-development-template';
+                githubToken.value = '';
+                signOffName.value = 'Daniel Mallett';
+                signOffEmail.value = 'daniel.mallett@ninjamonkeygames.com';
+                outputMessage.textContent = 'Click "Generate Commit Message" to see the output here.';
+
+                // Reset counters
+                fileEntryIdCounter = 1;
+                referenceEntryIdCounter = 0;
+
+                // Clear and re-initialize dynamic sections
+                fileEntriesContainer.innerHTML = '';
+                referenceEntriesContainer.innerHTML = '';
+
+                // Re-create the very first file entry (with ID 0)
+                const firstFileEntryHtml = fileEntryTemplate.replace(/{id}/g, '0').replace(/{displayId}/g, '1');
+                const tempDivFile = document.createElement('div');
+                tempDivFile.innerHTML = firstFileEntryHtml;
+                const firstFileEntry = tempDivFile.firstElementChild;
+                fileEntriesContainer.appendChild(firstFileEntry);
+                setupFileEntry(firstFileEntry); // Set up its listeners and options
+
+                // Re-create the first reference entry
+                createReferenceEntry();
+
+                // Update UI elements
+                updateCharCounter();
+                displayAlert('All fields have been cleared.', false);
+            };
+
+            // Initial setup calls
             setupFileEntry(getBySelector('.file-entry[data-id="0"]'));
             createReferenceEntry();
             addFileActionBtn.addEventListener('click', createFileEntry);
             addReferenceBtn.addEventListener('click', createReferenceEntry);
             fetchIssuesBtn.addEventListener('click', fetchIssues);
+            clearBtn.addEventListener('click', resetForm); // Add listener for the new clear button
             updateCharCounter();
             
             const wrapText = (text, maxLength) => {
