@@ -24,31 +24,100 @@ function getAllFilePaths($dir, &$results = []) {
     return $results;
 }
 
+// Helper function to parse headings with their full hierarchy from a single file
+function parseHeadingsWithHierarchy($filePath) {
+    if (!file_exists($filePath) || !is_readable($filePath)) {
+        return [];
+    }
+    $content = file_get_contents($filePath);
+    $lines = explode("\n", $content);
+    $results = [];
+    $stack = []; // To track parent headings
+    $normalizedPath = './' . str_replace('\\', '/', substr(realpath($filePath), strlen(realpath(__DIR__)) + 1));
+
+    foreach ($lines as $line) {
+        if (preg_match('/^(#+)\s(.+)/', $line, $matches)) {
+            $level = strlen($matches[1]);
+            $text = trim($matches[2]);
+
+            // Pop from stack until the parent level is correct
+            while (!empty($stack) && $stack[count($stack) - 1]['level'] >= $level) {
+                array_pop($stack);
+            }
+
+            $hierarchy = array_map(function($item) { return $item['text']; }, $stack);
+            $hierarchy[] = $text;
+            
+            $fullPath = $normalizedPath . ' :: ' . implode(' :: ', $hierarchy);
+            $results[] = $fullPath;
+
+            // Push current heading onto stack
+            $stack[] = ['level' => $level, 'text' => $text];
+        }
+    }
+    return $results;
+}
+
+// Helper function to get all markdown headings from all files recursively
+function getAllMarkdownHeadingsRecursive($dir, &$results = []) {
+    $items = scandir($dir);
+    foreach ($items as $item) {
+        if ($item == '.' || $item == '..') continue;
+        $path = realpath($dir . DIRECTORY_SEPARATOR . $item);
+        if (!$path || basename($path) === '.git') continue;
+
+        if (is_dir($path)) {
+            getAllMarkdownHeadingsRecursive($path, $results);
+        } elseif (pathinfo($path, PATHINFO_EXTENSION) === 'md') {
+            $headings = parseHeadingsWithHierarchy($path);
+            $results = array_merge($results, $headings);
+        }
+    }
+    return $results;
+}
+
+
 // Handle the file watcher API request
 if (isset($_GET['action']) && $_GET['action'] === 'watch') {
     header('Content-Type: application/json');
     
+    // --- File watching ---
     $currentFiles = getAllFilePaths(__DIR__);
     sort($currentFiles);
-
     $previousFiles = $_SESSION['file_state'] ?? $currentFiles;
-    
     $addedFiles = array_values(array_diff($currentFiles, $previousFiles));
     $deletedFiles = array_values(array_diff($previousFiles, $currentFiles));
-    
-    // Update the session state only if there's a change
     if (!empty($addedFiles) || !empty($deletedFiles)) {
         $_SESSION['file_state'] = $currentFiles;
     }
+
+    // --- Heading watching ---
+    $currentHeadings = getAllMarkdownHeadingsRecursive(__DIR__);
+    sort($currentHeadings);
+    $previousHeadings = $_SESSION['heading_state'] ?? $currentHeadings;
+    $addedHeadings = array_values(array_diff($currentHeadings, $previousHeadings));
+    $deletedHeadings = array_values(array_diff($previousHeadings, $currentHeadings));
+    if (!empty($addedHeadings) || !empty($deletedHeadings)) {
+        $_SESSION['heading_state'] = $currentHeadings;
+    }
     
-    echo json_encode(['added' => $addedFiles, 'deleted' => $deletedFiles]);
+    echo json_encode([
+        'added' => $addedFiles, 
+        'deleted' => $deletedFiles,
+        'addedHeadings' => $addedHeadings,
+        'deletedHeadings' => $deletedHeadings
+    ]);
     exit;
 }
 
-// Initialize file state on first load
+// Initialize file and heading states on first load
 if (!isset($_SESSION['file_state'])) {
     $_SESSION['file_state'] = getAllFilePaths(__DIR__);
     sort($_SESSION['file_state']);
+}
+if (!isset($_SESSION['heading_state'])) {
+    $_SESSION['heading_state'] = getAllMarkdownHeadingsRecursive(__DIR__);
+    sort($_SESSION['heading_state']);
 }
 
 
@@ -961,7 +1030,7 @@ function buildListItems($directory, $isRoot = true) {
                     hierarchy.unshift(parentListItem.dataset.text);
                     parentListItem = parentListItem.closest('ul.nested-headings')?.parentNode;
                 }
-                const displayedHierarchy = hierarchy.slice(1).join(' :: ');
+                const displayedHierarchy = hierarchy.join(' :: ');
                 return `${filePath} :: ${displayedHierarchy}`;
             };
             
@@ -1190,76 +1259,70 @@ function buildListItems($directory, $isRoot = true) {
             const watchFiles = async () => {
                 try {
                     const response = await fetch('?action=watch');
-                    const { added, deleted } = await response.json();
+                    const { added, deleted, addedHeadings, deletedHeadings } = await response.json();
 
-                    // Handle deletions first
-                    deleted.forEach(file => {
+                    const allDeleted = [...deleted, ...deletedHeadings];
+                    const allAdded = [...added, ...addedHeadings];
+
+                    allDeleted.forEach(item => {
                         let entryFoundAndRemoved = false;
                         const allEntries = getAllBySelector('.file-entry');
                         for (const entry of allEntries) {
                             const actionSelect = getBySelector('select[id^="file-action-type-"]', entry);
                             const fileList = getBySelector('.file-list', entry);
-                            const listedFile = fileList.querySelector('span')?.textContent;
+                            const listedItem = fileList.querySelector('span')?.textContent;
 
-                            if (listedFile === file && actionSelect.value === 'Add') {
+                            if (listedItem === item && actionSelect.value === 'Add') {
                                 entry.remove();
-                                handledFileChanges.delete(file);
+                                handledFileChanges.delete(item);
                                 entryFoundAndRemoved = true;
                                 break;
                             }
                         }
 
-                        if (!entryFoundAndRemoved && !handledFileChanges.has(file)) {
-                            let targetEntry = null;
-                            const defaultEntry = getBySelector('.file-entry[data-id="0"]');
-
-                            if (defaultEntry && !isDefaultEntryModified()) {
-                                targetEntry = defaultEntry;
-                            } else {
-                                targetEntry = createFileEntry();
-                            }
-
-                            if (targetEntry) {
-                                const actionSelect = getBySelector('select[id^="file-action-type-"]', targetEntry);
-                                actionSelect.value = 'Delete';
-                                actionSelect.dispatchEvent(new Event('change'));
-                                const fileList = getBySelector('.file-list', targetEntry);
-                                renderFileList([file], fileList);
-                                handledFileChanges.add(file);
-                            }
+                        if (!entryFoundAndRemoved && !handledFileChanges.has(item)) {
+                            handleNewChange(item, 'Delete');
                         }
                     });
 
-                    // Handle additions
-                    added.forEach(file => {
-                        if (handledFileChanges.has(file)) return;
-
-                        let targetEntry = null;
-                        const defaultEntry = getBySelector('.file-entry[data-id="0"]');
-
-                        if (defaultEntry && !isDefaultEntryModified()) {
-                            targetEntry = defaultEntry;
-                        } else {
-                            targetEntry = createFileEntry();
-                        }
-
-                        if (targetEntry) {
-                            const actionSelect = getBySelector('select[id^="file-action-type-"]', targetEntry);
-                            actionSelect.value = 'Add';
-                            actionSelect.dispatchEvent(new Event('change'));
-                            const fileList = getBySelector('.file-list', targetEntry);
-                            renderFileList([file], fileList);
-                            const fileItem = getBySelector(`.file-explorer li[data-path="${file}"]`, targetEntry);
-                            if (fileItem) {
-                                fileItem.classList.add('selected');
-                            }
-                            handledFileChanges.add(file);
-                        }
+                    allAdded.forEach(item => {
+                        handleNewChange(item, 'Add');
                     });
 
                 } catch (error) {
                     console.error('File watcher error:', error);
                     clearInterval(fileWatcherInterval);
+                }
+            };
+
+            const handleNewChange = (item, action) => {
+                if (handledFileChanges.has(item)) return;
+
+                let targetEntry = null;
+                const defaultEntry = getBySelector('.file-entry[data-id="0"]');
+
+                if (defaultEntry && !isDefaultEntryModified()) {
+                    targetEntry = defaultEntry;
+                } else {
+                    targetEntry = createFileEntry();
+                }
+
+                if (targetEntry) {
+                    const actionSelect = getBySelector('select[id^="file-action-type-"]', targetEntry);
+                    actionSelect.value = action;
+                    actionSelect.dispatchEvent(new Event('change'));
+                    
+                    const fileList = getBySelector('.file-list', targetEntry);
+                    renderFileList([item], fileList);
+                    
+                    if (action === 'Add' && !item.includes(' :: ')) {
+                         const fileItem = getBySelector(`.file-explorer li[data-path="${item}"]`, targetEntry);
+                         if (fileItem) {
+                             fileItem.classList.add('selected');
+                         }
+                    }
+                    
+                    handledFileChanges.add(item);
                 }
             };
 
