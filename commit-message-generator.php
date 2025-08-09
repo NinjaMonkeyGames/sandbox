@@ -1,4 +1,57 @@
 <?php
+session_start();
+
+// Helper function to get a flat list of all file paths
+function getAllFilePaths($dir, &$results = []) {
+    $files = scandir($dir);
+    foreach ($files as $key => $value) {
+        $path = realpath($dir . DIRECTORY_SEPARATOR . $value);
+        if (!$path) continue; // Skip if path is invalid
+
+        // Exclude the .git directory and its contents
+        if (basename($path) === '.git') {
+            continue;
+        }
+
+        if (!is_dir($path)) {
+            // Normalize path for cross-platform consistency
+            $relativePath = str_replace('\\', '/', substr($path, strlen(realpath(__DIR__)) + 1));
+            $results[] = './' . $relativePath;
+        } else if ($value != "." && $value != "..") {
+            getAllFilePaths($path, $results);
+        }
+    }
+    return $results;
+}
+
+// Handle the file watcher API request
+if (isset($_GET['action']) && $_GET['action'] === 'watch') {
+    header('Content-Type: application/json');
+    
+    $currentFiles = getAllFilePaths(__DIR__);
+    sort($currentFiles);
+
+    $previousFiles = $_SESSION['file_state'] ?? $currentFiles;
+    
+    $addedFiles = array_values(array_diff($currentFiles, $previousFiles));
+    $deletedFiles = array_values(array_diff($previousFiles, $currentFiles));
+    
+    // Update the session state only if there's a change
+    if (!empty($addedFiles) || !empty($deletedFiles)) {
+        $_SESSION['file_state'] = $currentFiles;
+    }
+    
+    echo json_encode(['added' => $addedFiles, 'deleted' => $deletedFiles]);
+    exit;
+}
+
+// Initialize file state on first load
+if (!isset($_SESSION['file_state'])) {
+    $_SESSION['file_state'] = getAllFilePaths(__DIR__);
+    sort($_SESSION['file_state']);
+}
+
+
 // PHP logic to handle POST requests for file writing
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Content-Type: application/json');
@@ -37,7 +90,7 @@ function getDirectoryTree($directory) {
     if (is_dir($directory)) {
         $dirHandle = opendir($directory);
         while (($file = readdir($dirHandle)) !== false) {
-            if ($file != '.' && $file != '..') {
+            if ($file != '.' && $file != '..' && $file != '.git') { // Exclude .git directory
                 $path = $directory . DIRECTORY_SEPARATOR . $file;
                 $items[$file] = is_dir($path);
             }
@@ -687,6 +740,7 @@ function buildListItems($directory, $isRoot = true) {
 
             let issueList = [];
             const allActionTypes = ['Fix', 'Update', 'Add', 'Delete'];
+            let handledFileChanges = new Set(); // Tracks files handled by the watcher
 
             const fileExplorerHtml = `
                 <div class="file-explorer">
@@ -929,6 +983,7 @@ function buildListItems($directory, $isRoot = true) {
                         removeBtn.onclick = (event) => {
                             event.stopPropagation();
                             li.remove();
+                            handledFileChanges.delete(file); // Allow watcher to pick it up again if needed
                             if (listElement.children.length === 0) {
                                 if(parentContainer) parentContainer.style.display = 'none';
                             }
@@ -1021,7 +1076,7 @@ function buildListItems($directory, $isRoot = true) {
             const createFileEntry = () => {
                 if (getUsedActionTypes().size >= allActionTypes.length) {
                     displayAlert('Cannot add more file actions. All types are in use.', true);
-                    return;
+                    return null;
                 }
                 const id = fileEntryIdCounter++;
                 const newEntryHtml = fileEntryTemplate.replace(/{id}/g, id).replace(/{displayId}/g, id + 1);
@@ -1030,6 +1085,7 @@ function buildListItems($directory, $isRoot = true) {
                 const newEntry = tempDiv.firstElementChild;
                 fileEntriesContainer.appendChild(newEntry);
                 setupFileEntry(newEntry);
+                return newEntry;
             };
 
             const setupFileEntry = (entry) => {
@@ -1047,13 +1103,8 @@ function buildListItems($directory, $isRoot = true) {
                 whatTextarea.addEventListener('input', handleTextareaInput);
                 whyTextarea.addEventListener('input', handleTextareaInput);
 
-                // Add blur listeners to enforce sentence case
-                whatTextarea.addEventListener('blur', () => {
-                    whatTextarea.value = toSentenceCase(whatTextarea.value);
-                });
-                whyTextarea.addEventListener('blur', () => {
-                    whyTextarea.value = toSentenceCase(whyTextarea.value);
-                });
+                whatTextarea.addEventListener('blur', () => whatTextarea.value = toSentenceCase(whatTextarea.value));
+                whyTextarea.addEventListener('blur', () => whyTextarea.value = toSentenceCase(whyTextarea.value));
 
                 fileActionType.addEventListener('change', (e) => {
                     const pastTenseAction = getPastTense(e.target.value);
@@ -1063,6 +1114,11 @@ function buildListItems($directory, $isRoot = true) {
                 });
 
                 getBySelector('.remove-btn', entry).addEventListener('click', () => {
+                    const fileList = getBySelector('.file-list', entry);
+                    const file = fileList.querySelector('span')?.textContent;
+                    if (file) {
+                        handledFileChanges.delete(file);
+                    }
                     entry.remove();
                     updateActionTypeSelects();
                 });
@@ -1084,7 +1140,6 @@ function buildListItems($directory, $isRoot = true) {
             };
 
             const resetForm = () => {
-                // Reset simple inputs to their default or empty states
                 commitType.value = '';
                 scope.value = '';
                 description.value = '';
@@ -1095,28 +1150,117 @@ function buildListItems($directory, $isRoot = true) {
                 signOffEmail.value = 'daniel.mallett@ninjamonkeygames.com';
                 outputMessage.textContent = 'Click "Generate Commit Message" to see the output here.';
 
-                // Reset counters
                 fileEntryIdCounter = 1;
                 referenceEntryIdCounter = 0;
+                handledFileChanges.clear();
 
-                // Clear and re-initialize dynamic sections
                 fileEntriesContainer.innerHTML = '';
                 referenceEntriesContainer.innerHTML = '';
 
-                // Re-create the very first file entry (with ID 0)
-                const firstFileEntryHtml = fileEntryTemplate.replace(/{id}/g, '0').replace(/{displayId}/g, '1');
-                const tempDivFile = document.createElement('div');
-                tempDivFile.innerHTML = firstFileEntryHtml;
-                const firstFileEntry = tempDivFile.firstElementChild;
-                fileEntriesContainer.appendChild(firstFileEntry);
-                setupFileEntry(firstFileEntry); // Set up its listeners and options
-
-                // Re-create the first reference entry
+                const firstFileEntry = createFileEntry();
                 createReferenceEntry();
 
-                // Update UI elements
                 updateCharCounter();
                 displayAlert('All fields have been cleared.', false);
+            };
+
+            const displayAlert = (message, isError) => {
+                const alertBox = document.createElement('div');
+                alertBox.textContent = message;
+                alertBox.className = `alert-box ${isError ? 'error' : ''}`;
+                document.body.appendChild(alertBox);
+                setTimeout(() => alertBox.remove(), 3000);
+            };
+
+            const isDefaultEntryModified = () => {
+                const defaultEntry = getBySelector('.file-entry[data-id="0"]');
+                if (!defaultEntry) return true; // It's been removed or changed, so it counts as modified.
+
+                const actionSelect = getBySelector('select[id^="file-action-type-"]', defaultEntry);
+                const fileList = getBySelector('.file-list', defaultEntry);
+                const whatText = getBySelector('textarea[id^="what-text-"]', defaultEntry);
+                const whyText = getBySelector('textarea[id^="why-text-"]', defaultEntry);
+
+                // It's unmodified if action is empty, no file is selected, and both text areas are empty.
+                const isUnmodified = !actionSelect.value && fileList.children.length === 0 && !whatText.value.trim() && !whyText.value.trim();
+                
+                return !isUnmodified;
+            };
+
+            const watchFiles = async () => {
+                try {
+                    const response = await fetch('?action=watch');
+                    const { added, deleted } = await response.json();
+
+                    // Handle deletions first
+                    deleted.forEach(file => {
+                        let entryFoundAndRemoved = false;
+                        const allEntries = getAllBySelector('.file-entry');
+                        for (const entry of allEntries) {
+                            const actionSelect = getBySelector('select[id^="file-action-type-"]', entry);
+                            const fileList = getBySelector('.file-list', entry);
+                            const listedFile = fileList.querySelector('span')?.textContent;
+
+                            if (listedFile === file && actionSelect.value === 'Add') {
+                                entry.remove();
+                                handledFileChanges.delete(file);
+                                entryFoundAndRemoved = true;
+                                break;
+                            }
+                        }
+
+                        if (!entryFoundAndRemoved && !handledFileChanges.has(file)) {
+                            let targetEntry = null;
+                            const defaultEntry = getBySelector('.file-entry[data-id="0"]');
+
+                            if (defaultEntry && !isDefaultEntryModified()) {
+                                targetEntry = defaultEntry;
+                            } else {
+                                targetEntry = createFileEntry();
+                            }
+
+                            if (targetEntry) {
+                                const actionSelect = getBySelector('select[id^="file-action-type-"]', targetEntry);
+                                actionSelect.value = 'Delete';
+                                actionSelect.dispatchEvent(new Event('change'));
+                                const fileList = getBySelector('.file-list', targetEntry);
+                                renderFileList([file], fileList);
+                                handledFileChanges.add(file);
+                            }
+                        }
+                    });
+
+                    // Handle additions
+                    added.forEach(file => {
+                        if (handledFileChanges.has(file)) return;
+
+                        let targetEntry = null;
+                        const defaultEntry = getBySelector('.file-entry[data-id="0"]');
+
+                        if (defaultEntry && !isDefaultEntryModified()) {
+                            targetEntry = defaultEntry;
+                        } else {
+                            targetEntry = createFileEntry();
+                        }
+
+                        if (targetEntry) {
+                            const actionSelect = getBySelector('select[id^="file-action-type-"]', targetEntry);
+                            actionSelect.value = 'Add';
+                            actionSelect.dispatchEvent(new Event('change'));
+                            const fileList = getBySelector('.file-list', targetEntry);
+                            renderFileList([file], fileList);
+                            const fileItem = getBySelector(`.file-explorer li[data-path="${file}"]`, targetEntry);
+                            if (fileItem) {
+                                fileItem.classList.add('selected');
+                            }
+                            handledFileChanges.add(file);
+                        }
+                    });
+
+                } catch (error) {
+                    console.error('File watcher error:', error);
+                    clearInterval(fileWatcherInterval);
+                }
             };
 
             // Initial setup calls
@@ -1125,8 +1269,12 @@ function buildListItems($directory, $isRoot = true) {
             addFileActionBtn.addEventListener('click', createFileEntry);
             addReferenceBtn.addEventListener('click', createReferenceEntry);
             fetchIssuesBtn.addEventListener('click', fetchIssues);
-            clearBtn.addEventListener('click', resetForm); // Add listener for the new clear button
+            clearBtn.addEventListener('click', resetForm);
             updateCharCounter();
+            fetchIssues();
+
+            // Start the file watcher
+            const fileWatcherInterval = setInterval(watchFiles, 3000); // Check every 3 seconds
             
             const wrapText = (text, maxLength) => {
                 const lines = text.split('\n');
@@ -1183,14 +1331,6 @@ function buildListItems($directory, $isRoot = true) {
                 return { valid: true };
             };
             
-            const displayAlert = (message, isError) => {
-                const alertBox = document.createElement('div');
-                alertBox.textContent = message;
-                alertBox.className = `alert-box ${isError ? 'error' : ''}`;
-                document.body.appendChild(alertBox);
-                setTimeout(() => alertBox.remove(), 3000);
-            };
-
             generateBtn.addEventListener('click', async () => {
                 const validation = validateForm();
                 if (!validation.valid) {
@@ -1267,7 +1407,6 @@ function buildListItems($directory, $isRoot = true) {
                 document.body.removeChild(textarea);
             });
             
-            fetchIssues();
         });
     </script>
 </body>
