@@ -4,17 +4,18 @@ name: 1. Environment Detector & Dispatcher
 on:
   push:
     branches:
-      - master # Production
-      - develop # Staging/UAT
-      - feature/** # Development/Ephemeral
-      - release/** # Pre-Production/Release Candidate
-      - hotfix/** # Production Fix
+      - master         # -> production.yaml
+      - develop        # -> staging.yaml
+      - feature/** # -> development.yaml
+      - release/** # -> release.yaml
+      - hotfix/** # -> release.yaml
 
 jobs:
   detect_environment:
     runs-on: ubuntu-latest
+    
+    # 1. Expose the determined environment name
     outputs:
-      # Expose the detected environment name for other jobs/workflows
       environment: ${{ steps.set_env.outputs.env_name }}
       
     steps:
@@ -24,57 +25,53 @@ jobs:
           BRANCH_NAME="${{ github.ref_name }}"
           ENVIRONMENT=""
 
+          # --- Environment Mapping Logic ---
           if [[ "$BRANCH_NAME" == "master" ]]; then
             ENVIRONMENT="production"
           elif [[ "$BRANCH_NAME" == "develop" ]]; then
             ENVIRONMENT="staging"
-          elif [[ "$BRANCH_NAME" == release/* ]]; then
-            ENVIRONMENT="pre-production"
-          elif [[ "$BRANCH_NAME" == hotfix/* ]]; then
-            ENVIRONMENT="hotfix"
+          elif [[ "$BRANCH_NAME" == release/* ]] || [[ "$BRANCH_NAME" == hotfix/* ]]; then
+            # Grouping release and hotfix branches
+            ENVIRONMENT="release"
           else
-            # Covers feature/* branches and any others
+            # Default for feature/* branches and any others
             ENVIRONMENT="development"
           fi
           
-          # 1. Echo the detected environment
+          # Log the detected environment
           echo "--- Detected CI Environment ---"
           echo "Branch: $BRANCH_NAME"
           echo "Set Environment to: $ENVIRONMENT"
           echo "-------------------------------"
           
-          # 2. Set the output variable 'env_name'
-          # This line ensures the variable is available as a job output
+          # Set the output variable for other jobs to read
           echo "env_name=$ENVIRONMENT" >> $GITHUB_OUTPUT
           
-      - name: Echo Detected Environment Output (FIXED SYNTAX)
-        # Using '|' for multi-line string prevents the "Nested mappings not allowed" error
-        run: |
-          echo "Environment output set: ${{ steps.set_env.outputs.env_name }}"
+  # --- Conditional Dispatcher Jobs ---
+  # These jobs use the 'uses' keyword to call the reusable workflows. 
+  # Only the job matching the detected environment will run.
 
-  # This job will call the appropriate deployment workflow
-  dispatch_workflow:
-    # IMPORTANT: Access outputs using the job ID: 'detect_environment'
-    needs: detect_environment 
-    runs-on: ubuntu-latest
+  call_development:
+    # Condition: Runs ONLY if the detected environment is 'development'
+    if: ${{ needs.detect_environment.outputs.environment == 'development' }}
+    needs: detect_environment
+    # The 'uses' keyword calls the reusable workflow file
+    uses: ./.github/workflows/development.yaml 
     
-    steps:
-      - name: Workflow Dispatcher
-        # Use the job output accessed via 'needs.<job-id>.outputs.<output-key>'
-        run: |
-          TARGET_ENV="${{ needs.detect_environment.outputs.environment }}"
-          echo "Target Environment is: $TARGET_ENV"
-          
-          # Determine which subsequent script to "call" or "run"
-          if [[ "$TARGET_ENV" == "production" ]]; then
-            echo "::notice title=Workflow Dispatch::Calling deploy-production.yaml for master branch"
-            # Logic for calling the production workflow
-            
-          elif [[ "$TARGET_ENV" == "staging" ]]; then
-            echo "::notice title=Workflow Dispatch::Calling deploy-staging.yaml for develop branch"
-            # Logic for calling the staging workflow
-            
-          else
-            echo "::notice title=Workflow Dispatch::Calling generic-build.yaml for $TARGET_ENV"
-            # Logic for calling the default workflow (feature/development)
-          fi
+  call_staging:
+    # Condition: Runs ONLY if the detected environment is 'staging'
+    if: ${{ needs.detect_environment.outputs.environment == 'staging' }}
+    needs: detect_environment
+    uses: ./.github/workflows/staging.yaml
+    
+  call_release:
+    # Condition: Runs ONLY if the detected environment is 'release'
+    if: ${{ needs.detect_environment.outputs.environment == 'release' }}
+    needs: detect_environment
+    uses: ./.github/workflows/release.yaml
+    
+  call_production:
+    # Condition: Runs ONLY if the detected environment is 'production'
+    if: ${{ needs.detect_environment.outputs.environment == 'production' }}
+    needs: detect_environment
+    uses: ./.github/workflows/production.yaml
