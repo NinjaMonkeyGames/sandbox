@@ -1,0 +1,86 @@
+name: 1. Environment Detector & Dispatcher
+
+# Trigger on pushes to all relevant GitFlow branches
+on:
+  push:
+    branches:
+      - master # <-- PRODUCTION branch (Changed from main)
+      - develop # Staging/UAT
+      - feature/** # Development/Ephemeral
+      - release/** # Pre-Production/Release Candidate
+      - hotfix/** # Production Fix
+
+# Define an output variable 'env_name' at the workflow level for easy use
+env:
+  DETECTED_ENVIRONMENT: 'development' # Default environment
+
+jobs:
+  detect_environment:
+    runs-on: ubuntu-latest
+    outputs:
+      # Expose the detected environment name for other jobs/workflows
+      environment: ${{ steps.set_env.outputs.env_name }}
+      
+    steps:
+      - name: Set Environment Name (GitFlow Logic)
+        id: set_env
+        run: |
+          BRANCH_NAME="${{ github.ref_name }}"
+          ENVIRONMENT=""
+
+          # *** PRODUCTION CHECK ***
+          if [[ "$BRANCH_NAME" == "master" ]]; then
+            ENVIRONMENT="production"
+          # ************************
+          
+          elif [[ "$BRANCH_NAME" == "develop" ]]; then
+            ENVIRONMENT="staging"
+          elif [[ "$BRANCH_NAME" == release/* ]]; then
+            ENVIRONMENT="pre-production"
+          elif [[ "$BRANCH_NAME" == hotfix/* ]]; then
+            ENVIRONMENT="hotfix"
+          else
+            # Covers feature/* branches and any others
+            ENVIRONMENT="development"
+          fi
+          
+          # 1. Echo the detected environment
+          echo "--- Detected CI Environment ---"
+          echo "Branch: $BRANCH_NAME"
+          echo "Set Environment to: $ENVIRONMENT"
+          echo "-------------------------------"
+          
+          # 2. Set the output variable 'env_name'
+          echo "env_name=$ENVIRONMENT" >> $GITHUB_OUTPUT
+          
+      - name: Echo Detected Environment Output
+        # Verify the output is correctly set
+        run: echo "Environment output set: ${{ steps.set_env.outputs.env_name }}"
+
+  # This job will call the appropriate deployment workflow
+  dispatch_workflow:
+    needs: detect_environment # Requires the environment detection to complete
+    runs-on: ubuntu-latest
+    
+    # Use the output from the previous job
+    env:
+      TARGET_ENV: ${{ needs.detect_environment.outputs.environment }}
+
+    steps:
+      - name: Workflow Dispatcher
+        run: |
+          echo "Target Environment is: $TARGET_ENV"
+          
+          # Determine which subsequent script to "call" or "run"
+          if [[ "$TARGET_ENV" == "production" ]]; then
+            echo "::notice title=Workflow Dispatch::Calling deploy-production.yaml for master branch"
+            # Logic for calling the production workflow
+            
+          elif [[ "$TARGET_ENV" == "staging" ]]; then
+            echo "::notice title=Workflow Dispatch::Calling deploy-staging.yaml for develop branch"
+            # Logic for calling the staging workflow
+            
+          else
+            echo "::notice title=Workflow Dispatch::Calling generic-build.yaml for $TARGET_ENV"
+            # Logic for calling the default workflow (feature/development)
+          fi
