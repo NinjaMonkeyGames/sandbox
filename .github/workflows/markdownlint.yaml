@@ -1,0 +1,35 @@
+name: Markdown Lint Check
+
+# Define this file as a callable/reusable workflow
+# This allows it to be called from the 'development.yaml' or any other main dispatcher.
+on:
+  workflow_call:
+    # No inputs are needed unless you want to pass file paths or configurations dynamically.
+    
+jobs:
+  lint_markdown:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: ⬇️ Checkout Code
+        # This step is essential to get your project files, including .markdownlint.json
+        uses: actions/checkout@v4
+        
+      - name: 📝 Run Markdown Lint using .markdownlint.json
+        # This uses the official GitHub Action wrapper for markdownlint-cli2
+        uses: lychee-action/markdownlint-cli2@v2
+        with:
+          # --- KEY CONFIGURATION ---
+          # 1. The 'config' option tells the action where to find your rules file.
+          #    (Assumes .markdownlint.json is in the repository root)
+          config: .markdownlint.json 
+          
+          # 2. The 'files' option defines which files to lint.
+          #    The double-star (**) means "any subdirectory," and (*.md) means "any file ending in .md".
+          files: "**/*.md"
+          
+      - name: ⚙️ Troubleshooting Output
+        if: ${{ failure() }}
+        run: |
+          echo "Markdown linting failed! Check the output above for specific rule violations."
+          echo "Ensure the .markdownlint.json file exists and is correctly formatted."

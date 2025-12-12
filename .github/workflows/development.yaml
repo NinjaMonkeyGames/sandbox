@@ -25,3 +25,15 @@ jobs:
           # Example: npm install
           # Example: npm run test:dev
           # Example: Deploy to ephemeral dev environment
+
+          run_markdownlint:
+        # Ensure this job only runs if the main build succeeded
+            needs: development_build 
+            
+            # CRITICAL: This job calls the other reusable workflow.
+            # It MUST NOT have 'runs-on' or 'steps'.
+            uses: ./.github/workflows/markdownlint.yaml 
+            
+            # Optional: Pass current branch name as an input if markdownlint.yaml needs it
+            # with:
+            #   ref: ${{ github.ref }}
