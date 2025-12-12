@@ -1,39 +1,39 @@
 # .github/workflows/development.yaml
 name: Development CI/CD Pipeline
 
-# Define this file as a callable workflow
+# This file is callable by the main dispatcher (ci.yaml)
 on:
   workflow_call:
-    # Define any inputs if your main workflow needs to pass data here
-    # inputs:
-    #   branch-name:
-    #     required: true
-    #     type: string
-
+    # Inputs can be defined here if the main dispatcher needs to pass data
+    # (e.g., inputs: branch-name: {required: true, type: string})
+    
 jobs:
   development_build:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Checkout Code
+      - name: ⬇️ Checkout Code
         uses: actions/checkout@v4
         
-      - name: 🚧 Run Development Build and Test
+      - name: 🏗️ Run Core Development Build and Test
         run: |
           echo "Starting the Development build pipeline..."
-          # Add your specific build, test, and deployment steps here
+          # --- Your Core CI Steps Go Here ---
           # Example: npm install
           # Example: npm run test:dev
           # Example: Deploy to ephemeral dev environment
+          echo "Core Development build steps complete."
+          
+  # -----------------------------------------------------------------
+  # New Job: Dispatch to the Markdown Linter
+  # This job will run AFTER development_build is successful.
+  # -----------------------------------------------------------------
+  run_markdownlint:
+    # 1. Ensure the build job completes successfully before linting starts
+    needs: development_build 
+    
+    # 2. CRITICAL: This job calls another reusable workflow.
+    #    It MUST use the 'uses' keyword and CANNOT have 'runs-on' or 'steps'.
+    #    This ensures the GitHub Actions parser doesn't throw a syntax error.
+    uses: ./.github/workflows/markdownlint.yaml
 
-          run_markdownlint:
-        # Ensure this job only runs if the main build succeeded
-            needs: development_build 
-            
-            # CRITICAL: This job calls the other reusable workflow.
-            # It MUST NOT have 'runs-on' or 'steps'.
-            uses: ./.github/workflows/markdownlint.yaml 
-            
-            # Optional: Pass current branch name as an input if markdownlint.yaml needs it
-            # with:
-            #   ref: ${{ github.ref }}
