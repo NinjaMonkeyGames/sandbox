@@ -1,0 +1,27 @@
+# .github/workflows/development.yaml
+name: Development CI/CD Pipeline
+
+# Define this file as a callable workflow
+on:
+  workflow_call:
+    # Define any inputs if your main workflow needs to pass data here
+    # inputs:
+    #   branch-name:
+    #     required: true
+    #     type: string
+
+jobs:
+  development_build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: 🚧 Run Development Build and Test
+        run: |
+          echo "Starting the Development build pipeline..."
+          # Add your specific build, test, and deployment steps here
+          # Example: npm install
+          # Example: npm run test:dev
+          # Example: Deploy to ephemeral dev environment
