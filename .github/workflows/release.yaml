@@ -11,7 +11,7 @@ on:
     #     type: string
 
 jobs:
-  development_build:
+  release_build:
     runs-on: ubuntu-latest
     
     steps:
