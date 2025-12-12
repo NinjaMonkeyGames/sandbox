@@ -4,15 +4,11 @@ name: 1. Environment Detector & Dispatcher
 on:
   push:
     branches:
-      - master # <-- PRODUCTION branch (Changed from main)
+      - master # Production
       - develop # Staging/UAT
       - feature/** # Development/Ephemeral
       - release/** # Pre-Production/Release Candidate
       - hotfix/** # Production Fix
-
-# Define an output variable 'env_name' at the workflow level for easy use
-env:
-  DETECTED_ENVIRONMENT: 'development' # Default environment
 
 jobs:
   detect_environment:
@@ -28,11 +24,8 @@ jobs:
           BRANCH_NAME="${{ github.ref_name }}"
           ENVIRONMENT=""
 
-          # *** PRODUCTION CHECK ***
           if [[ "$BRANCH_NAME" == "master" ]]; then
             ENVIRONMENT="production"
-          # ************************
-          
           elif [[ "$BRANCH_NAME" == "develop" ]]; then
             ENVIRONMENT="staging"
           elif [[ "$BRANCH_NAME" == release/* ]]; then
@@ -51,24 +44,25 @@ jobs:
           echo "-------------------------------"
           
           # 2. Set the output variable 'env_name'
+          # This line ensures the variable is available as a job output
           echo "env_name=$ENVIRONMENT" >> $GITHUB_OUTPUT
           
-      - name: Echo Detected Environment Output
-        # Verify the output is correctly set
-        run: echo "Environment output set: ${{ steps.set_env.outputs.env_name }}"
+      - name: Echo Detected Environment Output (FIXED SYNTAX)
+        # Using '|' for multi-line string prevents the "Nested mappings not allowed" error
+        run: |
+          echo "Environment output set: ${{ steps.set_env.outputs.env_name }}"
 
   # This job will call the appropriate deployment workflow
   dispatch_workflow:
-    needs: detect_environment # Requires the environment detection to complete
+    # IMPORTANT: Access outputs using the job ID: 'detect_environment'
+    needs: detect_environment 
     runs-on: ubuntu-latest
     
-    # Use the output from the previous job
-    env:
-      TARGET_ENV: ${{ needs.detect_environment.outputs.environment }}
-
     steps:
       - name: Workflow Dispatcher
+        # Use the job output accessed via 'needs.<job-id>.outputs.<output-key>'
         run: |
+          TARGET_ENV="${{ needs.detect_environment.outputs.environment }}"
           echo "Target Environment is: $TARGET_ENV"
           
           # Determine which subsequent script to "call" or "run"
