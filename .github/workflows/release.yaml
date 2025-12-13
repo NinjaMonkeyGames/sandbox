@@ -1,19 +1,17 @@
-name: 🚀 Production/Release Deployment
+# .github/workflows/release.yaml
+
+name: 🏷️ Release Pipeline
 
 on:
   workflow_call:
     inputs:
-      branch_name:
+      tag:
         required: true
         type: string
 
 jobs:
-  acknowledge_environment:
+  create_release:
     runs-on: ubuntu-latest
     steps:
-      - name: Acknowledge Release Environment
-        run: |
-          echo "==================================================="
-          echo "  DEPLOYMENT ACKNOWLEDGED: PRODUCTION/RELEASE"
-          echo "  Branch Triggered: ${{ inputs.branch_name }}"
-          echo "==================================================="
+      - name: Publish Release Notes
+        run: echo "Creating GitHub release for tag ${{ inputs.tag }}..."

@@ -1,25 +1,18 @@
-name: Development
+# .github/workflows/development.yaml
+
+name: 🚀 Development Pipeline
 
 on:
-  workflow_run:
-    workflows: ["CI"]
-    types:
-      - completed
-
+  workflow_call:
+    inputs:
+      sha:
+        required: true
+        type: string
+        
 jobs:
-  linting:
+  deploy_prod:
     runs-on: ubuntu-latest
-
+    environment: development
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Run markdown lint
-        run: |
-          echo "Markdown lint has been called."
-          # Here you would normally run markdownlint commands
-
-      - name: Run commit lint
-        run: |
-          echo "Commit lint has been called."
-          # Here you would normally run commitlint commands
+      - name: Deploy to Development
+        run: echo "Deploying commit ${{ inputs.sha }} to development..."

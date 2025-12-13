@@ -1,26 +1,57 @@
-name: CI
+# .github/workflows/ci.yaml
+
+name: Environment Dispatcher Pipeline
 
 on:
   push:
     branches:
-      - '*'  # Run on all branch pushes
+      - '**' # All branches
+    tags:
+      - 'v*' # All tags starting with 'v'
   pull_request:
     branches:
-      - '*'  # Run on all PRs
+      - '**'
+  workflow_dispatch:
 
+# Define a single job to handle the environment detection and dispatch
 jobs:
-  detect-environment:
+  dispatch_environment:
     runs-on: ubuntu-latest
+    
+    # Define variables for clearer conditional logic
+    env:
+      BRANCH_NAME: ${{ github.ref_name }}
+      IS_TAG: ${{ startsWith(github.ref, 'refs/tags/') }}
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - name: Set environment variable
-        id: set_env
-        run: |
-          echo "CI_ENVIRONMENT=$(echo ${{ github.ref }} | sed 's/refs\/heads\///')" >> $GITHUB_ENV
+      # --- 1. RELEASE Pipeline (Priority 1: Always check for tags first) ---
+      - name: Run Release Workflow
+        if: env.IS_TAG == 'true'
+        uses: ./.github/workflows/release.yaml
+        with:
+          tag: ${{ env.BRANCH_NAME }} # github.ref_name is the tag name
 
-      - name: Print environment
-        run: |
-          echo "Environment: $CI_ENVIRONMENT"
+      # --- 2. PRODUCTION Pipeline (If pushed to 'main' branch, and not a tag) ---
+      - name: Run Production Workflow
+        if: env.BRANCH_NAME == 'main' && env.IS_TAG == 'false'
+        uses: ./.github/workflows/production.yaml
+        with:
+          sha: ${{ github.sha }}
+
+      # --- 3. STAGING Pipeline (If pushed to 'staging' branch, and not a tag) ---
+      - name: Run Staging Workflow
+        if: env.BRANCH_NAME == 'staging' && env.IS_TAG == 'false'
+        uses: ./.github/workflows/staging.yaml
+        with:
+          branch: ${{ env.BRANCH_NAME }}
+
+      # --- 4. DEVELOPMENT Pipeline (If none of the above match: all other branches) ---
+      - name: Run Development Workflow
+        # This condition ensures it only runs if it's not main, not staging, and not a tag.
+        if: env.BRANCH_NAME != 'main' && env.BRANCH_NAME != 'staging' && env.IS_TAG == 'false'
+        uses: ./.github/workflows/development.yaml
+        with:
+          branch: ${{ env.BRANCH_NAME }}

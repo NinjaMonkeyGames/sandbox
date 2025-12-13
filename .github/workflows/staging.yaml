@@ -1,19 +1,18 @@
-name: 🧪 Staging Deployment
+# .github/workflows/staging.yaml
+
+name: 🚦 Staging Pipeline
 
 on:
   workflow_call:
     inputs:
-      branch_name:
+      branch:
         required: true
         type: string
 
 jobs:
-  acknowledge_environment:
+  deploy_to_staging:
     runs-on: ubuntu-latest
+    environment: staging
     steps:
-      - name: Acknowledge Staging Environment
-        run: |
-          echo "==================================================="
-          echo "  DEPLOYMENT ACKNOWLEDGED: STAGING"
-          echo "  Branch Triggered: ${{ inputs.branch_name }}"
-          echo "==================================================="
+      - name: Deploy to Staging Environment
+        run: echo "--- Deploying branch ${{ inputs.branch }} to Staging ---"
