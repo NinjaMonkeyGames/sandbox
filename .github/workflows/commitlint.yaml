@@ -1,16 +1,16 @@
 name: Commit Lint
 
 on:
-  # The secrets block is removed completely because GITHUB_TOKEN is reserved.
+  # This block is empty because it only accepts the workflow_call trigger.
   workflow_call: 
-    # The GITHUB_TOKEN is now implicitly available to jobs in this workflow.
-    
+    # No 'secrets' or 'inputs' defined here.
+
 jobs:
   commit-lint:
     runs-on: ubuntu-latest
     permissions:
-      contents: read # Required for actions/checkout
-      pull-requests: read # Recommended for commitlint on PRs
+      contents: read
+      pull-requests: read
     steps:
       - uses: actions/checkout@v4
         with:
@@ -22,5 +22,4 @@ jobs:
       - name: Install dependencies
         run: npm install @commitlint/config-conventional @commitlint/cli
       - name: Run Commit Lint
-        # Checks commits in the current branch against the target branch (e.g., master)
         run: npx commitlint --from ${{ github.event.pull_request.base.sha || 'HEAD~1' }} --to ${{ github.sha }} --verbose

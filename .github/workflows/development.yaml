@@ -9,17 +9,18 @@ on:
       - development
 
 jobs:
-  # --- COMMON LINTING JOBS ---
-  
+  # The linting jobs run in parallel and call the reusable workflows.
   lint-commit:
+    # Use the 'uses' keyword to call the external workflow file.
+    # Note: No 'runs-on' is needed here, as the job runs on the runner defined in the called workflow.
     uses: ./.github/workflows/commitlint.yaml 
-    # The 'secrets' block is REMOVED entirely
+    # CRITICAL: The 'secrets' key is entirely omitted to avoid the GITHUB_TOKEN conflict.
       
   lint-markdown:
     uses: ./.github/workflows/markdownlint.yaml
-    # The 'secrets' block is REMOVED entirely
+    # CRITICAL: The 'secrets' key is entirely omitted here as well.
 
-  # --- DEVELOPMENT SPECIFIC JOBS ---
+  # This is your environment-specific job. It runs on its own runner.
   build-test-dev:
     runs-on: ubuntu-latest
     steps:
@@ -28,3 +29,4 @@ jobs:
       - name: Run Dev-Specific Build and Tests
         run: |
           echo "Running build and tests for Development environment..."
+          # Add your development-specific build, test, or deployment steps here
