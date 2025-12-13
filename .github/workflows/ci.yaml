@@ -1,57 +1,56 @@
 # .github/workflows/ci.yaml
-
-name: Environment Dispatcher Pipeline
-
+name: Main CI Dispatcher
 on:
   push:
     branches:
-      - '**' # All branches
-    tags:
-      - 'v*' # All tags starting with 'v'
+      - '*'
   pull_request:
     branches:
-      - '**'
-  workflow_dispatch:
+      - '*'
 
-# Define a single job to handle the environment detection and dispatch
 jobs:
-  dispatch_environment:
+  dispatch:
     runs-on: ubuntu-latest
-    
-    # Define variables for clearer conditional logic
-    env:
-      BRANCH_NAME: ${{ github.ref_name }}
-      IS_TAG: ${{ startsWith(github.ref, 'refs/tags/') }}
-
+    # This job determines the environment based on the branch name
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - name: Determine Environment
+        id: env_detector
+        run: |
+          BRANCH_NAME="${{ github.ref_name }}"
+          ENVIRONMENT=""
+          
+          # Production (e.g., main or master branches)
+          if [[ "$BRANCH_NAME" == "main" || "$BRANCH_NAME" == "master" ]]; then
+            ENVIRONMENT="production"
+          # Staging (e.g., staging branch or release/* branches)
+          elif [[ "$BRANCH_NAME" == "staging" || "$BRANCH_NAME" == release/* ]]; then
+            ENVIRONMENT="staging"
+          # Development (any other branch, like feature/* or develop)
+          else
+            ENVIRONMENT="development"
+          fi
+          
+          echo "Determined environment: $ENVIRONMENT"
+          echo "environment=$ENVIRONMENT" >> $GITHUB_OUTPUT
 
-      # --- 1. RELEASE Pipeline (Priority 1: Always check for tags first) ---
-      - name: Run Release Workflow
-        if: env.IS_TAG == 'true'
-        uses: ./.github/workflows/release.yaml
-        with:
-          tag: ${{ env.BRANCH_NAME }} # github.ref_name is the tag name
+    outputs:
+      environment: ${{ steps.env_detector.outputs.environment }}
 
-      # --- 2. PRODUCTION Pipeline (If pushed to 'main' branch, and not a tag) ---
-      - name: Run Production Workflow
-        if: env.BRANCH_NAME == 'master' && env.IS_TAG == 'false'
-        uses: ./.github/workflows/production.yaml
-        with:
-          sha: ${{ github.sha }}
-
-      # --- 3. STAGING Pipeline (If pushed to 'staging' branch, and not a tag) ---
-      - name: Run Staging Workflow
-        if: env.BRANCH_NAME == 'staging' && env.IS_TAG == 'false'
-        uses: ./.github/workflows/staging.yaml
-        with:
-          branch: ${{ env.BRANCH_NAME }}
-
-      # --- 4. DEVELOPMENT Pipeline (If none of the above match: all other branches) ---
-      - name: Run Development Workflow
-        # This condition ensures it only runs if it's not master, not staging, and not a tag.
-        if: env.BRANCH_NAME != 'master' && env.BRANCH_NAME != 'staging' && env.IS_TAG == 'false'
-        uses: ./.github/workflows/development.yaml
-        with:
-          branch: ${{ env.BRANCH_NAME }}
+  # Call the appropriate workflow based on the detected environment
+  call_development:
+    name: Development CI
+    uses: ./.github/workflows/development.yaml
+    needs: dispatch
+    if: needs.dispatch.outputs.environment == 'development'
+    
+  call_staging:
+    name: Staging CI
+    uses: ./.github/workflows/staging.yaml
+    needs: dispatch
+    if: needs.dispatch.outputs.environment == 'staging'
+    
+  call_production:
+    name: Production CI
+    uses: ./.github/workflows/production.yaml
+    needs: dispatch
+    if: needs.dispatch.outputs.environment == 'production'

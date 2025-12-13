@@ -1,0 +1,11 @@
+# .github/workflows/commitlint.yaml
+name: Commit Lint Reusable
+on:
+  workflow_call:
+
+jobs:
+  commitlint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Commitlint Code Here
+        run: echo "commitlint code here"

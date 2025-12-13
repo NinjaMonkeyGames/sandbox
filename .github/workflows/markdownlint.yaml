@@ -1,0 +1,11 @@
+# .github/workflows/markdownlint.yaml
+name: Markdown Lint Reusable
+on:
+  workflow_call:
+
+jobs:
+  markdownlint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Markdown Code Here
+        run: echo "markdown code here"

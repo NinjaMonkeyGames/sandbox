@@ -1,18 +1,29 @@
 # .github/workflows/staging.yaml
-
-name: 🚦 Staging Pipeline
-
+name: Staging Environment
 on:
   workflow_call:
-    inputs:
-      branch:
-        required: true
-        type: string
-
 jobs:
-  deploy_to_staging:
+  # COMMON LINT ENDPOINTS
+  commitlint_job:
+    name: Run Commit Lint
+    uses: ./.github/workflows/commitlint.yaml
+  
+  markdownlint_job:
+    name: Run Markdown Lint
+    uses: ./.github/workflows/markdownlint.yaml
+    
+  # DIVERGENCE POINT
+  staging_tasks:
+    name: Staging Tasks
     runs-on: ubuntu-latest
-    environment: staging
+    # This job only runs after both lints complete successfully
+    needs: [commitlint_job, markdownlint_job] 
     steps:
-      - name: Deploy to Staging Environment
-        run: echo "--- Deploying branch ${{ inputs.branch }} to Staging ---"
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Diverged Path Announcement
+        run: echo "Lints complete. Now running staging-specific tasks."
+      - name: Staging-Specific Action
+        run: |
+          echo "Building Staging Artifacts and deploying to preview environment..."
+          # ... staging build/deploy commands

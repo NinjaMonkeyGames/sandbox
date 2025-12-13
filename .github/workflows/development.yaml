@@ -1,18 +1,29 @@
 # .github/workflows/development.yaml
-
-name: 🚀 Development Pipeline
-
+name: Development Environment
 on:
   workflow_call:
-    inputs:
-      sha:
-        required: true
-        type: string
-        
 jobs:
-  deploy_prod:
+  # COMMON LINT ENDPOINTS
+  commitlint_job:
+    name: Run Commit Lint
+    uses: ./.github/workflows/commitlint.yaml
+  
+  markdownlint_job:
+    name: Run Markdown Lint
+    uses: ./.github/workflows/markdownlint.yaml
+    
+  # DIVERGENCE POINT
+  development_tasks:
+    name: Development Tasks
     runs-on: ubuntu-latest
-    environment: development
+    # This job only runs after both lints complete successfully
+    needs: [commitlint_job, markdownlint_job] 
     steps:
-      - name: Deploy to Development
-        run: echo "Deploying commit ${{ inputs.sha }} to development..."
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Diverged Path Announcement
+        run: echo "Lints complete. Now running development-specific tasks."
+      - name: Development-Specific Action
+        run: |
+          echo "Building Development Artifacts..."
+          # ... development build/test commands
