@@ -1,59 +1,31 @@
-# .github/workflows/development.yaml
-name: Development CI/CD Pipeline
+name: Development CI
 
-# This file is callable by the main dispatcher (ci.yaml)
 on:
-  workflow_call:
-    # Inputs can be defined here if the main dispatcher needs to pass data
-    # (e.g., inputs: branch-name: {required: true, type: string})
-    
+  push:
+    branches:
+      - development
+  pull_request:
+    branches:
+      - development
+
 jobs:
-  development_build:
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: ⬇️ Checkout Code
-        uses: actions/checkout@v4
-        
-      - name: 🏗️ Run Development Build and Test
-        run: |
-          echo "Starting the development build pipeline..."
-          # --- Your Core CI Steps Go Here ---
-          echo "Development build and test steps complete."
-          
-  # -----------------------------------------------------------------
-  # 1. NEW JOB: Commit Linting (Quality Gate 1)
-  # -----------------------------------------------------------------
-  run_commitlint:
-    # Runs immediately after the development_build job succeeds
-    needs: development_build 
-    
-    # Calls the reusable workflow
+  # --- COMMON LINTING JOBS ---
+  lint-commit:
     uses: ./.github/workflows/commitlint.yaml
-    
-  # -----------------------------------------------------------------
-  # 2. Markdown Linting (Quality Gate 2)
-  # -----------------------------------------------------------------
-  run_markdownlint:
-    # Runs only after BOTH the build AND the commit linting jobs succeed
-    needs: [development_build, run_commitlint] 
-    
-    # Calls the reusable workflow
-    uses: ./.github/workflows/markdownlint.yaml
-    
-  # -----------------------------------------------------------------
-  # 3. Deployment (Final Stage)
-  # -----------------------------------------------------------------
-  deploy_development:
-    # Runs only after ALL THREE previous quality gates pass
-    needs: [development_build, run_commitlint, run_markdownlint] 
-    runs-on: ubuntu-latest
-    
-    environment: 
-      name: development
+    secrets:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
+  lint-markdown:
+    uses: ./.github/workflows/markdownlint.yaml
+    secrets:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # --- DEVELOPMENT SPECIFIC JOBS ---
+  build-test-dev:
+    runs-on: ubuntu-latest
     steps:
-      - name: 🚀 Deploy to Ephemeral Dev Environment
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Run Dev-Specific Build and Tests
         run: |
-          echo "All checks passed. Deploying feature branch to an ephemeral environment."
-          # Add your feature-branch deployment logic here
+          echo "Running build and tests for Development environment..."

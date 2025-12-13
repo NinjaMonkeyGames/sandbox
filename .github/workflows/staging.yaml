@@ -1,51 +1,31 @@
-# .github/workflows/staging.yaml
-name: Staging CI/CD Pipeline
+name: Staging CI
 
-# Define this file as a callable workflow
 on:
-  workflow_call:
-    # Inputs can be defined here if needed
-    
+  push:
+    branches:
+      - staging
+  pull_request:
+    branches:
+      - staging
+
 jobs:
-  staging_build:
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: ⬇️ Checkout Code
-        uses: actions/checkout@v4
-        
-      - name: 🏗️ Run Staging Build and Test
-        run: |
-          echo "Starting the staging build pipeline..."
-          # --- Your Core CI Steps Go Here ---
-          # Example: Install dependencies (npm install)
-          # Example: Run staging-specific tests (npm run test:staging)
-          echo "Staging build and test steps complete."
-          
-  # -----------------------------------------------------------------
-  # Job to run the Markdown Linter
-  # -----------------------------------------------------------------
-  run_markdownlint:
-    # Ensure the build job completes successfully first
-    needs: staging_build 
-    
-    # CRITICAL: Calls the reusable workflow (no runs-on or steps)
-    uses: ./.github/workflows/markdownlint.yaml
-    
-  # -----------------------------------------------------------------
-  # Optional: Staging Deployment Job
-  # -----------------------------------------------------------------
-  deploy_staging:
-    # This job requires BOTH the build and the linting to be successful
-    needs: [staging_build, run_markdownlint] 
-    runs-on: ubuntu-latest
-    
-    # Recommended: Use a staging environment definition
-    environment: 
-      name: staging
+  # --- COMMON LINTING JOBS ---
+  lint-commit:
+    uses: ./.github/workflows/commitlint.yaml
+    secrets:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
+  lint-markdown:
+    uses: ./.github/workflows/markdownlint.yaml
+    secrets:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # --- STAGING SPECIFIC JOBS ---
+  build-test-deploy-staging:
+    runs-on: ubuntu-latest
     steps:
-      - name: 🚀 Deploy to Staging/UAT Environment
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Run Staging-Specific Checks and Deployment
         run: |
-          echo "All checks passed. Deploying to Staging/UAT for final review."
-          # Add your staging deployment logic here
+          echo "Running detailed QA checks and deployment for Staging environment..."

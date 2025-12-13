@@ -1,77 +1,61 @@
-name: 1. Environment Detector & Dispatcher
+name: Continuous Integration - Dispatcher
 
-# Trigger on pushes to all relevant GitFlow branches
 on:
   push:
+    # Combined list of branches and tags that trigger this workflow
     branches:
-      - master         # -> production.yaml
-      - develop        # -> staging.yaml
-      - feature/** # -> development.yaml
-      - release/** # -> release.yaml
-      - hotfix/** # -> release.yaml
+      - master      # Production branch (was 'main')
+      - staging
+      - development
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+      
+  pull_request:
+    branches:
+      - master
+      - staging
+      - development
 
 jobs:
-  detect_environment:
+  dispatch:
     runs-on: ubuntu-latest
-    
-    # 1. Expose the determined environment name
-    outputs:
-      environment: ${{ steps.set_env.outputs.env_name }}
-      
     steps:
-      - name: Set Environment Name (GitFlow Logic)
-        id: set_env
+      - name: Determine Environment and Dispatch Workflow
         run: |
-          BRANCH_NAME="${{ github.ref_name }}"
-          ENVIRONMENT=""
-
-          # --- Environment Mapping Logic ---
-          if [[ "$BRANCH_NAME" == "master" ]]; then
+          # Determine the workflow file based on the branch or tag
+          WORKFLOW_FILE=""
+          
+          # Check for branch-specific environments
+          if [[ "${{ github.ref }}" == "refs/heads/master" ]]; then
+            WORKFLOW_FILE="production.yaml"
             ENVIRONMENT="production"
-          elif [[ "$BRANCH_NAME" == "develop" ]]; then
+          elif [[ "${{ github.ref }}" == "refs/heads/staging" ]]; then
+            WORKFLOW_FILE="staging.yaml"
             ENVIRONMENT="staging"
-          elif [[ "$BRANCH_NAME" == release/* ]] || [[ "$BRANCH_NAME" == hotfix/* ]]; then
-            # Grouping release and hotfix branches
+          elif [[ "${{ github.ref }}" == "refs/heads/development" ]]; then
+            WORKFLOW_FILE="development.yaml"
+            ENVIRONMENT="development"
+          # Check for a release tag push
+          elif [[ "${{ github.ref }}" =~ ^refs/tags/v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
+            WORKFLOW_FILE="release.yaml"
             ENVIRONMENT="release"
-          else
-            # Default for feature/* branches and any others
+          # For all other PRs or pushes, default to development
+          elif [[ "${{ github.event_name }}" == "pull_request" || "${{ github.ref }}" == "refs/heads/development" ]]; then
+            WORKFLOW_FILE="development.yaml"
             ENVIRONMENT="development"
           fi
           
-          # Log the detected environment
-          echo "--- Detected CI Environment ---"
-          echo "Branch: $BRANCH_NAME"
-          echo "Set Environment to: $ENVIRONMENT"
-          echo "-------------------------------"
-          
-          # Set the output variable for other jobs to read
-          echo "env_name=$ENVIRONMENT" >> $GITHUB_OUTPUT
-          
-  # --- Conditional Dispatcher Jobs ---
-  # These jobs use the 'uses' keyword to call the reusable workflows. 
-  # Only the job matching the detected environment will run.
+          # If a workflow file was determined, output the decision.
+          if [ ! -z "$WORKFLOW_FILE" ]; then
+            echo "::notice file=ci.yaml::Dispatching logic determined: $WORKFLOW_FILE (Environment: $ENVIRONMENT)"
+            echo "WORKFLOW_FILE=$WORKFLOW_FILE" >> $GITHUB_ENV
+            echo "ENVIRONMENT=$ENVIRONMENT" >> $GITHUB_ENV
+          else
+            echo "::notice file=ci.yaml::No specific environment workflow matched. Exiting."
+          fi
 
-  call_development:
-    # Condition: Runs ONLY if the detected environment is 'development'
-    if: ${{ needs.detect_environment.outputs.environment == 'development' }}
-    needs: detect_environment
-    # The 'uses' keyword calls the reusable workflow file
-    uses: ./.github/workflows/development.yaml 
-    
-  call_staging:
-    # Condition: Runs ONLY if the detected environment is 'staging'
-    if: ${{ needs.detect_environment.outputs.environment == 'staging' }}
-    needs: detect_environment
-    uses: ./.github/workflows/staging.yaml
-    
-  call_release:
-    # Condition: Runs ONLY if the detected environment is 'release'
-    if: ${{ needs.detect_environment.outputs.environment == 'release' }}
-    needs: detect_environment
-    uses: ./.github/workflows/release.yaml
-    
-  call_production:
-    # Condition: Runs ONLY if the detected environment is 'production'
-    if: ${{ needs.detect_environment.outputs.environment == 'production' }}
-    needs: detect_environment
-    uses: ./.github/workflows/production.yaml
+      - name: Acknowledge Branch Filter Recommendation
+        # As discussed, the individual environment files will use branch filters for simplicity.
+        # This step is a placeholder to show the dispatcher logic, 
+        # but the real execution happens in the targeted YAMLs (e.g., staging.yaml).
+        run: echo "The individual environment YAMLs (e.g., production.yaml, staging.yaml) are configured to trigger directly on their respective branches using branch filters for robust execution."

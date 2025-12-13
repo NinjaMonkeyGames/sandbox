@@ -1,34 +1,19 @@
-# .github/workflows/markdownlint.yaml
-name: Markdown Lint Check
+name: Markdown Lint
 
-# Define this file as a callable/reusable workflow
 on:
+  # Allows this workflow to be called by another workflow
   workflow_call:
-    # No inputs needed 
-    
+    secrets:
+      GITHUB_TOKEN:
+        required: true
+
 jobs:
-  lint_markdown:
+  markdown-lint:
     runs-on: ubuntu-latest
-    
     steps:
-      - name: ⬇️ Checkout Code
-        # Necessary to access all Markdown files and the config file
-        uses: actions/checkout@v4
-        
-      - name: 📝 Run Markdown Lint using .markdownlint-cli2.jsonc
-        # Using a reliable action that supports markdownlint-cli2
-        uses: DavidAnson/markdownlint-cli2-action@v1 
-        
+      - uses: actions/checkout@v4
+      - name: Run Markdown Lint
+        uses: avto-dev/markdown-lint@v1
         with:
-          # The key is to pass the configuration file name directly 
-          # to the action, which forwards it to markdownlint-cli2.
-          # This syntax tells the tool: "Use the config file named .markdownlint-cli2.jsonc"
-          config: .markdownlint-cli2.jsonc
-          
-          # The files glob pattern is also critical for coverage
-          files: "**/*.md"
-          
-      - name: ⚙️ Troubleshooting Output
-        if: ${{ failure() }}
-        run: |
-          echo "Markdown linting failed! Ensure the '.markdownlint-cli2.jsonc' file is in your repository root."
+          config: '.markdownlint.json' # Adjust to your config file path
+          args: '**/*.md'

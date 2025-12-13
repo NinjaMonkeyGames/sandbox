@@ -1,45 +1,25 @@
-# .github/workflows/commitlint.yaml
-name: Conventional Commit Linting (Official CLI)
+name: Commit Lint
 
-# Define this file as a callable/reusable workflow
 on:
+  # Allows this workflow to be called by another workflow
   workflow_call:
-    # No inputs needed
+    secrets:
+      GITHUB_TOKEN:
+        required: true
 
 jobs:
-  lint_commits:
+  commit-lint:
     runs-on: ubuntu-latest
-    
     steps:
-      - name: ⬇️ Checkout Code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
-          # Fetch the entire history so commitlint can determine the range to check
-          fetch-depth: 0 
-
-      - name: 🛠️ Setup Node.js Environment
+          fetch-depth: 0 # required for commitlint to check all commits
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20' # Use a stable Node.js version
-
-      - name: 📦 Install Commitlint and Dependencies
-        run: |
-          # Install the official commitlint CLI and the conventional config preset
-          npm install --save-dev @commitlint/cli @commitlint/config-conventional
-          # Note: If your project uses Yarn or pnpm, replace 'npm install' accordingly.
-
-      - name: 📝 Run Official Commitlint CLI
-        env:
-          # Set the configuration file environment variable
-          COMMITLINT_CONFIG: commitlint.config.js
-        run: |
-          echo "Running commitlint using configuration file: $COMMITLINT_CONFIG"
-          
-          # This command executes the commitlint binary from the node_modules/.bin folder.
-          # It checks commits between the current HEAD and the remote target branch's HEAD.
-          npx commitlint --from=$(git merge-base origin/master HEAD) --to=HEAD
-
-      - name: ⚙️ Troubleshooting Output
-        if: ${{ failure() }}
-        run: |
-          echo "Commit linting failed! Check 'commitlint.config.js' and ensure all commit messages follow the Conventional Commit rules."
+          node-version: '20'
+      - name: Install dependencies (optional, depends on commitlint setup)
+        run: npm install @commitlint/config-conventional @commitlint/cli
+      - name: Run Commit Lint
+        # Checks commits in the current branch against the target branch (e.g., main)
+        run: npx commitlint --from ${{ github.event.pull_request.base.sha || 'HEAD~1' }} --to ${{ github.sha }} --verbose

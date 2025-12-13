@@ -1,42 +1,31 @@
-# .github/workflows/release.yaml
-name: Release Candidate CI/CD Pipeline
+name: Release Workflow
 
-# Define this file as a callable workflow
 on:
-  workflow_call:
-    # Inputs can be defined here if needed
-    
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+' # Matches tags like v1.0.0
+
 jobs:
-  release_build:
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: ⬇️ Checkout Code
-        uses: actions/checkout@v4
-        
-      - name: 🏗️ Run Release Candidate Build and Test
-        run: |
-          echo "Starting the release candidate build pipeline..."
-          # --- Your Core CI Steps Go Here ---
-          # Example: Install dependencies
-          # Example: Run final, comprehensive tests (npm run test:e2e)
-          # Example: Create an immutable build artifact (tagging/versioning)
-          echo "Release candidate build and test steps complete."
-          
-  # -----------------------------------------------------------------
-  # Job to run the Markdown Linter
-  # -----------------------------------------------------------------
-  run_markdownlint:
-    # Ensure the build job completes successfully first
-    needs: release_build 
-    
-    # CRITICAL: Calls the reusable workflow (no runs-on or steps)
+  # --- COMMON LINTING JOBS ---
+  lint-commit:
+    uses: ./.github/workflows/commitlint.yaml
+    secrets:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+  lint-markdown:
     uses: ./.github/workflows/markdownlint.yaml
-    
-  # -----------------------------------------------------------------
-  # Optional: Pre-Production Deployment Job
-  # -----------------------------------------------------------------
-  deploy_preprod:
-    # This job requires BOTH the build and the linting to be successful
-    needs: [release_build, run_markdownlint] 
+    secrets:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # --- RELEASE SPECIFIC JOBS ---
+  create-release:
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          # Your release logic here
+          draft: false
+          prerelease: false
