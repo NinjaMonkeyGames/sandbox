@@ -4,24 +4,48 @@ name: Staging CI/CD Pipeline
 # Define this file as a callable workflow
 on:
   workflow_call:
-    # Define any inputs if your main workflow needs to pass data here
-    # inputs:
-    #   branch-name:
-    #     required: true
-    #     type: string
-
+    # Inputs can be defined here if needed
+    
 jobs:
   staging_build:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Checkout Code
+      - name: ⬇️ Checkout Code
         uses: actions/checkout@v4
         
-      - name: 🚧 Run Development Build and Test
+      - name: 🏗️ Run Staging Build and Test
         run: |
-          echo "Starting the Staging build pipeline..."
-          # Add your specific build, test, and deployment steps here
-          # Example: npm install
-          # Example: npm run test:dev
-          # Example: Deploy to ephemeral staging environment
+          echo "Starting the staging build pipeline..."
+          # --- Your Core CI Steps Go Here ---
+          # Example: Install dependencies (npm install)
+          # Example: Run staging-specific tests (npm run test:staging)
+          echo "Staging build and test steps complete."
+          
+  # -----------------------------------------------------------------
+  # Job to run the Markdown Linter
+  # -----------------------------------------------------------------
+  run_markdownlint:
+    # Ensure the build job completes successfully first
+    needs: staging_build 
+    
+    # CRITICAL: Calls the reusable workflow (no runs-on or steps)
+    uses: ./.github/workflows/markdownlint.yaml
+    
+  # -----------------------------------------------------------------
+  # Optional: Staging Deployment Job
+  # -----------------------------------------------------------------
+  deploy_staging:
+    # This job requires BOTH the build and the linting to be successful
+    needs: [staging_build, run_markdownlint] 
+    runs-on: ubuntu-latest
+    
+    # Recommended: Use a staging environment definition
+    environment: 
+      name: staging
+      
+    steps:
+      - name: 🚀 Deploy to Staging/UAT Environment
+        run: |
+          echo "All checks passed. Deploying to Staging/UAT for final review."
+          # Add your staging deployment logic here

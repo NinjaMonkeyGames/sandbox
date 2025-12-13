@@ -1,27 +1,52 @@
 # .github/workflows/release.yaml
-name: Release CI/CD Pipeline
+name: Release Candidate CI/CD Pipeline
 
 # Define this file as a callable workflow
 on:
   workflow_call:
-    # Define any inputs if your main workflow needs to pass data here
-    # inputs:
-    #   branch-name:
-    #     required: true
-    #     type: string
-
+    # Inputs can be defined here if needed
+    
 jobs:
   release_build:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Checkout Code
+      - name: ⬇️ Checkout Code
         uses: actions/checkout@v4
         
-      - name: 🚧 Run release Build and Test
+      - name: 🏗️ Run Release Candidate Build and Test
         run: |
-          echo "Starting the Release build pipeline..."
-          # Add your specific build, test, and production steps here
-          # Example: npm install
-          # Example: npm run test:dev
-          # Example: Deploy to ephemeral production environment
+          echo "Starting the release candidate build pipeline..."
+          # --- Your Core CI Steps Go Here ---
+          # Example: Install dependencies
+          # Example: Run final, comprehensive tests (npm run test:e2e)
+          # Example: Create an immutable build artifact (tagging/versioning)
+          echo "Release candidate build and test steps complete."
+          
+  # -----------------------------------------------------------------
+  # Job to run the Markdown Linter
+  # -----------------------------------------------------------------
+  run_markdownlint:
+    # Ensure the build job completes successfully first
+    needs: release_build 
+    
+    # CRITICAL: Calls the reusable workflow (no runs-on or steps)
+    uses: ./.github/workflows/markdownlint.yaml
+    
+  # -----------------------------------------------------------------
+  # Optional: Pre-Production Deployment Job
+  # -----------------------------------------------------------------
+  deploy_preprod:
+    # This job requires BOTH the build and the linting to be successful
+    needs: [release_build, run_markdownlint] 
+    runs-on: ubuntu-latest
+    
+    # Recommended: Use a pre-production environment definition
+    environment: 
+      name: pre-production
+      
+    steps:
+      - name: 🚀 Deploy to Pre-Production Environment
+        run: |
+          echo "All checks passed. Deploying release candidate to Pre-Production for final smoke tests."
+          # Add your pre-production deployment logic here

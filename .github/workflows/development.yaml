@@ -1,7 +1,7 @@
 # .github/workflows/development.yaml
 name: Development CI/CD Pipeline
 
-# This file is callable by the main dispatcher (ci.yaml)
+# Define this file as a callable workflow
 on:
   workflow_call:
     # Inputs can be defined here if the main dispatcher needs to pass data
@@ -15,25 +15,40 @@ jobs:
       - name: ⬇️ Checkout Code
         uses: actions/checkout@v4
         
-      - name: 🏗️ Run Core Development Build and Test
+      - name: 🏗️ Run Development Build and Test
         run: |
-          echo "Starting the Development build pipeline..."
+          echo "Starting the development build pipeline..."
           # --- Your Core CI Steps Go Here ---
-          # Example: npm install
-          # Example: npm run test:dev
-          # Example: Deploy to ephemeral dev environment
-          echo "Core Development build steps complete."
+          # Example: Install dependencies (npm install)
+          # Example: Run unit tests (npm run test:unit)
+          echo "Development build and test steps complete."
           
   # -----------------------------------------------------------------
-  # New Job: Dispatch to the Markdown Linter
-  # This job will run AFTER development_build is successful.
+  # Job to run the Markdown Linter
   # -----------------------------------------------------------------
   run_markdownlint:
-    # 1. Ensure the build job completes successfully before linting starts
+    # 1. Ensure the build job completes successfully first
     needs: development_build 
     
-    # 2. CRITICAL: This job calls another reusable workflow.
+    # 2. CRITICAL: This job calls the reusable workflow.
     #    It MUST use the 'uses' keyword and CANNOT have 'runs-on' or 'steps'.
-    #    This ensures the GitHub Actions parser doesn't throw a syntax error.
     uses: ./.github/workflows/markdownlint.yaml
-
+    
+  # -----------------------------------------------------------------
+  # Optional: Ephemeral Deployment Job
+  # This is often used to deploy feature branches for immediate testing.
+  # -----------------------------------------------------------------
+  deploy_development:
+    # This job requires BOTH the build and the linting to be successful
+    needs: [development_build, run_markdownlint] 
+    runs-on: ubuntu-latest
+    
+    # Recommended: Use a development environment definition
+    environment: 
+      name: development
+      
+    steps:
+      - name: 🚀 Deploy to Ephemeral Dev Environment
+        run: |
+          echo "All checks passed. Deploying feature branch to an ephemeral environment."
+          # Add your feature-branch deployment logic here

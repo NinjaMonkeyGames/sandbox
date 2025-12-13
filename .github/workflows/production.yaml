@@ -4,24 +4,51 @@ name: Production CI/CD Pipeline
 # Define this file as a callable workflow
 on:
   workflow_call:
-    # Define any inputs if your main workflow needs to pass data here
-    # inputs:
-    #   branch-name:
-    #     required: true
-    #     type: string
-
+    # Inputs can be defined here if the main dispatcher needs to pass data
+    # (e.g., inputs: release-tag: {required: true, type: string})
+    
 jobs:
   production_build:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Checkout Code
+      - name: ⬇️ Checkout Code
         uses: actions/checkout@v4
         
-      - name: 🚧 Run Development Build and Test
+      - name: 🏗️ Run Production Build and Test
         run: |
           echo "Starting the production build pipeline..."
           # Add your specific build, test, and production steps here
+          # 🚨 NOTE: Production should usually run unit/integration tests again.
           # Example: npm install
-          # Example: npm run test:dev
-          # Example: Deploy to ephemeral dev environment
+          # Example: npm run test:production
+          echo "Production build and test steps complete."
+          
+  # -----------------------------------------------------------------
+  # New Job: Dispatch to the Markdown Linter
+  # This job will run AFTER the main production_build is successful.
+  # -----------------------------------------------------------------
+  run_markdownlint:
+    # 1. Ensure the production build/test job completes successfully first
+    needs: production_build 
+    
+    # 2. CRITICAL: This job calls the reusable workflow.
+    #    It uses the 'uses' keyword and MUST NOT have 'runs-on' or 'steps'.
+    uses: ./.github/workflows/markdownlint.yaml
+    
+  # -----------------------------------------------------------------
+  # Optional: Production Deployment Job
+  # This is usually a separate job that runs AFTER both build and linting succeed
+  # -----------------------------------------------------------------
+  deploy_production:
+    # This job requires BOTH the build and the linting to be successful
+    needs: [production_build, run_markdownlint] 
+    runs-on: ubuntu-latest
+    environment: 
+      name: production
+    
+    steps:
+      - name: 🚀 Deploy to Production
+        run: |
+          echo "All checks passed. Deploying final build artifact to production environment..."
+          # Add your deployment logic here (e.g., AWS, Azure, Google Cloud deployment)
