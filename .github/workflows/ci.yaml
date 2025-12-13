@@ -1,56 +1,26 @@
 name: Environment Detection Pipeline
 
-# Trigger this workflow on pushes to the specified branches (and pull requests)
+# 🚩 FIX APPLIED HERE 🚩
+# The 'on' block specifies the events that trigger the workflow.
 on:
+  # 1. Trigger on 'push' events
   push:
     branches:
-      - master
-      - release
-      - staging
-      - '*' # Catch-all for other branches (development)
+      - master      # Triggers on push to 'master' (Production)
+      - release     # Triggers on push to 'release'
+      - staging     # Triggers on push to 'staging'
+      - '*'         # Catch-all for other branches (Development/Feature)
+      
+  # 2. Trigger on 'pull_request' events (optional, but often useful)
   pull_request:
     branches:
       - master
       - release
       - staging
       - '*'
+# 🚩 END OF FIX 🚩
 
 jobs:
-  # The job responsible for determining the environment
   detect_environment:
     runs-on: ubuntu-latest
-
-    # Set outputs for use in subsequent steps or jobs
-    outputs:
-      env_name: ${{ steps.set_env.outputs.environment }}
-
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Determine Environment Name
-        id: set_env # Assign an ID to this step to reference its outputs
-        run: |
-          # Get the branch name from the GitHub context
-          BRANCH_NAME="${{ github.ref_name }}"
-          
-          # Use case/if logic to map the branch name to the environment
-          if [[ "$BRANCH_NAME" == "master" ]]; then
-            ENV="production"
-          elif [[ "$BRANCH_NAME" == "release" ]]; then
-            ENV="release"
-          elif [[ "$BRANCH_NAME" == "staging" ]]; then
-            ENV="staging"
-          else
-            # All other branches (feature, bugfix, etc.) are development
-            ENV="development"
-          fi
-          
-          # Output the determined environment for use in other steps/jobs
-          echo "Detected Environment: $ENV"
-          echo "environment=$ENV" >> "$GITHUB_OUTPUT"
-
-      - name: Report Detected Environment
-        run: |
-          echo "The current environment is: ${{ steps.set_env.outputs.environment }}"
-          echo "You can now use this output in deployment logic."
+    # ... rest of the job definition remains the same ...
