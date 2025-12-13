@@ -1,7 +1,7 @@
 # .github/workflows/development.yaml
 name: Development CI/CD Pipeline
 
-# Define this file as a callable workflow
+# This file is callable by the main dispatcher (ci.yaml)
 on:
   workflow_call:
     # Inputs can be defined here if the main dispatcher needs to pass data
@@ -19,31 +19,36 @@ jobs:
         run: |
           echo "Starting the development build pipeline..."
           # --- Your Core CI Steps Go Here ---
-          # Example: Install dependencies (npm install)
-          # Example: Run unit tests (npm run test:unit)
           echo "Development build and test steps complete."
           
   # -----------------------------------------------------------------
-  # Job to run the Markdown Linter
+  # 1. NEW JOB: Commit Linting (Quality Gate 1)
   # -----------------------------------------------------------------
-  run_markdownlint:
-    # 1. Ensure the build job completes successfully first
+  run_commitlint:
+    # Runs immediately after the development_build job succeeds
     needs: development_build 
     
-    # 2. CRITICAL: This job calls the reusable workflow.
-    #    It MUST use the 'uses' keyword and CANNOT have 'runs-on' or 'steps'.
+    # Calls the reusable workflow
+    uses: ./.github/workflows/commitlint.yaml
+    
+  # -----------------------------------------------------------------
+  # 2. Markdown Linting (Quality Gate 2)
+  # -----------------------------------------------------------------
+  run_markdownlint:
+    # Runs only after BOTH the build AND the commit linting jobs succeed
+    needs: [development_build, run_commitlint] 
+    
+    # Calls the reusable workflow
     uses: ./.github/workflows/markdownlint.yaml
     
   # -----------------------------------------------------------------
-  # Optional: Ephemeral Deployment Job
-  # This is often used to deploy feature branches for immediate testing.
+  # 3. Deployment (Final Stage)
   # -----------------------------------------------------------------
   deploy_development:
-    # This job requires BOTH the build and the linting to be successful
-    needs: [development_build, run_markdownlint] 
+    # Runs only after ALL THREE previous quality gates pass
+    needs: [development_build, run_commitlint, run_markdownlint] 
     runs-on: ubuntu-latest
     
-    # Recommended: Use a development environment definition
     environment: 
       name: development
       

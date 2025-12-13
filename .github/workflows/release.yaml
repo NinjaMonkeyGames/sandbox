@@ -40,13 +40,3 @@ jobs:
     # This job requires BOTH the build and the linting to be successful
     needs: [release_build, run_markdownlint] 
     runs-on: ubuntu-latest
-    
-    # Recommended: Use a pre-production environment definition
-    environment: 
-      name: pre-production
-      
-    steps:
-      - name: 🚀 Deploy to Pre-Production Environment
-        run: |
-          echo "All checks passed. Deploying release candidate to Pre-Production for final smoke tests."
-          # Add your pre-production deployment logic here
