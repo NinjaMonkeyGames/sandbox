@@ -1,48 +1,56 @@
-name: CI Workflow Dispatcher
+name: Environment Detection Pipeline
 
+# Trigger this workflow on pushes to the specified branches (and pull requests)
 on:
   push:
     branches:
-      - '**'
+      - master
+      - release
+      - staging
+      - '*' # Catch-all for other branches (development)
   pull_request:
     branches:
       - master
       - release
       - staging
-      - development
-  workflow_dispatch:
+      - '*'
 
 jobs:
-  call_environment_workflow:
+  # The job responsible for determining the environment
+  detect_environment:
     runs-on: ubuntu-latest
 
+    # Set outputs for use in subsequent steps or jobs
+    outputs:
+      env_name: ${{ steps.set_env.outputs.environment }}
+
     steps:
-      - name: Checkout repository
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      # --- DEVELOPMENT / PR ---
-      # Runs on push to 'development' or on any Pull Request
-      - name: Call Development Workflow
-        if: github.ref == 'refs/heads/development' || github.event_name == 'pull_request'
-        uses: ./.github/workflows/development.yaml
-        with:
-          branch_name: ${{ github.ref_name }}
+      - name: Determine Environment Name
+        id: set_env # Assign an ID to this step to reference its outputs
+        run: |
+          # Get the branch name from the GitHub context
+          BRANCH_NAME="${{ github.ref_name }}"
+          
+          # Use case/if logic to map the branch name to the environment
+          if [[ "$BRANCH_NAME" == "master" ]]; then
+            ENV="production"
+          elif [[ "$BRANCH_NAME" == "release" ]]; then
+            ENV="release"
+          elif [[ "$BRANCH_NAME" == "staging" ]]; then
+            ENV="staging"
+          else
+            # All other branches (feature, bugfix, etc.) are development
+            ENV="development"
+          fi
+          
+          # Output the determined environment for use in other steps/jobs
+          echo "Detected Environment: $ENV"
+          echo "environment=$ENV" >> "$GITHUB_OUTPUT"
 
-
-      # --- STAGING ---
-      - name: Call Staging Workflow
-        if: github.ref == 'refs/heads/staging'
-        uses: ./.github/workflows/staging.yaml
-
-
-      # --- RELEASE ---
-      - name: Call Release Workflow
-        if: startsWith(github.ref, 'refs/heads/release/')
-        uses: ./.github/workflows/release.yaml
-
-
-      # --- PRODUCTION (Master branch) ---
-      # --- FIX: Changed 'main' to 'master' ---
-      - name: Call Production Workflow
-        if: github.ref == 'refs/heads/master'
-        uses: ./.github/workflows/production.yaml
+      - name: Report Detected Environment
+        run: |
+          echo "The current environment is: ${{ steps.set_env.outputs.environment }}"
+          echo "You can now use this output in deployment logic."
