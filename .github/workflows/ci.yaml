@@ -2,60 +2,40 @@ name: Continuous Integration - Dispatcher
 
 on:
   push:
-    # Combined list of branches and tags that trigger this workflow
+    # Trigger on any push to the branches or tags you care about
     branches:
-      - master      # Production branch (was 'main')
+      - master
       - staging
       - development
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
       
   pull_request:
+    # Trigger on any PR targeting these branches
     branches:
       - master
       - staging
       - development
 
 jobs:
-  dispatch:
+  # This job will now simply confirm the environment and exit.
+  # The actual work (calling linters) is done by the environment-specific YAMLs 
+  # which are triggered in parallel by the same 'push' event.
+  determine-environment:
     runs-on: ubuntu-latest
     steps:
-      - name: Determine Environment and Dispatch Workflow
+      - name: Determine Environment
+        id: determine
         run: |
-          # Determine the workflow file based on the branch or tag
-          WORKFLOW_FILE=""
+          ENVIRONMENT="development"
           
-          # Check for branch-specific environments
           if [[ "${{ github.ref }}" == "refs/heads/master" ]]; then
-            WORKFLOW_FILE="production.yaml"
             ENVIRONMENT="production"
           elif [[ "${{ github.ref }}" == "refs/heads/staging" ]]; then
-            WORKFLOW_FILE="staging.yaml"
             ENVIRONMENT="staging"
-          elif [[ "${{ github.ref }}" == "refs/heads/development" ]]; then
-            WORKFLOW_FILE="development.yaml"
-            ENVIRONMENT="development"
-          # Check for a release tag push
           elif [[ "${{ github.ref }}" =~ ^refs/tags/v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
-            WORKFLOW_FILE="release.yaml"
             ENVIRONMENT="release"
-          # For all other PRs or pushes, default to development
-          elif [[ "${{ github.event_name }}" == "pull_request" || "${{ github.ref }}" == "refs/heads/development" ]]; then
-            WORKFLOW_FILE="development.yaml"
-            ENVIRONMENT="development"
           fi
           
-          # If a workflow file was determined, output the decision.
-          if [ ! -z "$WORKFLOW_FILE" ]; then
-            echo "::notice file=ci.yaml::Dispatching logic determined: $WORKFLOW_FILE (Environment: $ENVIRONMENT)"
-            echo "WORKFLOW_FILE=$WORKFLOW_FILE" >> $GITHUB_ENV
-            echo "ENVIRONMENT=$ENVIRONMENT" >> $GITHUB_ENV
-          else
-            echo "::notice file=ci.yaml::No specific environment workflow matched. Exiting."
-          fi
-
-      - name: Acknowledge Branch Filter Recommendation
-        # As discussed, the individual environment files will use branch filters for simplicity.
-        # This step is a placeholder to show the dispatcher logic, 
-        # but the real execution happens in the targeted YAMLs (e.g., staging.yaml).
-        run: echo "The individual environment YAMLs (e.g., production.yaml, staging.yaml) are configured to trigger directly on their respective branches using branch filters for robust execution."
+          # Log the outcome
+          echo "::notice file=ci.yaml::Detected Environment: $ENVIRONMENT for ref ${{ github.ref }}"
