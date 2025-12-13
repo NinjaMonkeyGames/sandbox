@@ -1,56 +1,48 @@
-# .github/workflows/ci.yaml
-name: Main CI Dispatcher
+name: CI Workflow Dispatcher
+
 on:
   push:
     branches:
-      - '*'
+      - '**'
   pull_request:
     branches:
-      - '*'
+      - master
+      - release
+      - staging
+      - development
+  workflow_dispatch:
 
 jobs:
-  dispatch:
+  call_environment_workflow:
     runs-on: ubuntu-latest
-    # This job determines the environment based on the branch name
+
     steps:
-      - name: Determine Environment
-        id: env_detector
-        run: |
-          BRANCH_NAME="${{ github.ref_name }}"
-          ENVIRONMENT=""
-          
-          # Production (e.g., main or master branches)
-          if [[ "$BRANCH_NAME" == "main" || "$BRANCH_NAME" == "master" ]]; then
-            ENVIRONMENT="production"
-          # Staging (e.g., staging branch or release/* branches)
-          elif [[ "$BRANCH_NAME" == "staging" || "$BRANCH_NAME" == release/* ]]; then
-            ENVIRONMENT="staging"
-          # Development (any other branch, like feature/* or develop)
-          else
-            ENVIRONMENT="development"
-          fi
-          
-          echo "Determined environment: $ENVIRONMENT"
-          echo "environment=$ENVIRONMENT" >> $GITHUB_OUTPUT
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    outputs:
-      environment: ${{ steps.env_detector.outputs.environment }}
+      # --- DEVELOPMENT / PR ---
+      # Runs on push to 'development' or on any Pull Request
+      - name: Call Development Workflow
+        if: github.ref == 'refs/heads/development' || github.event_name == 'pull_request'
+        uses: ./.github/workflows/development.yaml
+        with:
+          branch_name: ${{ github.ref_name }}
 
-  # Call the appropriate workflow based on the detected environment
-  call_development:
-    name: Development CI
-    uses: ./.github/workflows/development.yaml
-    needs: dispatch
-    if: needs.dispatch.outputs.environment == 'development'
-    
-  call_staging:
-    name: Staging CI
-    uses: ./.github/workflows/staging.yaml
-    needs: dispatch
-    if: needs.dispatch.outputs.environment == 'staging'
-    
-  call_production:
-    name: Production CI
-    uses: ./.github/workflows/production.yaml
-    needs: dispatch
-    if: needs.dispatch.outputs.environment == 'production'
+
+      # --- STAGING ---
+      - name: Call Staging Workflow
+        if: github.ref == 'refs/heads/staging'
+        uses: ./.github/workflows/staging.yaml
+
+
+      # --- RELEASE ---
+      - name: Call Release Workflow
+        if: startsWith(github.ref, 'refs/heads/release/')
+        uses: ./.github/workflows/release.yaml
+
+
+      # --- PRODUCTION (Master branch) ---
+      # --- FIX: Changed 'main' to 'master' ---
+      - name: Call Production Workflow
+        if: github.ref == 'refs/heads/master'
+        uses: ./.github/workflows/production.yaml
