@@ -36,7 +36,7 @@ jobs:
 
       # --- 2. PRODUCTION Pipeline (If pushed to 'main' branch, and not a tag) ---
       - name: Run Production Workflow
-        if: env.BRANCH_NAME == 'main' && env.IS_TAG == 'false'
+        if: env.BRANCH_NAME == 'master' && env.IS_TAG == 'false'
         uses: ./.github/workflows/production.yaml
         with:
           sha: ${{ github.sha }}
@@ -50,8 +50,8 @@ jobs:
 
       # --- 4. DEVELOPMENT Pipeline (If none of the above match: all other branches) ---
       - name: Run Development Workflow
-        # This condition ensures it only runs if it's not main, not staging, and not a tag.
-        if: env.BRANCH_NAME != 'main' && env.BRANCH_NAME != 'staging' && env.IS_TAG == 'false'
+        # This condition ensures it only runs if it's not master, not staging, and not a tag.
+        if: env.BRANCH_NAME != 'master' && env.BRANCH_NAME != 'staging' && env.IS_TAG == 'false'
         uses: ./.github/workflows/development.yaml
         with:
           branch: ${{ env.BRANCH_NAME }}
