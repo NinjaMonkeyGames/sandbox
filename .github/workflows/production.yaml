@@ -16,8 +16,4 @@ jobs:
           echo "==================================================="
           echo "  DEPLOYMENT ACKNOWLEDGED: DEDICATED PRODUCTION"
           echo "  Branch Triggered: ${{ inputs.branch_name }}"
-          echo "  Time: $(date)"
           echo "==================================================="
-          echo "Proceeding with final, dedicated production deployment..."
-
-      # Add subsequent steps here

@@ -16,10 +16,4 @@ jobs:
           echo "==================================================="
           echo "  DEPLOYMENT ACKNOWLEDGED: STAGING"
           echo "  Branch Triggered: ${{ inputs.branch_name }}"
-          echo "  Time: $(date)"
           echo "==================================================="
-          echo "Proceeding with staging environment testing and deployment..."
-
-      # Add subsequent steps here (e.g., integration tests, staging deployment)
-      # - name: Run Integration Tests
-      #   ...

@@ -1,6 +1,5 @@
 name: CI/CD Environment Dispatcher
 
-# Controls when the workflow should run.
 on:
   push:
     branches:
@@ -8,8 +7,6 @@ on:
       - release/**
       - staging
       - develop
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 jobs:
@@ -19,39 +16,30 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # ----------------------------------------------------------------------
       # Development Environment
-      # ----------------------------------------------------------------------
       - name: Run Development Workflow
         if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/development'
         uses: ./.github/workflows/development.yaml
         with:
           branch_name: ${{ github.ref_name }}
 
-      # ----------------------------------------------------------------------
       # Staging Environment
-      # ----------------------------------------------------------------------
       - name: Run Staging Workflow
         if: github.ref == 'refs/heads/staging'
         uses: ./.github/workflows/staging.yaml
         with:
           branch_name: ${{ github.ref_name }}
 
-      # ----------------------------------------------------------------------
       # Production/Release Environment
-      # Runs if pushed to 'master' or a branch starting with 'release/'
-      # ----------------------------------------------------------------------
       - name: Run Release/Production Workflow
         if: |
           github.ref == 'refs/heads/master' || 
           startsWith(github.ref, 'refs/heads/release/')
-        uses: ./.github/workflows/release.yaml # Assuming 'release.yaml' handles production deployment
+        uses: ./.github/workflows/release.yaml
         with:
           branch_name: ${{ github.ref_name }}
           
-      # ----------------------------------------------------------------------
-      # Catch-all for any other branches (e.g., feature branches)
-      # ----------------------------------------------------------------------
+      # Catch-all for any other branches
       - name: Only Run Tests on Feature Branches
         if: |
           github.ref != 'refs/heads/develop' &&

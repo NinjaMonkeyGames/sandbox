@@ -16,10 +16,4 @@ jobs:
           echo "==================================================="
           echo "  BUILD ACKNOWLEDGED: DEVELOPMENT"
           echo "  Branch Triggered: ${{ inputs.branch_name }}"
-          echo "  Time: $(date)"
           echo "==================================================="
-          echo "Proceeding with development build and unit testing..."
-
-      # Add subsequent steps here (e.g., unit tests, building dev containers)
-      # - name: Run Unit Tests
-      #   ...

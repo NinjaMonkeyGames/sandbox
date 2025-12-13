@@ -1,7 +1,6 @@
 name: 🚀 Production/Release Deployment
 
 on:
-  # This makes the workflow reusable, only callable by the dispatcher (ci.yaml)
   workflow_call:
     inputs:
       branch_name:
@@ -17,10 +16,4 @@ jobs:
           echo "==================================================="
           echo "  DEPLOYMENT ACKNOWLEDGED: PRODUCTION/RELEASE"
           echo "  Branch Triggered: ${{ inputs.branch_name }}"
-          echo "  Time: $(date)"
           echo "==================================================="
-          echo "Proceeding with production deployment steps..."
-
-      # Add subsequent steps here (e.g., build, push to registry, deploy to production cluster)
-      # - name: Build Production Image
-      #   ...
