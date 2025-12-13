@@ -1,0 +1,22 @@
+name: Commit Lint
+
+on:
+  push:
+    branches:
+      - '*'  # Run on all branch pushes
+  pull_request:
+    branches:
+      - '*'  # Run on all PRs
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run commit lint
+        run: |
+          echo "Commit lint has been called."
+          # Insert actual commit linting command here, like `commitlint --from=HEAD~1`

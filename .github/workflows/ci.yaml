@@ -1,49 +1,31 @@
-name: CI/CD Environment Dispatcher
+name: CI
 
 on:
   push:
     branches:
-      - master
-      - release/**
-      - staging
-      - develop
-  workflow_dispatch:
+      - '*'  # Run on all branch pushes
+  pull_request:
+    branches:
+      - '*'  # Run on all PRs
 
 jobs:
-  dispatch:
+  detect-environment:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
 
-      # Development Environment
-      - name: Run Development Workflow
-        if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/development'
-        uses: ./.github/workflows/development.yaml
-        with:
-          branch_name: ${{ github.ref_name }}
+      - name: Set environment variable
+        id: set_env
+        run: |
+          echo "CI_ENVIRONMENT=$(echo ${{ github.ref }} | sed 's/refs\/heads\///')" >> $GITHUB_ENV
 
-      # Staging Environment
-      - name: Run Staging Workflow
-        if: github.ref == 'refs/heads/staging'
-        uses: ./.github/workflows/staging.yaml
-        with:
-          branch_name: ${{ github.ref_name }}
+      - name: Print environment
+        run: echo "Environment: $CI_ENVIRONMENT"
 
-      # Production/Release Environment
-      - name: Run Release/Production Workflow
-        if: |
-          github.ref == 'refs/heads/master' || 
-          startsWith(github.ref, 'refs/heads/release/')
-        uses: ./.github/workflows/release.yaml
+      - name: Trigger environment-specific workflow
+        uses: peter-evans/workflow-dispatch@v1
         with:
-          branch_name: ${{ github.ref_name }}
-          
-      # Catch-all for any other branches
-      - name: Only Run Tests on Feature Branches
-        if: |
-          github.ref != 'refs/heads/develop' &&
-          github.ref != 'refs/heads/staging' &&
-          github.ref != 'refs/heads/master' &&
-          !startsWith(github.ref, 'refs/heads/release/')
-        run: echo "Branch ${{ github.ref_name }} is a feature branch. Running only unit tests/linting..."
+          workflow: .github/workflows/${{ env.CI_ENVIRONMENT }}.yaml
+          ref: ${{ github.sha }}
