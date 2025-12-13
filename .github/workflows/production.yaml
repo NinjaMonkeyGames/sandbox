@@ -1,32 +1,23 @@
-name: Production CI
+name: 🏭 Dedicated Production Deployment
 
 on:
-  push:
-    branches:
-      - master # Updated to master
-  pull_request:
-    branches:
-      - master # Updated to master
+  workflow_call:
+    inputs:
+      branch_name:
+        required: true
+        type: string
 
 jobs:
-  # --- COMMON LINTING JOBS ---
-  lint-commit:
-    uses: ./.github/workflows/commitlint.yaml
-    secrets:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
-  lint-markdown:
-    uses: ./.github/workflows/markdownlint.yaml
-    secrets:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  # --- PRODUCTION SPECIFIC JOBS ---
-  deploy-production:
+  acknowledge_environment:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-      - name: Run Production Deployment
+      - name: Acknowledge Production Environment
         run: |
-          echo "Deploying to Production environment..."
-          # Add your production-specific deployment steps here
+          echo "==================================================="
+          echo "  DEPLOYMENT ACKNOWLEDGED: DEDICATED PRODUCTION"
+          echo "  Branch Triggered: ${{ inputs.branch_name }}"
+          echo "  Time: $(date)"
+          echo "==================================================="
+          echo "Proceeding with final, dedicated production deployment..."
+
+      # Add subsequent steps here

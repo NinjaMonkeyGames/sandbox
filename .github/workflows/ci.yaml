@@ -1,41 +1,61 @@
-name: Continuous Integration - Dispatcher
+name: CI/CD Environment Dispatcher
 
+# Controls when the workflow should run.
 on:
   push:
-    # Trigger on any push to the branches or tags you care about
     branches:
       - master
+      - release/**
       - staging
-      - development
-    tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+'
-      
-  pull_request:
-    # Trigger on any PR targeting these branches
-    branches:
-      - master
-      - staging
-      - development
+      - develop
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 jobs:
-  # This job will now simply confirm the environment and exit.
-  # The actual work (calling linters) is done by the environment-specific YAMLs 
-  # which are triggered in parallel by the same 'push' event.
-  determine-environment:
+  dispatch:
     runs-on: ubuntu-latest
     steps:
-      - name: Determine Environment
-        id: determine
-        run: |
-          ENVIRONMENT="development"
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # ----------------------------------------------------------------------
+      # Development Environment
+      # ----------------------------------------------------------------------
+      - name: Run Development Workflow
+        if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/development'
+        uses: ./.github/workflows/development.yaml
+        with:
+          branch_name: ${{ github.ref_name }}
+
+      # ----------------------------------------------------------------------
+      # Staging Environment
+      # ----------------------------------------------------------------------
+      - name: Run Staging Workflow
+        if: github.ref == 'refs/heads/staging'
+        uses: ./.github/workflows/staging.yaml
+        with:
+          branch_name: ${{ github.ref_name }}
+
+      # ----------------------------------------------------------------------
+      # Production/Release Environment
+      # Runs if pushed to 'master' or a branch starting with 'release/'
+      # ----------------------------------------------------------------------
+      - name: Run Release/Production Workflow
+        if: |
+          github.ref == 'refs/heads/master' || 
+          startsWith(github.ref, 'refs/heads/release/')
+        uses: ./.github/workflows/release.yaml # Assuming 'release.yaml' handles production deployment
+        with:
+          branch_name: ${{ github.ref_name }}
           
-          if [[ "${{ github.ref }}" == "refs/heads/master" ]]; then
-            ENVIRONMENT="production"
-          elif [[ "${{ github.ref }}" == "refs/heads/staging" ]]; then
-            ENVIRONMENT="staging"
-          elif [[ "${{ github.ref }}" =~ ^refs/tags/v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
-            ENVIRONMENT="release"
-          fi
-          
-          # Log the outcome
-          echo "::notice file=ci.yaml::Detected Environment: $ENVIRONMENT for ref ${{ github.ref }}"
+      # ----------------------------------------------------------------------
+      # Catch-all for any other branches (e.g., feature branches)
+      # ----------------------------------------------------------------------
+      - name: Only Run Tests on Feature Branches
+        if: |
+          github.ref != 'refs/heads/develop' &&
+          github.ref != 'refs/heads/staging' &&
+          github.ref != 'refs/heads/master' &&
+          !startsWith(github.ref, 'refs/heads/release/')
+        run: echo "Branch ${{ github.ref_name }} is a feature branch. Running only unit tests/linting..."

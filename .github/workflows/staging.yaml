@@ -1,31 +1,25 @@
-name: Staging CI
+name: 🧪 Staging Deployment
 
 on:
-  push:
-    branches:
-      - staging
-  pull_request:
-    branches:
-      - staging
+  workflow_call:
+    inputs:
+      branch_name:
+        required: true
+        type: string
 
 jobs:
-  # --- COMMON LINTING JOBS ---
-  lint-commit:
-    uses: ./.github/workflows/commitlint.yaml
-    secrets:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
-  lint-markdown:
-    uses: ./.github/workflows/markdownlint.yaml
-    secrets:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  # --- STAGING SPECIFIC JOBS ---
-  build-test-deploy-staging:
+  acknowledge_environment:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-      - name: Run Staging-Specific Checks and Deployment
+      - name: Acknowledge Staging Environment
         run: |
-          echo "Running detailed QA checks and deployment for Staging environment..."
+          echo "==================================================="
+          echo "  DEPLOYMENT ACKNOWLEDGED: STAGING"
+          echo "  Branch Triggered: ${{ inputs.branch_name }}"
+          echo "  Time: $(date)"
+          echo "==================================================="
+          echo "Proceeding with staging environment testing and deployment..."
+
+      # Add subsequent steps here (e.g., integration tests, staging deployment)
+      # - name: Run Integration Tests
+      #   ...

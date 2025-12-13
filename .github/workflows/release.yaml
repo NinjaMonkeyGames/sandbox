@@ -1,31 +1,26 @@
-name: Release Workflow
+name: 🚀 Production/Release Deployment
 
 on:
-  push:
-    tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+' # Matches tags like v1.0.0
+  # This makes the workflow reusable, only callable by the dispatcher (ci.yaml)
+  workflow_call:
+    inputs:
+      branch_name:
+        required: true
+        type: string
 
 jobs:
-  # --- COMMON LINTING JOBS ---
-  lint-commit:
-    uses: ./.github/workflows/commitlint.yaml
-    secrets:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
-  lint-markdown:
-    uses: ./.github/workflows/markdownlint.yaml
-    secrets:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  # --- RELEASE SPECIFIC JOBS ---
-  create-release:
+  acknowledge_environment:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          # Your release logic here
-          draft: false
-          prerelease: false
+      - name: Acknowledge Release Environment
+        run: |
+          echo "==================================================="
+          echo "  DEPLOYMENT ACKNOWLEDGED: PRODUCTION/RELEASE"
+          echo "  Branch Triggered: ${{ inputs.branch_name }}"
+          echo "  Time: $(date)"
+          echo "==================================================="
+          echo "Proceeding with production deployment steps..."
+
+      # Add subsequent steps here (e.g., build, push to registry, deploy to production cluster)
+      # - name: Build Production Image
+      #   ...

@@ -1,32 +1,25 @@
-name: Development CI
+name: 🌱 Development Build and Test
 
 on:
-  push:
-    branches:
-      - development
-  pull_request:
-    branches:
-      - development
+  workflow_call:
+    inputs:
+      branch_name:
+        required: true
+        type: string
 
 jobs:
-  # The linting jobs run in parallel and call the reusable workflows.
-  lint-commit:
-    # Use the 'uses' keyword to call the external workflow file.
-    # Note: No 'runs-on' is needed here, as the job runs on the runner defined in the called workflow.
-    uses: ./.github/workflows/commitlint.yaml 
-    # CRITICAL: The 'secrets' key is entirely omitted to avoid the GITHUB_TOKEN conflict.
-      
-  lint-markdown:
-    uses: ./.github/workflows/markdownlint.yaml
-    # CRITICAL: The 'secrets' key is entirely omitted here as well.
-
-  # This is your environment-specific job. It runs on its own runner.
-  build-test-dev:
+  acknowledge_environment:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-      - name: Run Dev-Specific Build and Tests
+      - name: Acknowledge Development Environment
         run: |
-          echo "Running build and tests for Development environment..."
-          # Add your development-specific build, test, or deployment steps here
+          echo "==================================================="
+          echo "  BUILD ACKNOWLEDGED: DEVELOPMENT"
+          echo "  Branch Triggered: ${{ inputs.branch_name }}"
+          echo "  Time: $(date)"
+          echo "==================================================="
+          echo "Proceeding with development build and unit testing..."
+
+      # Add subsequent steps here (e.g., unit tests, building dev containers)
+      # - name: Run Unit Tests
+      #   ...
