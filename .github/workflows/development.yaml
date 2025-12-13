@@ -10,15 +10,14 @@ on:
 
 jobs:
   # --- COMMON LINTING JOBS ---
+  
   lint-commit:
-    uses: ./.github/workflows/commitlint.yaml
-    secrets:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    uses: ./.github/workflows/commitlint.yaml 
+    # The 'secrets' block is REMOVED entirely
       
   lint-markdown:
     uses: ./.github/workflows/markdownlint.yaml
-    secrets:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    # The 'secrets' block is REMOVED entirely
 
   # --- DEVELOPMENT SPECIFIC JOBS ---
   build-test-dev:

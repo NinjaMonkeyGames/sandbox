@@ -1,25 +1,26 @@
 name: Commit Lint
 
 on:
-  # Allows this workflow to be called by another workflow
-  workflow_call:
-    secrets:
-      GITHUB_TOKEN:
-        required: true
-
+  # The secrets block is removed completely because GITHUB_TOKEN is reserved.
+  workflow_call: 
+    # The GITHUB_TOKEN is now implicitly available to jobs in this workflow.
+    
 jobs:
   commit-lint:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read # Required for actions/checkout
+      pull-requests: read # Recommended for commitlint on PRs
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # required for commitlint to check all commits
+          fetch-depth: 0
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Install dependencies (optional, depends on commitlint setup)
+      - name: Install dependencies
         run: npm install @commitlint/config-conventional @commitlint/cli
       - name: Run Commit Lint
-        # Checks commits in the current branch against the target branch (e.g., main)
+        # Checks commits in the current branch against the target branch (e.g., master)
         run: npx commitlint --from ${{ github.event.pull_request.base.sha || 'HEAD~1' }} --to ${{ github.sha }} --verbose
