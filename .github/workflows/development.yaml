@@ -1,0 +1,16 @@
+name: Development Workflow
+
+on:
+  workflow_run:
+    workflows: ["CI Workflow"]
+    types:
+      - completed
+
+jobs:
+  development:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Echo development environment
+        run: |
+          echo "development environment"
