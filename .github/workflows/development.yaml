@@ -1,16 +1,17 @@
-name: Development Workflow
+name: Development Confirmation Workflow
 
 on:
-  workflow_run:
-    workflows: ["CI Workflow"]
-    types:
-      - completed
+  # This trigger is necessary for the main CI workflow to call it using 'gh workflow run'
+  workflow_dispatch:
 
 jobs:
-  development:
+  confirm-call:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Echo development environment
+      - name: Confirmation Echo
         run: |
-          echo "development environment"
+          echo "=================================================="
+          echo "✅ DEVELOPMENT.YAML HAS BEEN SUCCESSFULLY CALLED! ✅"
+          echo "Running on branch: ${{ github.ref_name }}"
+          echo "Triggered by: ${{ github.event_name }}"
+          echo "=================================================="
