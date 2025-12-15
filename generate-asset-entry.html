@@ -26,17 +26,17 @@
         <h2>Input Variables</h2>
         <div class="form-group">
             <label for="assetTitle">Main Title Text (Force Uppercase):</label>
-            <input type="text" id="assetTitle" value="GIT CONFIGURATION FILES">
+            <input type="text" id="assetTitle" value="">
         </div>
 
         <div class="form-group">
             <label for="assetName">Asset Name (e.g., .git):</label>
-            <input type="text" id="assetName" value=".git">
+            <input type="text" id="assetName" value="">
         </div>
 
         <div class="form-group">
-            <label for="relativePath">Relative Path (Force Lowercase):</label>
-            <input type="text" id="relativePath" value=".git">
+            <label for="relativePath">Relative Path (Force Lowercase & Forward Slashes):</label>
+            <input type="text" id="relativePath" value="">
         </div>
 
         <div class="form-group">
@@ -59,17 +59,17 @@
             <label for="ciType">CI Type (Conventional Commit Type):</label>
             <select id="ciType">
                 <option value="N/A" selected>N/A</option>
-                <option value="feat">feat (New feature)</option>
-                <option value="fix">fix (Bug fix)</option>
-                <option value="docs">docs (Documentation changes)</option>
-                <option value="style">style (Code style changes)</option>
-                <option value="refactor">refactor (Refactor code)</option>
-                <option value="perf">perf (Performance improvements)</option>
-                <option value="test">test (Adding or updating tests)</option>
-                <option value="build">build (Changes to build system/dependencies)</option>
-                <option value="ci">ci (CI-related changes)</option>
-                <option value="chore">chore (Other changes)</option>
-                <option value="revert">revert (Reverts a previous commit)</option>
+                <option value="feat">feat (New feature)</option>     
+                <option value="fix">fix (Bug fix)</option>      
+                <option value="docs">docs (Documentation changes)</option>     
+                <option value="style">style (Code style changes, no code change)</option>    
+                <option value="refactor">refactor (Refactor without new features or fixes)</option> 
+                <option value="perf">perf (Performance improvements)</option>     
+                <option value="test">test (Adding or updating tests)</option>     
+                <option value="build">build (Changes to build system or dependencies)</option>    
+                <option value="ci">ci (Continuous integration-related changes)</option>       
+                <option value="chore">chore (Other changes that don't modify source or test files)</option>    
+                <option value="revert">revert (Reverts a previous commit)</option>   
             </select>
         </div>
 
@@ -77,16 +77,16 @@
             <label for="ciScope">CI Scope (System Area):</label>
             <select id="ciScope">
                 <option value="N/A" selected>N/A</option>
-                <option value="core">core</option>
-                <option value="api">api</option>
-                <option value="ui">ui</option>
-                <option value="auth">auth</option>
-                <option value="db">db</option>
-                <option value="deps">deps</option>
-                <option value="tests">tests</option>
-                <option value="config">config</option>
-                <option value="security">security</option>
-                <option value="rebase">rebase</option>
+                <option value="core">core (For core changes)</option>     
+                <option value="api">api (For API-related changes)</option>      
+                <option value="ui">ui (For UI-related changes)</option>       
+                <option value="auth">auth (For authentication changes)</option>     
+                <option value="db">db (For database changes)</option>       
+                <option value="deps">deps (For dependency updates)</option>     
+                <option value="tests">tests (For test-related changes)</option>    
+                <option value="config">config (For configuration updates)</option>   
+                <option value="security">security (For security-related changes)</option> 
+                <option value="rebase">rebase (For rebase-related changes)</option>   
             </select>
         </div>
 
@@ -104,12 +104,12 @@
 
         <div class="form-group">
             <label for="assetPurpose">Asset Purpose Description:</label>
-            <textarea id="assetPurpose">Contains version control metadata required by Git.</textarea>
+            <textarea id="assetPurpose"></textarea>
         </div>
 
         <div class="form-group">
             <label for="assetContents">Asset Contents Description:</label>
-            <textarea id="assetContents">Stores commit history, branches, and repository configuration. Created automatically by Git, not tracked in version control.</textarea>
+            <textarea id="assetContents"></textarea>
         </div>
 
         <button type="button" onclick="generateMarkdown()">Generate Markdown</button>
@@ -123,10 +123,13 @@
     const fixedBackToTopTarget = '#grid-utility-project-programmers-manual';
 
     function generateMarkdown() {
-        // 1. Get values from input fields and apply forced casing
+        // 1. Get values from input fields and apply forced casing/formatting
         const assetTitle = document.getElementById('assetTitle').value.trim().toUpperCase(); // Force Uppercase
         const assetName = document.getElementById('assetName').value.trim();
-        const relativePath = document.getElementById('relativePath').value.trim().toLowerCase(); // Force Lowercase
+        
+        let relativePath = document.getElementById('relativePath').value.trim().toLowerCase(); // Force Lowercase
+        // Force forward slashes: replace all backslashes with forward slashes
+        relativePath = relativePath.replace(/\\/g, '/');
         
         // 2. Get values from dropdowns
         const includeInRepo = document.getElementById('includeInRepo').value;
@@ -176,8 +179,8 @@ ${assetContents}
         document.getElementById('output').textContent = markdownOutput;
     }
 
-    // Initial generation on load with default values
-    document.addEventListener('DOMContentLoaded', generateMarkdown);
+    // Since the fields are now empty by default, only generate output when the user clicks the button.
+    // We remove the initial generation call (document.addEventListener('DOMContentLoaded', generateMarkdown);)
 </script>
 
 </body>
