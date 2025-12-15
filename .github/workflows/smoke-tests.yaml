@@ -1,7 +1,7 @@
 name: Smoke Tests Utility Workflow
 
 on:
-  workflow_call: # This makes it callable by the environment workflows
+  workflow_call:
 
 jobs:
   run_smoke_tests:
@@ -11,11 +11,14 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
         
-      - name: 💨 Run Smoke Tests Script
+      - name: 💨 Run Duplicate Commit Title Check Script
+        # This step executes your specific shell script
         run: |
           echo "################################################"
           echo "## SMOKE TESTS WORKFLOW CALLED SUCCESSFULLY! ##"
           echo "################################################"
-          # Placeholder for your actual smoke test script
-          echo "Running shell script: ./scripts/run-smoke-tests.sh"
-          echo "smoke-tests"
+          echo "Executing script: duplicate-commit-title.sh"
+          
+          # Assuming the script is in a 'scripts' directory or the repository root
+          # Adjust the path (e.g., ./scripts/duplicate-commit-title.sh) if necessary
+          ./duplicate-commit-title.sh
