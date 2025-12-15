@@ -10,6 +10,8 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # <-- This is the key for full history
         
       - name: 🔒 Grant Execute Permission to Script
         run: chmod +x ./duplicate-commit-title.sh
