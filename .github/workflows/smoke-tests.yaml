@@ -1,0 +1,21 @@
+name: Smoke Tests Utility Workflow
+
+on:
+  workflow_call: # This makes it callable by the environment workflows
+
+jobs:
+  run_smoke_tests:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: 💨 Run Smoke Tests Script
+        run: |
+          echo "################################################"
+          echo "## SMOKE TESTS WORKFLOW CALLED SUCCESSFULLY! ##"
+          echo "################################################"
+          # Placeholder for your actual smoke test script
+          echo "Running shell script: ./scripts/run-smoke-tests.sh"
+          echo "smoke-tests"

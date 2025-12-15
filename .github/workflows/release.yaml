@@ -5,22 +5,28 @@ on:
   workflow_call:
 
 jobs:
-  # Job 1 & 2: Mandatory Quality Checks
+  # Job 1: Commit Lint Check
   call_commitlint:
     name: ⚙️ Commit Lint Check
     uses: ./.github/workflows/commitlint.yaml
 
+  # Job 2: Markdown Lint Check
   call_markdownlint:
     name: 📄 Markdown Lint Check
     uses: ./.github/workflows/markdownlint.yaml
+      
+  # Job 3: NEW JOB - Smoke Tests Call
+  call_smoke_tests:
+    name: 💨 Run Smoke Tests
+    uses: ./.github/workflows/smoke-tests.yaml # <-- Calls the new workflow file
 
-  # Job 3: Core Environment Steps
+  # Job 4: Core Environment Steps
   release_checks:
     name: Release Final Checks
     runs-on: ubuntu-latest
     environment: release
-    # Ensures this job waits for both linting jobs to complete successfully
-    needs: [call_commitlint, call_markdownlint]
+    # NOW DEPENDS on all three quality/test jobs
+    needs: [call_commitlint, call_markdownlint, call_smoke_tests]
 
     steps:
       - name: Checkout Code
@@ -31,7 +37,7 @@ jobs:
           echo "#################################################"
           echo "## RELEASE/PRE-PROD WORKFLOW CALLED! ##"
           echo "#################################################"
-          echo "All linting checks passed. Running final pre-production checks."
+          echo "All linting and smoke tests passed. Running final pre-production checks."
 
       - name: Placeholder for Release Checks
         run: |
