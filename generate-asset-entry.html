@@ -11,10 +11,21 @@
         h2 { border-bottom: 2px solid #ccc; padding-bottom: 5px; color: #555; }
         label { display: block; margin-top: 10px; font-weight: bold; }
         input[type="text"], textarea, select { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        button { background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; margin-top: 20px; }
-        button:hover { background-color: #0056b3; }
-        #output { background-color: #eee; padding: 15px; border-radius: 4px; white-space: pre-wrap; margin-top: 20px; border: 1px solid #ccc; }
         .form-group { margin-bottom: 15px; }
+        
+        /* Button Styles */
+        .button-group { display: flex; gap: 10px; margin-top: 20px; }
+        .button-group button { padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; color: white; transition: background-color 0.3s; }
+        
+        /* Copy Button */
+        #copyButton { background-color: #28a745; }
+        #copyButton:hover:not(:disabled) { background-color: #1e7e34; }
+        
+        /* Disabled State */
+        .button-group button:disabled { background-color: #ccc; cursor: not-allowed; }
+
+        /* Output Box */
+        #output { background-color: #eee; padding: 15px; border-radius: 4px; white-space: pre-wrap; margin-top: 20px; border: 1px solid #ccc; min-height: 100px; }
     </style>
 </head>
 <body>
@@ -22,21 +33,21 @@
 <div class="container">
     <h1>Advanced Markdown Asset Document Generator</h1>
 
-    <form id="generatorForm">
+    <form id="generatorForm" oninput="checkFormValidity()">
         <h2>Input Variables</h2>
         <div class="form-group">
             <label for="assetTitle">Main Title Text (Force Uppercase):</label>
-            <input type="text" id="assetTitle" value="">
+            <input type="text" id="assetTitle" required value="">
         </div>
 
         <div class="form-group">
             <label for="assetName">Asset Name (e.g., .git):</label>
-            <input type="text" id="assetName" value="">
+            <input type="text" id="assetName" required value="">
         </div>
 
         <div class="form-group">
             <label for="relativePath">Relative Path (Force Lowercase & Forward Slashes):</label>
-            <input type="text" id="relativePath" value="">
+            <input type="text" id="relativePath" required value="">
         </div>
 
         <div class="form-group">
@@ -104,25 +115,63 @@
 
         <div class="form-group">
             <label for="assetPurpose">Asset Purpose Description:</label>
-            <textarea id="assetPurpose"></textarea>
+            <textarea id="assetPurpose" required></textarea>
         </div>
 
         <div class="form-group">
             <label for="assetContents">Asset Contents Description:</label>
-            <textarea id="assetContents"></textarea>
+            <textarea id="assetContents" required></textarea>
         </div>
 
-        <button type="button" onclick="generateMarkdown()">Generate Markdown</button>
+        <div class="button-group">
+             <button type="button" id="copyButton" onclick="copyToClipboard()" disabled>Copy to Clipboard</button>
+        </div>
     </form>
 
     <h2>Generated Output (Markdown)</h2>
-    <div id="output"></div>
+    <div id="output">Fill in all required fields to generate content.</div>
 </div>
 
 <script>
     const fixedBackToTopTarget = '#grid-utility-project-programmers-manual';
+    const requiredFields = ['assetTitle', 'assetName', 'relativePath', 'assetPurpose', 'assetContents'];
+    
+    // Function to check if all required fields are populated
+    function checkFormValidity() {
+        const isFormValid = requiredFields.every(id => document.getElementById(id).value.trim() !== '');
+        
+        const copyButton = document.getElementById('copyButton');
+        
+        // If the form is valid, generate the markdown and enable the copy button
+        if (isFormValid) {
+            generateMarkdown();
+            copyButton.disabled = false;
+        } else {
+            // If not valid, clear output and disable copy button
+            document.getElementById('output').textContent = 'Fill in all required fields to generate content.';
+            copyButton.disabled = true;
+        }
+    }
+
+    function copyToClipboard() {
+        const outputText = document.getElementById('output').textContent;
+        navigator.clipboard.writeText(outputText).then(() => {
+            // Provide visual feedback
+            const copyButton = document.getElementById('copyButton');
+            const originalText = copyButton.textContent;
+            copyButton.textContent = 'Copied!';
+            setTimeout(() => {
+                copyButton.textContent = originalText;
+            }, 1500);
+        }).catch(err => {
+            console.error('Could not copy text: ', err);
+            alert('Copy failed. Please manually copy the text from the box.');
+        });
+    }
 
     function generateMarkdown() {
+        // This function is only called when the form is valid, per checkFormValidity()
+        
         // 1. Get values from input fields and apply forced casing/formatting
         const assetTitle = document.getElementById('assetTitle').value.trim().toUpperCase(); // Force Uppercase
         const assetName = document.getElementById('assetName').value.trim();
@@ -178,9 +227,6 @@ ${assetContents}
         // 6. Display the output
         document.getElementById('output').textContent = markdownOutput;
     }
-
-    // Since the fields are now empty by default, only generate output when the user clicks the button.
-    // We remove the initial generation call (document.addEventListener('DOMContentLoaded', generateMarkdown);)
 </script>
 
 </body>
