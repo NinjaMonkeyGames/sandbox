@@ -1,18 +1,37 @@
 name: Markdown Lint Utility Workflow
 
 on:
-  workflow_call: # This makes it callable by the environment workflows
+  workflow_call:
 
 jobs:
   markdown_lint_check:
     runs-on: ubuntu-latest
     
     steps:
-      - name: 📄 Report Successful Markdown Lint Call
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        # Required to run the markdownlint-cli2 package
+        uses: actions/setup-node@v4
+        with:
+          node-version: '23' 
+          
+      - name: Install markdownlint-cli2
+        # Install the tool locally so the next step can find it
+        run: npm install markdownlint-cli2
+        
+      - name: 🔍 Check Markdown Lint Version
+        # This new step confirms the installed version for debugging/confirmation
+        run: npx markdownlint-cli2 --version
+        
+      - name: 📄 Run Markdown Lint Check with Custom Config (Direct CLI Execution)
+        # Use npx to execute the locally installed package, passing your config file
+        run: npx markdownlint-cli2 --config .markdownlint-cli2.jsonc .
+        
+      - name: Report Successful Markdown Lint Execution
         run: |
           echo "###################################################"
-          echo "## MARKDOWN LINT WORKFLOW CALLED SUCCESSFULLY! ##"
+          echo "## MARKDOWN LINT WORKFLOW EXECUTED SUCCESSFULLY! ##"
           echo "###################################################"
-          echo "This utility job is active across all environments."
-          # Placeholder for the actual markdownlint action/command
-          # echo "Running actual markdownlint tool..."
+          echo "Checked files using configuration: .markdownlint-cli2.jsonc via direct CLI execution."
