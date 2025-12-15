@@ -1,27 +1,41 @@
-# .github/workflows/staging.yaml
-name: Staging CI/CD Pipeline
+# .github/workflows/staging.yaml (Logic for the develop Branch)
+name: Develop Branch Staging CI/CD Workflow
 
-# Define this file as a callable workflow
 on:
   workflow_call:
-    # Define any inputs if your main workflow needs to pass data here
-    # inputs:
-    #   branch-name:
-    #     required: true
-    #     type: string
 
 jobs:
-  staging_build:
+  # Job 1 & 2: Mandatory Quality Checks
+  call_commitlint:
+    name: ⚙️ Commit Lint Check
+    uses: ./.github/workflows/commitlint.yaml
+
+  call_markdownlint:
+    name: 📄 Markdown Lint Check
+    uses: ./.github/workflows/markdownlint.yaml
+
+  # Job 3: Core Environment Steps
+  staging_deploy:
+    name: Staging Deployment Steps
     runs-on: ubuntu-latest
-    
+    environment: staging
+    # Ensures this job waits for both linting jobs to complete successfully
+    needs: [call_commitlint, call_markdownlint]
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-        
-      - name: 🚧 Run Development Build and Test
+
+      - name: 📦 Report Successful Staging Call
         run: |
-          echo "Starting the Staging build pipeline..."
-          # Add your specific build, test, and deployment steps here
-          # Example: npm install
-          # Example: npm run test:dev
-          # Example: Deploy to ephemeral staging environment
+          echo "###################################################"
+          echo "## STAGING WORKFLOW (Develop Branch) CALLED! ##"
+          echo "###################################################"
+          echo "All linting checks passed. Executing full integration tests and deploying to STAGING."
+
+      - name: Placeholder for Staging Deployment Steps
+        run: |
+          echo "Running full integration tests..."
+          # ./scripts/run-integration-tests.sh
+          echo "Deploying built assets to Staging Server..."
+          # ./scripts/deploy-staging.sh

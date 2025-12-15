@@ -1,27 +1,41 @@
-# .github/workflows/release.yaml
-name: Release CI/CD Pipeline
+# .github/workflows/release.yaml (Logic for release/* Branches)
+name: Release / Pre-Production CI/CD Workflow
 
-# Define this file as a callable workflow
 on:
   workflow_call:
-    # Define any inputs if your main workflow needs to pass data here
-    # inputs:
-    #   branch-name:
-    #     required: true
-    #     type: string
 
 jobs:
-  release_build:
+  # Job 1 & 2: Mandatory Quality Checks
+  call_commitlint:
+    name: ⚙️ Commit Lint Check
+    uses: ./.github/workflows/commitlint.yaml
+
+  call_markdownlint:
+    name: 📄 Markdown Lint Check
+    uses: ./.github/workflows/markdownlint.yaml
+
+  # Job 3: Core Environment Steps
+  release_checks:
+    name: Release Final Checks
     runs-on: ubuntu-latest
-    
+    environment: release
+    # Ensures this job waits for both linting jobs to complete successfully
+    needs: [call_commitlint, call_markdownlint]
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-        
-      - name: 🚧 Run release Build and Test
+
+      - name: 📢 Report Successful Release Call
         run: |
-          echo "Starting the Release build pipeline..."
-          # Add your specific build, test, and production steps here
-          # Example: npm install
-          # Example: npm run test:dev
-          # Example: Deploy to ephemeral production environment
+          echo "#################################################"
+          echo "## RELEASE/PRE-PROD WORKFLOW CALLED! ##"
+          echo "#################################################"
+          echo "All linting checks passed. Running final pre-production checks."
+
+      - name: Placeholder for Release Checks
+        run: |
+          echo "Starting vulnerability and security scan..."
+          # ./scripts/run-security-scan.sh
+          echo "Creating final release artifact..."
+          # npm run build:release

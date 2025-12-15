@@ -1,77 +1,34 @@
-name: 1. Environment Detector & Dispatcher
+name: GitFlow CI/CD Dispatcher
 
-# Trigger on pushes to all relevant GitFlow branches
 on:
   push:
     branches:
-      - master         # -> production.yaml
-      - develop        # -> staging.yaml
-      - feature/** # -> development.yaml
-      - release/** # -> release.yaml
-      - hotfix/** # -> release.yaml
+      - master
+      - develop
+      - 'release/**'
+      - 'feature/**'
 
 jobs:
-  detect_environment:
-    runs-on: ubuntu-latest
-    
-    # 1. Expose the determined environment name
-    outputs:
-      environment: ${{ steps.set_env.outputs.env_name }}
-      
-    steps:
-      - name: Set Environment Name (GitFlow Logic)
-        id: set_env
-        run: |
-          BRANCH_NAME="${{ github.ref_name }}"
-          ENVIRONMENT=""
-
-          # --- Environment Mapping Logic ---
-          if [[ "$BRANCH_NAME" == "master" ]]; then
-            ENVIRONMENT="production"
-          elif [[ "$BRANCH_NAME" == "develop" ]]; then
-            ENVIRONMENT="staging"
-          elif [[ "$BRANCH_NAME" == release/* ]] || [[ "$BRANCH_NAME" == hotfix/* ]]; then
-            # Grouping release and hotfix branches
-            ENVIRONMENT="release"
-          else
-            # Default for feature/* branches and any others
-            ENVIRONMENT="development"
-          fi
-          
-          # Log the detected environment
-          echo "--- Detected CI Environment ---"
-          echo "Branch: $BRANCH_NAME"
-          echo "Set Environment to: $ENVIRONMENT"
-          echo "-------------------------------"
-          
-          # Set the output variable for other jobs to read
-          echo "env_name=$ENVIRONMENT" >> $GITHUB_OUTPUT
-          
-  # --- Conditional Dispatcher Jobs ---
-  # These jobs use the 'uses' keyword to call the reusable workflows. 
-  # Only the job matching the detected environment will run.
-
-  call_development:
-    # Condition: Runs ONLY if the detected environment is 'development'
-    if: ${{ needs.detect_environment.outputs.environment == 'development' }}
-    needs: detect_environment
-    # The 'uses' keyword calls the reusable workflow file
-    uses: ./.github/workflows/development.yaml 
-    
-  call_staging:
-    # Condition: Runs ONLY if the detected environment is 'staging'
-    if: ${{ needs.detect_environment.outputs.environment == 'staging' }}
-    needs: detect_environment
-    uses: ./.github/workflows/staging.yaml
-    
-  call_release:
-    # Condition: Runs ONLY if the detected environment is 'release'
-    if: ${{ needs.detect_environment.outputs.environment == 'release' }}
-    needs: detect_environment
-    uses: ./.github/workflows/release.yaml
-    
-  call_production:
-    # Condition: Runs ONLY if the detected environment is 'production'
-    if: ${{ needs.detect_environment.outputs.environment == 'production' }}
-    needs: detect_environment
+  # 1. PRODUCTION (master) - Calls ./production.yaml
+  production_deployment:
+    name: 🚀 Production Deploy (Master)
+    if: github.ref == 'refs/heads/master'
     uses: ./.github/workflows/production.yaml
+
+  # 2. STAGING (develop) - Calls ./staging.yaml
+  staging_ci:
+    name: 📦 Staging CI (Develop Branch)
+    if: github.ref == 'refs/heads/develop'
+    uses: ./.github/workflows/staging.yaml
+
+  # 3. RELEASE / PRE-PRODUCTION (release/*) - Calls ./release.yaml
+  release_ci:
+    name: 📢 Release/Pre-Prod CI
+    if: startsWith(github.ref, 'refs/heads/release/')
+    uses: ./.github/workflows/release.yaml
+
+  # 4. DEVELOPMENT (feature/*) - Calls ./development.yaml
+  development_ci:
+    name: 🛠️ Feature/Development CI
+    if: startsWith(github.ref, 'refs/heads/feature/')
+    uses: ./.github/workflows/development.yaml
