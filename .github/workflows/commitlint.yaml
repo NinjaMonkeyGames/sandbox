@@ -8,11 +8,35 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - name: 📝 Report Successful Commit Lint Call
+      - name: Checkout Code (Full History Required for Commitlint)
+        # Fetch-depth: 0 ensures commitlint can check all necessary commits (e.g., in a PR).
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+        
+      - name: Setup Node.js
+        # Required to run the commitlint package
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' 
+          
+      - name: Install Commitlint CLI and Config
+        # We install the CLI and the config-conventional package (often required even with a custom config)
+        run: npm install @commitlint/cli @commitlint/config-conventional
+        
+      - name: 🔍 Check Commitlint Version
+        # This new step confirms the installed version for debugging/confirmation
+        run: npx commitlint --version
+        
+      - name: 📝 Run Commit Lint Check with Custom Config
+        # This command runs commitlint against the last commit using your commitlint.config.js.
+        # It uses 'HEAD^1' to 'HEAD' to check the commit that triggered the workflow (or just 'HEAD' for the last commit).
+        # We assume linting the last commit message is sufficient for a push.
+        run: npx commitlint --config commitlint.config.js --from HEAD~1 --to HEAD 
+        
+      - name: Report Successful Commit Lint Execution
         run: |
           echo "#################################################"
-          echo "## COMMIT LINT WORKFLOW CALLED SUCCESSFULLY! ##"
+          echo "## COMMIT LINT WORKFLOW EXECUTED SUCCESSFULLY! ##"
           echo "#################################################"
-          echo "This utility job is active across all environments."
-          # Placeholder for the actual commitlint action/command
-          # echo "Running actual commitlint tool..."
+          echo "Checked commit messages using configuration: commitlint.config.js"
