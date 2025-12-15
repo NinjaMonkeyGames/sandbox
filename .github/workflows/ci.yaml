@@ -1,75 +1,42 @@
-name: CI Workflow
+name: GitFlow CI/CD Dispatcher
 
 on:
   push:
     branches:
       - master
-      - release/*
-      - staging/*
       - develop
-  pull_request:
-    branches:
-      - master
-      - release/*
-      - staging/*
-      - develop
+      - 'release/**'
+      - 'feature/**'
 
 jobs:
-  detect-environment:
-    runs-on: ubuntu-latest
-    outputs:
-      environment: ${{ steps.set_env.outputs.environment }}
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+  # 1. PRODUCTION (master) - Calls ./production.yaml
+  production_deployment:
+    name: 🚀 Production Deploy (Master)
+    # Condition: Only run if the branch is 'master' (as requested)
+    if: github.ref == 'refs/heads/master'
+    uses: ./.github/workflows/production.yaml
+    secrets: inherit # Passes all repository secrets to the called workflow
 
-      - name: Set environment variable based on branch
-        id: set_env
-        run: |
-          BRANCH_NAME="${GITHUB_REF##*/}"
-          echo "Branch name: $BRANCH_NAME"
-          if [[ "$BRANCH_NAME" == "master" ]]; then
-            echo "Environment=production" >> $GITHUB_ENV
-            echo "::set-output name=environment::production"
-          elif [[ "$BRANCH_NAME" == release/* ]]; then
-            echo "Environment=release" >> $GITHUB_ENV
-            echo "::set-output name=environment::release"
-          elif [[ "$BRANCH_NAME" == staging/* ]]; then
-            echo "Environment=staging" >> $GITHUB_ENV
-            echo "::set-output name=environment::staging"
-          elif [[ "$BRANCH_NAME" == "develop" ]]; then
-            echo "Environment=development" >> $GITHUB_ENV
-            echo "::set-output name=environment::development"
-          else
-            echo "Unknown environment, defaulting to development"
-            echo "Environment=development" >> $GITHUB_ENV
-            echo "::set-output name=environment::development"
-          fi
+  # 2. STAGING (develop) - Calls ./staging.yaml
+  # Maps the 'develop' branch logic to the staging environment workflow.
+  staging_ci:
+    name: 📦 Staging CI (Develop Branch)
+    if: github.ref == 'refs/heads/develop'
+    uses: ./.github/workflows/staging.yaml
+    secrets: inherit
 
-  include-environment-specific-workflow:
-    needs: detect-environment
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+  # 3. RELEASE / PRE-PRODUCTION (release/*) - Calls ./release.yaml
+  # Maps 'release/*' branches to their dedicated release workflow.
+  release_ci:
+    name: 📢 Release/Pre-Prod CI
+    if: startsWith(github.ref, 'refs/heads/release/')
+    uses: ./.github/workflows/release.yaml
+    secrets: inherit
 
-      - name: Trigger appropriate workflow based on the environment
-        run: |
-          echo "Environment is ${{ needs.detect-environment.outputs.environment }}"
-          if [[ "${{ needs.detect-environment.outputs.environment }}" == "production" ]]; then
-            echo "Triggering production workflow"
-            gh workflow run production.yaml
-          elif [[ "${{ needs.detect-environment.outputs.environment }}" == "release" ]]; then
-            echo "Triggering release workflow"
-            gh workflow run release.yaml
-          elif [[ "${{ needs.detect-environment.outputs.environment }}" == "staging" ]]; then
-            echo "Triggering staging workflow"
-            gh workflow run staging.yaml
-          elif [[ "${{ needs.detect-environment.outputs.environment }}" == "development" ]]; then
-            echo "Triggering development workflow"
-            gh workflow run development.yaml
-          else
-            echo "Unknown environment, skipping workflow trigger."
-            exit 1
-          fi
+  # 4. DEVELOPMENT (feature/*) - Calls ./development.yaml
+  # Maps 'feature/*' branches to the development workflow logic.
+  development_ci:
+    name: 🛠️ Feature/Development CI
+    if: startsWith(github.ref, 'refs/heads/feature/')
+    uses: ./.github/workflows/development.yaml
+    secrets: inherit

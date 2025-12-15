@@ -1,17 +1,39 @@
-name: Development Confirmation Workflow
+# .github/workflows/development.yaml (Logic for feature/* Branches)
+name: Feature Branch Development CI Workflow
 
 on:
-  # This trigger is necessary for the main CI workflow to call it using 'gh workflow run'
-  workflow_dispatch:
+  workflow_call:
+    secrets:
+      # Secrets might be needed for pushing a development artifact to a dev registry
+      DOCKER_USER:
+        required: true
+      DOCKER_PASSWORD:
+        required: true
 
 jobs:
-  confirm-call:
+  development_ci:
     runs-on: ubuntu-latest
+    environment: development # Assigned for feature branch development tasks
+
     steps:
-      - name: Confirmation Echo
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🛠️ Report Successful Development Call
         run: |
-          echo "=================================================="
-          echo "✅ DEVELOPMENT.YAML HAS BEEN SUCCESSFULLY CALLED! ✅"
-          echo "Running on branch: ${{ github.ref_name }}"
-          echo "Triggered by: ${{ github.event_name }}"
-          echo "=================================================="
+          echo "#####################################################"
+          echo "## DEVELOPMENT WORKFLOW (Feature Branch) CALLED! ##"
+          echo "#####################################################"
+          echo "Triggered by branch: ${{ github.ref_name }}"
+          echo "Executing unit tests and basic build checks."
+          
+      - name: Build and Test Application
+        run: |
+          echo "Running unit tests..."
+          npm ci
+          npm test
+          
+      - name: Build Development Artifact
+        run: |
+          echo "Building application artifact for feature branch."
+          npm run build:dev
