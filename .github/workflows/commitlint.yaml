@@ -1,0 +1,18 @@
+name: Commit Lint Utility Workflow
+
+on:
+  workflow_call: # This makes it callable by the environment workflows
+
+jobs:
+  commit_lint_check:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📝 Report Successful Commit Lint Call
+        run: |
+          echo "#################################################"
+          echo "## COMMIT LINT WORKFLOW CALLED SUCCESSFULLY! ##"
+          echo "#################################################"
+          echo "This utility job is active across all environments."
+          # Placeholder for the actual commitlint action/command
+          # echo "Running actual commitlint tool..."
