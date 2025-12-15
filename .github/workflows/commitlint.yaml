@@ -18,7 +18,7 @@ jobs:
         # Required to run the commitlint package
         uses: actions/setup-node@v4
         with:
-          node-version: '20' 
+          node-version: '23' 
           
       - name: Install Commitlint CLI and Config
         # We install the CLI and the config-conventional package (often required even with a custom config)
