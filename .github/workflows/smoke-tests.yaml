@@ -12,7 +12,6 @@ jobs:
         uses: actions/checkout@v4
         
       - name: 🔒 Grant Execute Permission to Script
-        # This is the crucial step to resolve 'Permission denied' (Error Code 126)
         run: chmod +x ./duplicate-commit-title.sh
         
       - name: 💨 Run Duplicate Commit Title Check Script
