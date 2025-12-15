@@ -1,0 +1,40 @@
+# .github/workflows/production.yaml (Logic for the master Branch)
+name: Production Deployment Workflow
+
+on:
+  workflow_call:
+
+jobs:
+  # Job 1 & 2: Mandatory Quality Checks
+  call_commitlint:
+    name: ⚙️ Commit Lint Check
+    uses: ./.github/workflows/commitlint.yaml
+
+  call_markdownlint:
+    name: 📄 Markdown Lint Check
+    uses: ./.github/workflows/markdownlint.yaml
+      
+  # Job 3: Core Environment Steps
+  production_deploy:
+    name: Production Deployment Steps
+    runs-on: ubuntu-latest
+    environment: production 
+    # Ensures this job waits for both linting jobs to complete successfully
+    needs: [call_commitlint, call_markdownlint]
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🔒 Report Successful Production Call
+        run: |
+          echo "######################################################"
+          echo "## PRODUCTION WORKFLOW (master Branch) CALLED! ##"
+          echo "######################################################"
+          echo "All linting checks passed. Preparing for live deployment."
+          
+      - name: Placeholder for Production Deployment Steps
+        run: |
+          echo "Starting production deployment process..."
+          ./scripts/deploy-production.sh
+          echo "Deployment complete."

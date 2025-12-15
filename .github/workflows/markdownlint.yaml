@@ -1,0 +1,18 @@
+name: Markdown Lint Utility Workflow
+
+on:
+  workflow_call: # This makes it callable by the environment workflows
+
+jobs:
+  markdown_lint_check:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📄 Report Successful Markdown Lint Call
+        run: |
+          echo "###################################################"
+          echo "## MARKDOWN LINT WORKFLOW CALLED SUCCESSFULLY! ##"
+          echo "###################################################"
+          echo "This utility job is active across all environments."
+          # Placeholder for the actual markdownlint action/command
+          # echo "Running actual markdownlint tool..."

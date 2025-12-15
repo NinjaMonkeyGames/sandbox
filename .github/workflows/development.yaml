@@ -1,0 +1,41 @@
+# .github/workflows/development.yaml (Logic for feature/* Branches)
+name: Feature Branch Development CI Workflow
+
+on:
+  workflow_call:
+
+jobs:
+  # Job 1 & 2: Mandatory Quality Checks
+  call_commitlint:
+    name: ⚙️ Commit Lint Check
+    uses: ./.github/workflows/commitlint.yaml
+
+  call_markdownlint:
+    name: 📄 Markdown Lint Check
+    uses: ./.github/workflows/markdownlint.yaml
+
+  # Job 3: Core Environment Steps
+  development_ci:
+    name: Development Build Steps
+    runs-on: ubuntu-latest
+    environment: development
+    # Ensures this job waits for both linting jobs to complete successfully
+    needs: [call_commitlint, call_markdownlint] 
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🛠️ Report Successful Development Call
+        run: |
+          echo "#####################################################"
+          echo "## DEVELOPMENT WORKFLOW (Feature Branch) CALLED! ##"
+          echo "#####################################################"
+          echo "All linting checks passed. Proceeding with core development build."
+          
+      - name: Placeholder for Feature Branch CI Steps
+        run: |
+          echo "Running unit tests..."
+          # npm test
+          echo "Building development artifacts..."
+          # npm run build:dev

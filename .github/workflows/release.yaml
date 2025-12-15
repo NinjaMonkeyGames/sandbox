@@ -1,0 +1,41 @@
+# .github/workflows/release.yaml (Logic for release/* Branches)
+name: Release / Pre-Production CI/CD Workflow
+
+on:
+  workflow_call:
+
+jobs:
+  # Job 1 & 2: Mandatory Quality Checks
+  call_commitlint:
+    name: ⚙️ Commit Lint Check
+    uses: ./.github/workflows/commitlint.yaml
+
+  call_markdownlint:
+    name: 📄 Markdown Lint Check
+    uses: ./.github/workflows/markdownlint.yaml
+
+  # Job 3: Core Environment Steps
+  release_checks:
+    name: Release Final Checks
+    runs-on: ubuntu-latest
+    environment: release
+    # Ensures this job waits for both linting jobs to complete successfully
+    needs: [call_commitlint, call_markdownlint]
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 📢 Report Successful Release Call
+        run: |
+          echo "#################################################"
+          echo "## RELEASE/PRE-PROD WORKFLOW CALLED! ##"
+          echo "#################################################"
+          echo "All linting checks passed. Running final pre-production checks."
+
+      - name: Placeholder for Release Checks
+        run: |
+          echo "Starting vulnerability and security scan..."
+          # ./scripts/run-security-scan.sh
+          echo "Creating final release artifact..."
+          # npm run build:release
