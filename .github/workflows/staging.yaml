@@ -1,9 +1,8 @@
-# .github/workflows/staging.yaml (Logic for the develop Branch)
+# Logic for the develop Branch
 name: Develop Branch Staging CI/CD Workflow
 
 on:
-  workflow_call:
-    # secrets: block removed
+  workflow_call: # <-- CORRECT: Waits to be called by ci.yaml
 
 jobs:
   staging_deploy:

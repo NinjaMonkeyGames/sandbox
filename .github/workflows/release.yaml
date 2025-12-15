@@ -1,9 +1,8 @@
-# .github/workflows/release.yaml (Logic for release/* Branches)
+# Logic for release/* Branches
 name: Release / Pre-Production CI/CD Workflow
 
 on:
-  workflow_call:
-    # secrets: block removed
+  workflow_call: # <-- CORRECT: Waits to be called by ci.yaml
 
 jobs:
   release_checks:

@@ -1,9 +1,8 @@
-# .github/workflows/development.yaml (Logic for feature/* Branches)
+# Logic for feature/* Branches
 name: Feature Branch Development CI Workflow
 
 on:
-  workflow_call:
-    # secrets: block removed
+  workflow_call: # <-- CORRECT: Waits to be called by ci.yaml
 
 jobs:
   development_ci:

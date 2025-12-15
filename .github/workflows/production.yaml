@@ -1,10 +1,9 @@
-# .github/workflows/production.yaml (Logic for the master Branch)
+# Logic for the master Branch
 name: Production Deployment Workflow
 
 on:
-  workflow_call:
-    # secrets: block removed
-      
+  workflow_call: # <-- CORRECT: Waits to be called by ci.yaml
+
 jobs:
   production_deploy:
     runs-on: ubuntu-latest
