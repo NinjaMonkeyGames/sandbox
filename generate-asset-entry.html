@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Markdown Asset Document Generator</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f9; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #333; }
+        h2 { border-bottom: 2px solid #ccc; padding-bottom: 5px; color: #555; }
+        label { display: block; margin-top: 10px; font-weight: bold; }
+        input[type="text"], textarea, select { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; margin-top: 20px; }
+        button:hover { background-color: #0056b3; }
+        #output { background-color: #eee; padding: 15px; border-radius: 4px; white-space: pre-wrap; margin-top: 20px; border: 1px solid #ccc; }
+        .form-group { margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Advanced Markdown Asset Document Generator</h1>
+
+    <form id="generatorForm">
+        <h2>Input Variables</h2>
+        <div class="form-group">
+            <label for="assetTitle">Main Title Text (Force Uppercase):</label>
+            <input type="text" id="assetTitle" value="GIT CONFIGURATION FILES">
+        </div>
+
+        <div class="form-group">
+            <label for="assetName">Asset Name (e.g., .git):</label>
+            <input type="text" id="assetName" value=".git">
+        </div>
+
+        <div class="form-group">
+            <label for="relativePath">Relative Path (Force Lowercase):</label>
+            <input type="text" id="relativePath" value=".git">
+        </div>
+
+        <div class="form-group">
+            <label for="includeInRepo">Include in Repository:</label>
+            <select id="includeInRepo">
+                <option value="Yes">Yes</option>
+                <option value="No" selected>No</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="assetType">Asset Type (Influences Emoji):</label>
+            <select id="assetType">
+                <option value="FOLDER" selected>FOLDER</option>
+                <option value="FILE">FILE</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="ciType">CI Type (Conventional Commit Type):</label>
+            <select id="ciType">
+                <option value="N/A" selected>N/A</option>
+                <option value="feat">feat (New feature)</option>
+                <option value="fix">fix (Bug fix)</option>
+                <option value="docs">docs (Documentation changes)</option>
+                <option value="style">style (Code style changes)</option>
+                <option value="refactor">refactor (Refactor code)</option>
+                <option value="perf">perf (Performance improvements)</option>
+                <option value="test">test (Adding or updating tests)</option>
+                <option value="build">build (Changes to build system/dependencies)</option>
+                <option value="ci">ci (CI-related changes)</option>
+                <option value="chore">chore (Other changes)</option>
+                <option value="revert">revert (Reverts a previous commit)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="ciScope">CI Scope (System Area):</label>
+            <select id="ciScope">
+                <option value="N/A" selected>N/A</option>
+                <option value="core">core</option>
+                <option value="api">api</option>
+                <option value="ui">ui</option>
+                <option value="auth">auth</option>
+                <option value="db">db</option>
+                <option value="deps">deps</option>
+                <option value="tests">tests</option>
+                <option value="config">config</option>
+                <option value="security">security</option>
+                <option value="rebase">rebase</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="fileFormat">File Format (If Asset Type is FILE):</label>
+            <select id="fileFormat">
+                <option value="N/A" selected>N/A</option>
+                <option value="YAML">YAML</option>
+                <option value="PNG">PNG</option>
+                <option value="JSON">JSON</option>
+                <option value="TOML">TOML</option>
+                <option value="YOYO Configuration File">YOYO Configuration File</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="assetPurpose">Asset Purpose Description:</label>
+            <textarea id="assetPurpose">Contains version control metadata required by Git.</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="assetContents">Asset Contents Description:</label>
+            <textarea id="assetContents">Stores commit history, branches, and repository configuration. Created automatically by Git, not tracked in version control.</textarea>
+        </div>
+
+        <button type="button" onclick="generateMarkdown()">Generate Markdown</button>
+    </form>
+
+    <h2>Generated Output (Markdown)</h2>
+    <div id="output"></div>
+</div>
+
+<script>
+    const fixedBackToTopTarget = '#grid-utility-project-programmers-manual';
+
+    function generateMarkdown() {
+        // 1. Get values from input fields and apply forced casing
+        const assetTitle = document.getElementById('assetTitle').value.trim().toUpperCase(); // Force Uppercase
+        const assetName = document.getElementById('assetName').value.trim();
+        const relativePath = document.getElementById('relativePath').value.trim().toLowerCase(); // Force Lowercase
+        
+        // 2. Get values from dropdowns
+        const includeInRepo = document.getElementById('includeInRepo').value;
+        const assetType = document.getElementById('assetType').value;
+        const ciType = document.getElementById('ciType').value;
+        const ciScope = document.getElementById('ciScope').value;
+        const fileFormat = document.getElementById('fileFormat').value;
+
+        // 3. Get text area values
+        const assetPurpose = document.getElementById('assetPurpose').value.trim();
+        const assetContents = document.getElementById('assetContents').value.trim();
+        
+        // 4. Determine the correct Asset Type value for the table and the emoji
+        const finalAssetTypeValue = assetType === 'FILE' ? `${assetType} (${fileFormat})` : assetType;
+        const emoji = assetType === 'FOLDER' ? '📁' : '📄'; // Folder icon or File icon
+
+        // 5. Construct the Markdown output string
+        const markdownOutput = 
+`### ${assetTitle} [${assetName.toUpperCase()}] ${emoji}
+
+#### Attribute Table — [${assetName}]
+
+| Attribute | Value |
+|---|---|
+| Asset Name | ${assetName} |
+| Relative Path | ${relativePath} |
+| Include in Repository | ${includeInRepo} |
+| Asset Type | ${finalAssetTypeValue} |
+| CI Type | ${ciType} |
+| CI Scope | ${ciScope} |
+
+#### Asset Purpose — [${assetName}]
+
+${assetPurpose}
+
+#### Asset Contents Description — [${assetName}]
+
+${assetContents}
+
+---
+
+[Back to top](${fixedBackToTopTarget})
+
+---`;
+
+        // 6. Display the output
+        document.getElementById('output').textContent = markdownOutput;
+    }
+
+    // Initial generation on load with default values
+    document.addEventListener('DOMContentLoaded', generateMarkdown);
+</script>
+
+</body>
+</html>
