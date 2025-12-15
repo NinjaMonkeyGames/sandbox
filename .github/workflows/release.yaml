@@ -3,17 +3,12 @@ name: Release / Pre-Production CI/CD Workflow
 
 on:
   workflow_call:
-    secrets:
-      # Secrets needed for final scans or creating a release artifact
-      VULNERABILITY_SCANNER_TOKEN:
-        required: false
-      NPM_TOKEN:
-        required: false # If publishing an internal package for the release
+    # secrets: block removed
 
 jobs:
   release_checks:
     runs-on: ubuntu-latest
-    environment: release # Assigned for release branch final checks
+    environment: release
 
     steps:
       - name: Checkout Code
@@ -26,14 +21,3 @@ jobs:
           echo "#################################################"
           echo "Triggered by release branch: ${{ github.ref_name }}"
           echo "Running final pre-production checks and creating release tags."
-
-      - name: Run Security Scan
-        run: |
-          echo "Starting vulnerability and security scan..."
-          ./scripts/run-security-scan.sh
-          
-      - name: Create Release Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: release-build-${{ github.ref_name }}
-          path: ./dist

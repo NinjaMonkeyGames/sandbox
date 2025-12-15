@@ -12,31 +12,27 @@ jobs:
   # 1. PRODUCTION (master) - Calls ./production.yaml
   production_deployment:
     name: 🚀 Production Deploy (Master)
-    # Condition: Only run if the branch is 'master' (as requested)
     if: github.ref == 'refs/heads/master'
     uses: ./.github/workflows/production.yaml
-    secrets: inherit # Passes all repository secrets to the called workflow
+    # secrets: inherit removed
 
   # 2. STAGING (develop) - Calls ./staging.yaml
-  # Maps the 'develop' branch logic to the staging environment workflow.
   staging_ci:
     name: 📦 Staging CI (Develop Branch)
     if: github.ref == 'refs/heads/develop'
     uses: ./.github/workflows/staging.yaml
-    secrets: inherit
+    # secrets: inherit removed
 
   # 3. RELEASE / PRE-PRODUCTION (release/*) - Calls ./release.yaml
-  # Maps 'release/*' branches to their dedicated release workflow.
   release_ci:
     name: 📢 Release/Pre-Prod CI
     if: startsWith(github.ref, 'refs/heads/release/')
     uses: ./.github/workflows/release.yaml
-    secrets: inherit
+    # secrets: inherit removed
 
   # 4. DEVELOPMENT (feature/*) - Calls ./development.yaml
-  # Maps 'feature/*' branches to the development workflow logic.
   development_ci:
     name: 🛠️ Feature/Development CI
     if: startsWith(github.ref, 'refs/heads/feature/')
     uses: ./.github/workflows/development.yaml
-    secrets: inherit
+    # secrets: inherit removed
