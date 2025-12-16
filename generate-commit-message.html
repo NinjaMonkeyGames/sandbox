@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conventional Commit Generator</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f9; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #333; }
+        h2 { border-bottom: 2px solid #ccc; padding-bottom: 5px; color: #555; }
+        label { display: block; margin-top: 10px; font-weight: bold; }
+        input[type="text"], textarea, select { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .form-group { margin-bottom: 15px; }
+        .header-group { display: flex; gap: 10px; }
+        .header-group > div { flex: 1; }
+
+        /* Styles for Dynamic Body Fields */
+        .body-group { 
+            display: flex; 
+            gap: 10px; 
+            margin-bottom: 15px;
+            padding: 10px; 
+            border: 1px solid #ddd; 
+            border-radius: 4px;
+            align-items: flex-start;
+            position: relative; 
+        }
+        .body-group label { margin-top: 0; } 
+        .body-dropdown {
+            flex: 0 0 150px;
+        }
+        .body-textarea {
+            flex: 1;
+        }
+        .body-textarea textarea {
+            min-height: 100px;
+        }
+        /* Style for the 'Add Body Section' button */
+        #addBodyButton {
+            background-color: #28a745; 
+            color: white; 
+            border: none; 
+            padding: 8px 15px; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            margin-top: 10px;
+        }
+        #addBodyButton:hover { background-color: #218838; }
+
+
+        /* Dynamic Reference Styles */
+        #referencesContainer > div { display: flex; gap: 10px; margin-bottom: 5px; align-items: center; }
+        #referencesContainer select { flex: 2; }
+        #referencesContainer input[type="text"] { flex: 1; }
+        #addReferenceButton { background-color: #17a2b8; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
+        #addReferenceButton:hover { background-color: #138496; }
+        
+        /* General Remove Button Style */
+        .remove-btn { 
+            background-color: #dc3545; 
+            color: white; 
+            border: none; 
+            padding: 8px 10px; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            height: 36px;
+            margin-top: auto;
+        }
+        .remove-btn.body-remove { 
+            align-self: flex-end; 
+            margin-bottom: 8px; 
+        }
+        .remove-btn:hover { background-color: #c82333; }
+
+        /* Button Styles */
+        .button-group { margin-top: 20px; text-align: center; }
+        #copyButton { background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; transition: background-color 0.3s; }
+        #copyButton:hover:not(:disabled) { background-color: #0056b3; }
+        #copyButton:disabled { background-color: #ccc; cursor: not-allowed; }
+
+        /* Output Box */
+        #output { background-color: #eee; padding: 15px; border-radius: 4px; white-space: pre-wrap; margin-top: 20px; border: 1px solid #ccc; min-height: 250px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Conventional Commit Generator (Detailed)</h1>
+
+    <form id="commitForm" oninput="checkFormValidity()">
+        <h2>Commit Header and Scope</h2>
+        <div class="header-group">
+            <div class="form-group">
+                <label for="commitType">Type:</label>
+                <select id="commitType" required>
+                    <option value="feat" selected>feat (New feature)</option>     
+                    <option value="fix">fix (Bug fix)</option>      
+                    <option value="docs">docs (Documentation changes)</option>     
+                    <option value="style">style (Code style changes)</option>    
+                    <option value="refactor">refactor (Refactor without new features or fixes)</option> 
+                    <option value="perf">perf (Performance improvements)</option>     
+                    <option value="test">test (Adding or updating tests)</option>     
+                    <option value="build">build (Changes to build system or dependencies)</option>    
+                    <option value="ci">ci (Continuous integration-related changes)</option>       
+                    <option value="chore">chore (Other changes)</option>    
+                    <option value="revert">revert (Reverts a previous commit)</option>   
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="commitScope">Scope (Optional):</label>
+                <select id="commitScope">
+                    <option value="" selected>(None)</option>
+                    <option value="core">core</option>     
+                    <option value="api">api</option>      
+                    <option value="ui">ui</option>       
+                    <option value="auth">auth</option>     
+                    <option value="db">db</option>       
+                    <option value="deps">deps</option>     
+                    <option value="tests">tests</option>    
+                    <option value="config">config</option>   
+                    <option value="security">security</option> 
+                    <option value="rebase">rebase</option>   
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="subjectHeading">Subject Heading (Max 50 characters, e.g., example heading):</label>
+            <input type="text" id="subjectHeading" required value="" maxlength="50">
+        </div>
+
+        <h2>File Changes (One file and action per line, e.g., my-file.ts.fix)</h2>
+        <div class="form-group">
+            <textarea id="fileChanges" rows="5" placeholder="Example:
+example-broken.fix
+example-file.add
+example-file.md.update
+example-file.delete"></textarea>
+        </div>
+
+        <h2>Commit Body Details (Optional, use backticks `` for code/file names)</h2>
+        
+        <div id="bodySectionsContainer">
+            </div>
+
+        <button type="button" id="addBodyButton" onclick="addBodySection()">+ Add Body Section</button>
+
+
+        <h2>Footers (References, Closes, Fixes)</h2>
+        <div class="form-group">
+            <label>Ticket References/Actions:</label>
+            <div id="referencesContainer">
+                </div>
+            <button type="button" id="addReferenceButton" onclick="addReferenceRow()">+ Add Reference</button>
+        </div>
+        
+        <div class="form-group">
+            <label for="signedOffBy">Signed-off-by (e.g., Daniel Mallett <daniel.mallett@email.com>):</label>
+            <input type="text" id="signedOffBy" required value="">
+        </div>
+
+        <div class="button-group">
+             <button type="button" id="copyButton" onclick="copyToClipboard()" disabled>Copy Commit Message</button>
+        </div>
+    </form>
+
+    <h2>Generated Commit Message (Real-time preview)</h2>
+    <div id="output">Fill in required fields to see the generated commit message.</div>
+</div>
+
+<script>
+    const requiredFields = ['subjectHeading', 'signedOffBy'];
+    let referenceCounter = 0; // Unique ID for dynamic references
+    let bodyCounter = 0; // Unique ID for dynamic body sections
+    
+    // Available body types
+    const bodyTypes = ["Fix", "Add", "Update", "Delete"];
+
+    // --- Dynamic Body Section Functions ---
+    
+    function addBodySection() {
+        bodyCounter++;
+        const container = document.getElementById('bodySectionsContainer');
+        const sectionId = `body-section-${bodyCounter}`;
+        
+        const row = document.createElement('div');
+        row.id = sectionId;
+        row.className = 'body-group';
+        
+        // Build the options string for the select dropdown
+        const optionsHtml = bodyTypes.map(type => 
+            `<option value="${type}">${type}</option>`
+        ).join('');
+        
+        row.innerHTML = `
+            <div class="body-dropdown">
+                <label for="body-type-${bodyCounter}">Type:</label>
+                <select id="body-type-${bodyCounter}" onchange="checkFormValidity()">
+                    ${optionsHtml}
+                </select>
+            </div>
+            <div class="body-textarea">
+                <label for="body-content-${bodyCounter}">Body Content:</label>
+                <textarea id="body-content-${bodyCounter}" rows="5" 
+                    placeholder="Details for this section. Use backticks \`\` for code/file names." 
+                    oninput="checkFormValidity()"></textarea>
+            </div>
+            <button type="button" class="remove-btn body-remove" 
+                    onclick="removeBodySection('${sectionId}')">X</button>
+        `;
+        container.appendChild(row);
+        checkFormValidity();
+    }
+    
+    function removeBodySection(sectionId) {
+        const section = document.getElementById(sectionId);
+        if (section) {
+            section.remove();
+            checkFormValidity();
+        }
+    }
+
+
+    // --- Dynamic Reference Functions ---
+
+    function addReferenceRow() {
+        referenceCounter++;
+        const container = document.getElementById('referencesContainer');
+        
+        const row = document.createElement('div');
+        row.id = `ref-row-${referenceCounter}`;
+        
+        row.innerHTML = `
+            <select id="ref-type-${referenceCounter}" onchange="checkFormValidity()">
+                <option value="References">References</option>
+                <option value="Closes">Closes</option>
+                <option value="Fixes">Fixes</option>
+            </select>
+            <input type="text" id="ref-num-${referenceCounter}" oninput="checkFormValidity()" placeholder="Ticket ID (e.g., 10)" pattern="#?\\d+" title="Enter ticket ID starting with # or just the number">
+            <button type="button" class="remove-btn" onclick="removeReferenceRow('ref-row-${referenceCounter}')">X</button>
+        `;
+        container.appendChild(row);
+        checkFormValidity();
+    }
+
+    function removeReferenceRow(rowId) {
+        const row = document.getElementById(rowId);
+        if (row) {
+            row.remove();
+            checkFormValidity();
+        }
+    }
+
+    // --- Validation and Generation Logic ---
+
+    function checkFormValidity() {
+        // Check standard required fields
+        const isStandardValid = requiredFields.every(id => document.getElementById(id).value.trim() !== '');
+        
+        // No longer strictly validating the dynamic rows, as they are optional.
+        const isFormValid = isStandardValid; 
+        
+        const copyButton = document.getElementById('copyButton');
+        
+        if (isFormValid) {
+            generateCommitMessage();
+            copyButton.disabled = false;
+        } else {
+            document.getElementById('output').textContent = 'Fill in required fields to see the generated commit message.';
+            copyButton.disabled = true;
+        }
+    }
+
+    function generateCommitMessage() {
+        // 1. Get Header components
+        const type = document.getElementById('commitType').value.trim();
+        const scope = document.getElementById('commitScope').value.trim();
+        const heading = document.getElementById('subjectHeading').value.trim();
+
+        // Construct Header: feat(core): example heading
+        const scopePart = scope ? `(${scope})` : '';
+        let commitMessage = `${type}${scopePart}: ${heading}\n\n`;
+
+        // 2. Get and Format File Changes
+        const fileChangesInput = document.getElementById('fileChanges').value.trim();
+        if (fileChangesInput) {
+            // FIX APPLIED: Adds an extra newline for separation between header and list
+            commitMessage += `Files:\n\n`; 
+            const filesArray = fileChangesInput.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+            filesArray.forEach(file => {
+                commitMessage += `    - ${file}\n`;
+            });
+            commitMessage += '\n'; // Add extra line after files section
+        }
+
+        // 3. Get and Format Body Sections
+        const bodyLines = [];
+        document.querySelectorAll('#bodySectionsContainer > .body-group').forEach(section => {
+            const id = section.id.split('-').pop(); // Extract the counter ID
+            const typeElement = document.getElementById(`body-type-${id}`);
+            const contentElement = document.getElementById(`body-content-${id}`);
+            
+            if (typeElement && contentElement && contentElement.value.trim()) {
+                const title = `${typeElement.value}:`;
+                const content = contentElement.value.trim();
+                
+                // Content is indented by 4 spaces (or tabs) after the title
+                bodyLines.push(`${title}\n\n    ${content}`);
+            }
+        });
+        
+        if (bodyLines.length > 0) {
+            // Join all body sections with two newlines for separation
+            commitMessage += bodyLines.join('\n\n');
+            commitMessage += '\n\n'; // Add final separation before footers/signed-off
+        }
+        
+        // Remove trailing newlines if present before the Footers section
+        commitMessage = commitMessage.trimEnd();
+
+        // 4. Get and Format Dynamic Footers (References, Closes, Fixes)
+        const referenceLines = [];
+        document.querySelectorAll('#referencesContainer > div').forEach(row => {
+            const id = row.id.split('-').pop(); // Extract the counter ID
+            const typeElement = document.getElementById(`ref-type-${id}`);
+            const numElement = document.getElementById(`ref-num-${id}`);
+            
+            if (typeElement && numElement && numElement.value.trim()) {
+                const type = typeElement.value;
+                let number = numElement.value.trim();
+                
+                // Ensure the ticket number starts with #
+                if (!number.startsWith('#')) {
+                    number = '#' + number;
+                }
+                referenceLines.push(`${type}: ${number}`); // Use ': ' for conventional commit footer
+            }
+        });
+
+        const signedOffBy = document.getElementById('signedOffBy').value.trim();
+
+        if (referenceLines.length > 0 || signedOffBy) {
+             commitMessage += '\n\n'; // Ensure separation from body/header
+
+            // Process multiple references
+            if (referenceLines.length > 0) {
+                referenceLines.forEach(line => {
+                    commitMessage += `${line}\n`;
+                });
+                commitMessage += '\n'; // Add extra line after the list of references
+            }
+        }
+        
+        // 5. Signed-off-by is always last
+        if (signedOffBy) {
+            // Trim to ensure we don't end up with excessive leading newlines if references was empty
+            commitMessage = commitMessage.trimEnd();
+            commitMessage += `\n\nSigned-off-by: ${signedOffBy}`;
+        }
+        
+        // 6. Display the output
+        document.getElementById('output').textContent = commitMessage.trim();
+    }
+
+    function copyToClipboard() {
+        const outputText = document.getElementById('output').textContent;
+        navigator.clipboard.writeText(outputText).then(() => {
+            const copyButton = document.getElementById('copyButton');
+            const originalText = copyButton.textContent;
+            copyButton.textContent = 'Copied!';
+            copyButton.style.backgroundColor = '#28a745'; // Green feedback
+            setTimeout(() => {
+                copyButton.textContent = originalText;
+                copyButton.style.backgroundColor = '#007bff'; // Back to blue
+            }, 1500);
+        }).catch(err => {
+            console.error('Could not copy text: ', err);
+            alert('Copy failed. Please manually copy the text from the box.');
+        });
+    }
+
+    // Initialize one body section and one reference row on load
+    document.addEventListener('DOMContentLoaded', () => {
+        addBodySection(); // Initialize with one body section
+        addReferenceRow();
+        checkFormValidity();
+    });
+</script>
+
+</body>
+</html>

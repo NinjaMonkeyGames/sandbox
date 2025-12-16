@@ -105,6 +105,7 @@
             <label for="fileFormat">File Format (If Asset Type is FILE):</label>
             <select id="fileFormat">
                 <option value="N/A" selected>N/A</option>
+                <option value="TEXT">TEXT</option>
                 <option value="YAML">YAML</option>
                 <option value="PNG">PNG</option>
                 <option value="JSON">JSON</option>
@@ -195,14 +196,14 @@
         const finalAssetTypeValue = assetType === 'FILE' ? `${assetType} (${fileFormat})` : assetType;
         const emoji = assetType === 'FOLDER' ? '📁' : '📄'; // Folder icon or File icon
 
-        // 5. Construct the Markdown output string
+        // 5. Construct the MD060 Compliant Markdown output string (Note the required padding: | Attribute | Value |)
         const markdownOutput = 
 `### ${assetTitle} [${assetName.toUpperCase()}] ${emoji}
 
 #### Attribute Table — [${assetName}]
 
 | Attribute | Value |
-|---|---|
+| :--- | :--- |
 | Asset Name | ${assetName} |
 | Relative Path | ${relativePath} |
 | Include in Repository | ${includeInRepo} |
