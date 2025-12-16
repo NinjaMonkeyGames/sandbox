@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NMG Instruction Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f9;
+        }
+        #generator {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        #controls-container {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        #element-creation, #heading-creation {
+            flex: 1 1 48%; /* Ensures they take up roughly half the space */
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f7f7f7;
+        }
+        #element-creation h2, #heading-creation h2 {
+             color: #333;
+             border-bottom: 2px solid #ccc;
+             padding-bottom: 5px;
+             margin-top: 0;
+        }
+        #controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .control-group {
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            flex: 1 1 300px;
+            background-color: #fafafa;
+        }
+        label, button {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"], select, textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 8px 12px;
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            display: inline-block;
+        }
+        button:hover {
+            background-color: #4cae4c;
+        }
+        #output-area {
+            margin-top: 20px;
+            padding: 15px;
+            border: 2px dashed #007bff;
+            background-color: #eaf5ff;
+            border-radius: 4px;
+        }
+        #output-list {
+            list-style-type: none; /* Change to none for mixed content */
+            padding-left: 0;
+            counter-reset: step-counter 0; /* Reset counter */
+        }
+        #output-list li {
+            font-size: 1.1em;
+            align-items: flex-start;
+            line-height: 1.4;
+            padding: 5px 0;
+        }
+        
+        /* Styles for the new block types */
+        .heading-block {
+            font-weight: bold;
+            margin: 15px 0 5px 0 !important;
+            padding: 5px 0;
+            border-bottom: 1px dashed #666;
+            color: #333;
+            list-style: none !important;
+            display: block; 
+        }
+        /* Style for the heading title */
+        .heading-title {
+            display: block;
+            margin-bottom: 5px;
+        }
+        /* Style for the heading description */
+        .heading-description {
+            display: block;
+            font-weight: normal; 
+            font-size: 0.9em;
+            color: #555;
+            margin-top: 5px;
+        }
+        .text-block {
+            margin: 5px 0 10px 0 !important;
+            padding: 5px 0;
+            color: #333;
+            list-style: none !important;
+            background-color: #f0f0f0; 
+            padding-left: 10px;
+        }
+
+        .instruction-content {
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+        
+        /* Styling for the JavaScript-inserted prefix */
+        .instruction-number, .instruction-prefix {
+            font-weight: bold;
+            flex-shrink: 0;
+            margin-right: 5px;
+            margin-left: 20px; /* Provides indentation for numbered steps */
+        }
+        
+        .instruction-prefix {
+            /* This is the container for the EMOJI */
+            margin-left: 10px; 
+            margin-top: 2px;
+            font-style: normal; 
+            white-space: nowrap;
+        }
+        
+        .control-output {
+            font-weight: bold;
+            font-family: monospace;
+            background-color: #f0f0f0;
+            padding: 1px 4px;
+            border-radius: 3px;
+        }
+        .value-output {
+            font-weight: bold;
+            font-style: italic;
+        }
+        /* Styling for the new link output */
+        .link-output {
+            font-weight: bold;
+            font-family: monospace;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+            flex-shrink: 0;
+        }
+        .action-buttons button {
+            padding: 4px 8px;
+            margin: 0;
+            background-color: #aaa;
+            line-height: 1;
+        }
+        .delete-btn {
+            background-color: #d9534f !important;
+        }
+        .reorder-btn {
+            background-color: #007bff !important;
+        }
+        /* Style for the Copy button */
+        #copy-button {
+            background-color: #007bff;
+            margin-left: 10px;
+        }
+        #copy-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="generator">
+        <h1>NMG Standard Instruction Generator</h1>
+        
+        <div id="controls-container">
+            
+            <div id="heading-creation">
+                <h2>1. Document Structure Blocks</h2>
+                <div class="control-group">
+                    <h3>Add Heading</h3>
+                    <label for="headingLevel">Heading Level:</label>
+                    <select id="headingLevel">
+                        <option value="h2">H2 (##)</option>
+                        <option value="h3">H3 (###)</option>
+                        <option value="h4">H4 (####)</option>
+                        <option value="h5">H5 (#####)</option>
+                        <option value="h6">H6 (######)</option>
+                    </select>
+                    <label for="headingTitle">Heading Title:</label>
+                    <input type="text" id="headingTitle">
+                    
+                    <label for="headingDescription">Description/Context (Optional):</label>
+                    <textarea id="headingDescription"></textarea>
+                    
+                    <button onclick="generateHeadingBlock()">Add Heading Block</button>
+                </div>
+                
+                <div class="control-group">
+                    <h3>Add Informational Text Block</h3>
+                    <label for="blockType">Block Type:</label>
+                    <select id="blockType">
+                        <option value="info">ℹ️ information</option>
+                        <option value="pro-tip">💡 Pro-Tip</option>
+                        <option value="caution">⚠️ Caution</option>
+                        <option value="warning">🚫️ Warning</option>
+                    </select>
+                    <label for="blockContent">Text Content:</label>
+                    <textarea id="blockContent"></textarea>
+                    <button onclick="generateTextBlock()">Add Text Block</button>
+                </div>
+            </div>
+
+            <div id="element-creation">
+                <h2>2. Step-by-Step Instruction Creation</h2>
+                <div id="controls">
+                    <div class="control-group">
+                        <h3>1. Click/Select Action</h3>
+                        <label for="clickLabel">Button/Link Label:</label>
+                        <input type="text" id="clickLabel">
+                        <button onclick="generateClickInstruction()">Add Click</button>
+                    </div>
+
+                    <div class="control-group">
+                        <h3>2. Select Field</h3>
+                        <label for="selectFieldLabel">Field Label:</label>
+                        <input type="text" id="selectFieldLabel">
+                        <button onclick="generateSelectInstruction()">Add Select Field</button>
+                    </div>
+                    
+                    <div class="control-group">
+                        <h3>3. Type/Enter Value</h3>
+                        <label for="enterFieldLabel">Field Label:</label>
+                        <input type="text" id="enterFieldLabel">
+                        <label for="enterValue">Value to Enter:</label>
+                        <input type="text" id="enterValue">
+                        <button onclick="generateEnterInstruction()">Add Type/Enter</button>
+                    </div>
+                    
+                    <div class="control-group">
+                        <h3>4. Check/Uncheck Option</h3>
+                        <label for="checkAction">Action:</label>
+                        <select id="checkAction">
+                            <option value="Check">[x] Check</option>
+                            <option value="Ensure the following options are unchecked">[ ] Ensure the following options are unchecked</option>
+                        </select>
+                        <label for="checkLabel">Option Label:</label>
+                        <input type="text" id="checkLabel">
+                        <button onclick="generateCheckInstruction()">Add Check/Uncheck</button>
+                    </div>
+                    
+                    <div class="control-group">
+                        <h3>5. Set Dropdown/Toggle</h3>
+                        <label for="setClickLabel">Click/Dropdown Label:</label>
+                        <input type="text" id="setClickLabel">
+                        <label for="setSelectValue">Value to Select:</label>
+                        <input type="text" id="setSelectValue">
+                        <button onclick="generateSetInstruction()">Add Set Dropdown</button>
+                    </div>
+
+                    <div class="control-group">
+                        <h3>6. Go to Link</h3>
+                        <label for="goToLink">Link Description/URL:</label>
+                        <input type="text" id="goToLink">
+                        <button onclick="generateGoToInstruction()">Add Go To Link</button>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+        <div id="output-area">
+            <h2>Generated Instructions Document</h2>
+            <ol id="output-list"></ol>
+            <button onclick="clearInstructions()" style="background-color: #d9534f; margin-top: 15px;">Clear All Instructions</button>
+            <button id="copy-button" onclick="copyToMarkdown()">Copy All as Markdown</button>
+        </div>
+
+    </div>
+
+    <script>
+        const outputList = document.getElementById('output-list');
+
+        function formatControl(label) {
+            return `<span class="control-output">\`${label}\`</span>`;
+        }
+
+        function formatValue(value) {
+            return `<span class="value-output">“${value}”</span>`;
+        }
+        
+        function formatLink(link) {
+            return `<span class="link-output">&lt;${link}&gt;</span>`;
+        }
+        
+        // --- Core List Management Functions ---
+
+        function addInstruction(html, prefixHTML, isBlock = false, blockClass = '') {
+            const listItem = document.createElement('li');
+            
+            const instructionContentHTML = `<span class="instruction-content">${html}</span>`;
+
+            let prefixElement = '';
+            if (isBlock) {
+                if (blockClass === 'text-block' && prefixHTML) {
+                    prefixElement = `<span class="instruction-prefix">${prefixHTML}</span>`;
+                } else {
+                    prefixElement = '';
+                }
+            } else {
+                prefixElement = `<span class="instruction-number"></span>`;
+            }
+
+
+            listItem.innerHTML = `
+                ${prefixElement}
+                ${instructionContentHTML}
+                <span class="action-buttons">
+                    <button class="reorder-btn" onclick="moveInstruction(this, -1)">▲</button>
+                    <button class="reorder-btn" onclick="moveInstruction(this, 1)">▼</button>
+                    <button class="delete-btn" onclick="deleteInstruction(this)">✕</button>
+                </span>
+            `;
+
+            if (isBlock) {
+                listItem.classList.add('heading-block');
+                if(blockClass) listItem.classList.add(blockClass);
+            }
+
+            if (blockClass === 'heading-block') {
+                listItem.style.display = 'block'; 
+            } else {
+                listItem.style.display = 'flex';
+            }
+
+            outputList.appendChild(listItem);
+            updateInstructionNumbers();
+        }
+
+        function deleteInstruction(button) {
+            const listItem = button.closest('li');
+            outputList.removeChild(listItem);
+            updateInstructionNumbers();
+        }
+
+        function moveInstruction(button, direction) {
+            const listItem = button.closest('li');
+            const listItems = Array.from(outputList.children);
+            const index = listItems.indexOf(listItem);
+            const newIndex = index + direction;
+
+            if (newIndex >= 0 && newIndex < listItems.length) {
+                outputList.removeChild(listItem);
+                
+                const nextItem = listItems[newIndex + (direction === 1 ? 1 : 0)];
+                if (nextItem) {
+                    outputList.insertBefore(listItem, nextItem);
+                } else {
+                    outputList.appendChild(listItem);
+                }
+                updateInstructionNumbers();
+            }
+        }
+
+        function clearInstructions() {
+            outputList.innerHTML = '';
+            updateInstructionNumbers();
+        }
+
+        function updateInstructionNumbers() {
+            let counter = 0;
+            const listItems = outputList.children;
+            
+            for (let i = 0; i < listItems.length; i++) {
+                const item = listItems[i];
+                const numberSpan = item.querySelector('.instruction-number');
+
+                if (!item.classList.contains('heading-block') && !item.classList.contains('text-block')) {
+                    counter++;
+                    if (numberSpan) {
+                        numberSpan.textContent = `${counter}.`;
+                    }
+                } else {
+                    if (numberSpan) {
+                         numberSpan.textContent = '';
+                    }
+                }
+            }
+        }
+
+
+        // --- Generator Functions (Instructions) ---
+
+        function generateClickInstruction() {
+            const label = document.getElementById('clickLabel').value.trim();
+            if (label) {
+                const instruction = `Click ${formatControl(label)}.`;
+                addInstruction(instruction, null, false);
+                document.getElementById('clickLabel').value = '';
+            }
+        }
+
+        function generateSelectInstruction() {
+            const label = document.getElementById('selectFieldLabel').value.trim();
+            if (label) {
+                const instruction = `Select the ${formatControl(label)} field.`;
+                addInstruction(instruction, null, false);
+                document.getElementById('selectFieldLabel').value = '';
+            }
+        }
+
+        function generateEnterInstruction() {
+            const fieldLabel = document.getElementById('enterFieldLabel').value.trim();
+            const value = document.getElementById('enterValue').value.trim();
+            if (fieldLabel && value) {
+                const instruction = `Select the ${formatControl(fieldLabel)} field and type ${formatValue(value)}.`;
+                addInstruction(instruction, null, false);
+                document.getElementById('enterFieldLabel').value = '';
+                document.getElementById('enterValue').value = '';
+            }
+        }
+        
+        function generateCheckInstruction() {
+            const action = document.getElementById('checkAction').value; 
+            const label = document.getElementById('checkLabel').value.trim();
+            if (label) {
+                const instruction = `${formatValue(action)} ${formatControl(label)}.`;
+                addInstruction(instruction, null, false);
+                document.getElementById('checkLabel').value = '';
+            }
+        }
+        
+        function generateSetInstruction() {
+            const clickLabel = document.getElementById('setClickLabel').value.trim();
+            const selectValue = document.getElementById('setSelectValue').value.trim();
+            if (clickLabel && selectValue) {
+                const instruction = `Click ${formatControl(clickLabel)} then Select ${formatControl(selectValue)} from the drop-down box.`;
+                addInstruction(instruction, null, false);
+                document.getElementById('setClickLabel').value = '';
+                document.getElementById('setSelectValue').value = '';
+            }
+        }
+
+        function generateGoToInstruction() {
+            const link = document.getElementById('goToLink').value.trim();
+            if (link) {
+                const instruction = `Go to ${formatLink(link)}.`;
+                addInstruction(instruction, null, false);
+                document.getElementById('goToLink').value = '';
+            }
+        }
+        
+        // --- Generator Functions (Heading Blocks) ---
+
+        function generateHeadingBlock() {
+            const level = document.getElementById('headingLevel').value;
+            const title = document.getElementById('headingTitle').value.trim();
+            const description = document.getElementById('headingDescription').value.trim();
+            
+            const levelNumber = parseInt(level.substring(1));
+            const prefix = '#'.repeat(levelNumber);
+
+            if (title) {
+                let fontSize = '1.5em'; 
+                if (levelNumber === 3) fontSize = '1.3em';
+                else if (levelNumber === 4) fontSize = '1.1em';
+                else if (levelNumber === 5) fontSize = '1.0em';
+                else if (levelNumber === 6) fontSize = '0.9em';
+
+                const titleHTML = `<span class="heading-title" style="font-size: ${fontSize};">${prefix} ${title}</span>`;
+                
+                const descriptionHTML = description 
+                    ? `<span class="heading-description">${description}</span>` 
+                    : '';
+
+                const instruction = titleHTML + descriptionHTML;
+                
+                addInstruction(instruction, null, true, 'heading-block'); 
+                document.getElementById('headingTitle').value = '';
+                document.getElementById('headingDescription').value = '';
+            }
+        }
+
+        function generateTextBlock() {
+            const typeValue = document.getElementById('blockType').value;
+            const content = document.getElementById('blockContent').value.trim();
+            
+            const prefixMap = {
+                'info': 'ℹ️',
+                'pro-tip': '💡',
+                'caution': '⚠️',
+                'warning': '🚫️'
+            };
+            
+            const prefixHTML = prefixMap[typeValue];
+            
+            if (content) {
+                const instruction = `<span style="font-style: italic;">${content}</span>`;
+                addInstruction(instruction, prefixHTML, true, 'text-block');
+                document.getElementById('blockContent').value = '';
+            }
+        }
+        
+        // --- Markdown Copy Function ---
+
+        function copyToMarkdown() {
+            const listItems = outputList.children;
+            let markdownText = '';
+            let stepCounter = 1;
+
+            for (let i = 0; i < listItems.length; i++) {
+                const item = listItems[i];
+                const contentSpan = item.querySelector('.instruction-content');
+                
+                // 1. Handle Headings
+                if (item.classList.contains('heading-block') && !item.classList.contains('text-block')) {
+                    const titleElement = item.querySelector('.heading-title');
+                    const prefix = titleElement.textContent.match(/#+/)[0];
+                    const title = titleElement.textContent.replace(prefix, '').trim();
+
+                    markdownText += `\n${prefix} ${title}\n`;
+                    
+                    const descriptionElement = item.querySelector('.heading-description');
+                    if (descriptionElement) {
+                        // FIX: Add an extra newline after the description text and before the separator
+                        markdownText += `\n${descriptionElement.textContent.trim()}\n\n`;
+                    } else {
+                        // If no description, still add a newline before the separator
+                        markdownText += `\n`; 
+                    }
+                    markdownText += '---\n'; 
+                    continue; 
+                }
+
+                // 2. Handle Informational Text Blocks
+                if (item.classList.contains('text-block')) {
+                    const prefixElement = item.querySelector('.instruction-prefix');
+                    const contentElement = item.querySelector('span[style*="italic"]');
+                    
+                    if (prefixElement && contentElement) {
+                        const emoji = prefixElement.textContent.trim();
+                        const content = contentElement.textContent.trim(); 
+                        
+                        markdownText += `\n> ${emoji} **${content}**\n`;
+                    }
+                    continue;
+                }
+
+                // 3. Handle Numbered Instructions (Steps)
+                
+                let rawContent = contentSpan.innerHTML;
+
+                // a. Cleanup HTML styling:
+                let instruction = rawContent;
+                
+                // Replace monospace code styling
+                instruction = instruction.replace(/<span class="control-output">\\`([^`]+)\\`<\/span>/g, '`$1`');
+                
+                // Replace italic value styling
+                instruction = instruction.replace(/<span class="value-output">“([^”]+)”<\/span>/g, '**$1**');
+                
+                // Replace link formatting
+                instruction = instruction.replace(/<span class="link-output">&lt;([^&]+)&gt;<\/span>/g, '<$1>');
+                
+                // b. Strip remaining HTML tags and apply numbering
+                instruction = instruction.replace(/<[^>]*>?/gm, '').trim();
+                markdownText += `${stepCounter}. ${instruction}\n`;
+                stepCounter++;
+            }
+
+            // Copy to clipboard
+            navigator.clipboard.writeText(markdownText).then(() => {
+                const copyButton = document.getElementById('copy-button');
+                const originalText = copyButton.textContent;
+                copyButton.textContent = 'Copied!';
+                copyButton.style.backgroundColor = '#28a745'; 
+                setTimeout(() => {
+                    copyButton.textContent = originalText;
+                    copyButton.style.backgroundColor = '#007bff';
+                }, 1500);
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+                alert('Failed to copy text. Check the console for details.');
+            });
+        }
+        
+        // Initial numbering update
+        updateInstructionNumbers();
+
+    </script>
+</body>
+</html>
