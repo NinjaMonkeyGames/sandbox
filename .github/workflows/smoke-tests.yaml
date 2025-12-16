@@ -25,3 +25,4 @@ jobs:
           
           # The script is now executable
           ./duplicate-commit-title.sh
+          ./check-developer-asset-entry.sh
