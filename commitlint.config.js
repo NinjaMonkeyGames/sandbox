@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 import signedOffByRule from './signed-off-by-regex.js';
+import duplicateCommit from './commitlint-plugin-no-duplicate.js';
 
 // Rule severity
 const ERROR = 2;        // Marks a rule as an error
@@ -24,8 +25,10 @@ const LOWER_CASE = 'lower-case';
 const SNAKE_CASE = 'snake-case';
 const SENTENCE_CASE = 'sentence-case';
 
+
 // Special strings
 const SIGNED_OFF_BY = 'Signed-off-by';
+const DUPLICATE_COMMIT = 'duplicate-commit'
 
 export default {
   // Extend the conventional commit config
@@ -35,7 +38,7 @@ export default {
   rules: {
     // Custom rules
     'signed-off-by-regex': [ERROR, ALWAYS],             // Require a "Signed-off-by" line in commit messages
-
+    'duplicate-commit': [ERROR, ALWAYS],
     // Conventional commit rules
 
     // Header rules

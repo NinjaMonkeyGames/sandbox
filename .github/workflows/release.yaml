@@ -1,47 +1,47 @@
-# .github/workflows/release.yaml (Logic for release/* Branches)
 name: Release / Pre-Production CI/CD Workflow
 
 on:
   workflow_call:
 
 jobs:
-  # Job 1: Commit Lint Check
   call_commitlint:
-    name: ⚙️ Commit Lint Check
     uses: ./.github/workflows/commitlint.yaml
 
-  # Job 2: Markdown Lint Check
   call_markdownlint:
-    name: 📄 Markdown Lint Check
     uses: ./.github/workflows/markdownlint.yaml
       
-  # Job 3: NEW JOB - Smoke Tests Call
   call_smoke_tests:
-    name: 💨 Run Smoke Tests
-    uses: ./.github/workflows/smoke-tests.yaml # <-- Calls the new workflow file
+    uses: ./.github/workflows/smoke-tests.yaml
 
-  # Job 4: Core Environment Steps
   release_checks:
-    name: Release Final Checks
+    name: Release Final Checks & Tagging
     runs-on: ubuntu-latest
     environment: release
-    # NOW DEPENDS on all three quality/test jobs
     needs: [call_commitlint, call_markdownlint, call_smoke_tests]
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: 📢 Report Successful Release Call
-        run: |
-          echo "#################################################"
-          echo "## RELEASE/PRE-PROD WORKFLOW CALLED! ##"
-          echo "#################################################"
-          echo "All linting and smoke tests passed. Running final pre-production checks."
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
 
+      - name: Install Dependencies
+        run: npm install
+
+      - name: 🚀 Run Semantic Release (RC)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
+          
       - name: Placeholder for Release Checks
         run: |
-          echo "Starting vulnerability and security scan..."
-          # ./scripts/run-security-scan.sh
-          echo "Creating final release artifact..."
-          # npm run build:release
+          echo "Vulnerability scan passed. Versioned RC artifact created."

@@ -1,46 +1,49 @@
-# .github/workflows/production.yaml (Logic for the master Branch)
 name: Production Deployment Workflow
 
 on:
   workflow_call:
 
 jobs:
-  # Job 1: Commit Lint Check
   call_commitlint:
-    name: ⚙️ Commit Lint Check
     uses: ./.github/workflows/commitlint.yaml
 
-  # Job 2: Markdown Lint Check
   call_markdownlint:
-    name: 📄 Markdown Lint Check
     uses: ./.github/workflows/markdownlint.yaml
       
-  # Job 3: NEW JOB - Smoke Tests Call
   call_smoke_tests:
-    name: 💨 Run Smoke Tests
-    uses: ./.github/workflows/smoke-tests.yaml # <-- Calls the new workflow file
+    uses: ./.github/workflows/smoke-tests.yaml
 
-  # Job 4: Core Environment Steps
   production_deploy:
-    name: Production Deployment Steps
+    name: Production Deployment & Release
     runs-on: ubuntu-latest
     environment: production 
-    # NOW DEPENDS on all three quality/test jobs
     needs: [call_commitlint, call_markdownlint, call_smoke_tests]
+    # Grant permissions to write the version bump back to the repo
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Required for semantic-release to see commit history
 
-      - name: 🔒 Report Successful Production Call
-        run: |
-          echo "######################################################"
-          echo "## PRODUCTION WORKFLOW (master Branch) CALLED! ##"
-          echo "######################################################"
-          echo "All linting and smoke tests passed. Preparing for live deployment."
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+
+      - name: Install Dependencies
+        run: npm install # Installs semantic-release and your GM version script
+
+      - name: 🚀 Run Semantic Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
           
       - name: Placeholder for Production Deployment Steps
         run: |
-          echo "Starting production deployment process..."
-          # ./scripts/deploy-production.sh
-          echo "Deployment complete."
+          echo "Starting production deployment process with updated version..."
+          # Your actual deployment script would go here
