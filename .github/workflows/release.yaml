@@ -1,4 +1,3 @@
-# .github/workflows/release.yaml (Logic for release/* Branches)
 name: Release / Pre-Production CI/CD Workflow
 
 on:
@@ -18,9 +17,9 @@ jobs:
   # Job 3: NEW JOB - Smoke Tests Call
   call_smoke_tests:
     name: 💨 Run Smoke Tests
-    uses: ./.github/workflows/smoke-tests.yaml # <-- Calls the new workflow file
+    uses: ./.github/workflows/smoke-tests.yaml
 
-  # Job 4: Core Environment Steps
+  # Job 4: Core Environment Steps (Staging/Pre-Prod)
   release_checks:
     name: Release Final Checks
     runs-on: ubuntu-latest
@@ -35,7 +34,7 @@ jobs:
       - name: 📢 Report Successful Release Call
         run: |
           echo "#################################################"
-          echo "## RELEASE/PRE-PROD WORKFLOW CALLED! ##"
+          echo "## RELEASE/PRE-PROD WORKFLOW CALLED!          ##"
           echo "#################################################"
           echo "All linting and smoke tests passed. Running final pre-production checks."
 
@@ -45,3 +44,12 @@ jobs:
           # ./scripts/run-security-scan.sh
           echo "Creating final release artifact..."
           # npm run build:release
+
+  # Job 5: Call Release Engine (Pre-release / Dry Run)
+  call_release_engine:
+    name: 🔍 Validate Release Syntax (Pre-release)
+    needs: [release_checks]
+    uses: ./.github/workflows/semantic-release.yaml
+    with:
+      environment: release
+    secrets: inherit

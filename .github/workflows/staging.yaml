@@ -1,4 +1,3 @@
-# .github/workflows/staging.yaml (Logic for the develop Branch)
 name: Develop Branch Staging CI/CD Workflow
 
 on:
@@ -18,7 +17,7 @@ jobs:
   # Job 3: NEW JOB - Smoke Tests Call
   call_smoke_tests:
     name: 💨 Run Smoke Tests
-    uses: ./.github/workflows/smoke-tests.yaml # <-- Calls the new workflow file
+    uses: ./.github/workflows/smoke-tests.yaml
 
   # Job 4: Core Environment Steps
   staging_deploy:
@@ -35,7 +34,7 @@ jobs:
       - name: 📦 Report Successful Staging Call
         run: |
           echo "###################################################"
-          echo "## STAGING WORKFLOW (Develop Branch) CALLED! ##"
+          echo "## STAGING WORKFLOW (Develop Branch) CALLED!     ##"
           echo "###################################################"
           echo "All linting and smoke tests passed. Executing full integration tests and deploying to STAGING."
 
@@ -45,3 +44,12 @@ jobs:
           # ./scripts/run-integration-tests.sh
           echo "Deploying built assets to Staging Server..."
           # ./scripts/deploy-staging.sh
+
+  # Job 5: Call Release Engine (Validation)
+  call_release_engine:
+    name: 🔍 Validate Release Syntax (Staging)
+    needs: [staging_deploy]
+    uses: ./.github/workflows/semantic-release.yaml
+    with:
+      environment: staging
+    secrets: inherit

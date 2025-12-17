@@ -1,4 +1,3 @@
-# .github/workflows/production.yaml (Logic for the master Branch)
 name: Production Deployment Workflow
 
 on:
@@ -15,17 +14,17 @@ jobs:
     name: 📄 Markdown Lint Check
     uses: ./.github/workflows/markdownlint.yaml
       
-  # Job 3: NEW JOB - Smoke Tests Call
+  # Job 3: Smoke Tests Call
   call_smoke_tests:
     name: 💨 Run Smoke Tests
-    uses: ./.github/workflows/smoke-tests.yaml # <-- Calls the new workflow file
+    uses: ./.github/workflows/smoke-tests.yaml
 
   # Job 4: Core Environment Steps
   production_deploy:
     name: Production Deployment Steps
     runs-on: ubuntu-latest
     environment: production 
-    # NOW DEPENDS on all three quality/test jobs
+    # Must pass all quality checks and smoke tests first
     needs: [call_commitlint, call_markdownlint, call_smoke_tests]
 
     steps:
@@ -35,7 +34,7 @@ jobs:
       - name: 🔒 Report Successful Production Call
         run: |
           echo "######################################################"
-          echo "## PRODUCTION WORKFLOW (master Branch) CALLED! ##"
+          echo "## PRODUCTION WORKFLOW (master Branch) CALLED!      ##"
           echo "######################################################"
           echo "All linting and smoke tests passed. Preparing for live deployment."
           
@@ -44,3 +43,13 @@ jobs:
           echo "Starting production deployment process..."
           # ./scripts/deploy-production.sh
           echo "Deployment complete."
+
+  # Job 5: Call Release Engine (Production Release)
+  # This only runs if the deployment step was successful
+  call_release_engine:
+    name: 🚀 Execute Production Release
+    needs: [production_deploy]
+    uses: ./.github/workflows/semantic-release.yaml
+    with:
+      environment: production
+    secrets: inherit

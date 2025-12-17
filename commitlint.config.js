@@ -3,7 +3,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 import signedOffByRule from './signed-off-by-regex.js';
-import duplicateCommit from './commitlint-plugin-no-duplicate.js';
 
 // Rule severity
 const ERROR = 2;        // Marks a rule as an error
