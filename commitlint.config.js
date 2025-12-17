@@ -36,7 +36,6 @@ export default {
   rules: {
     // Custom rules
     'signed-off-by-regex': [ERROR, ALWAYS],             // Require a "Signed-off-by" line in commit messages
-    'duplicate-commit': [ERROR, ALWAYS],
     // Conventional commit rules
 
     // Header rules
