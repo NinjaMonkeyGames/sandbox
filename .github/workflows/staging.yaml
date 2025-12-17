@@ -1,47 +1,47 @@
+# .github/workflows/staging.yaml (Logic for the develop Branch)
 name: Develop Branch Staging CI/CD Workflow
 
 on:
   workflow_call:
 
 jobs:
+  # Job 1: Commit Lint Check
   call_commitlint:
+    name: ⚙️ Commit Lint Check
     uses: ./.github/workflows/commitlint.yaml
 
+  # Job 2: Markdown Lint Check
   call_markdownlint:
+    name: 📄 Markdown Lint Check
     uses: ./.github/workflows/markdownlint.yaml
       
+  # Job 3: NEW JOB - Smoke Tests Call
   call_smoke_tests:
-    uses: ./.github/workflows/smoke-tests.yaml
+    name: 💨 Run Smoke Tests
+    uses: ./.github/workflows/smoke-tests.yaml # <-- Calls the new workflow file
 
+  # Job 4: Core Environment Steps
   staging_deploy:
     name: Staging Deployment Steps
     runs-on: ubuntu-latest
     environment: staging
+    # NOW DEPENDS on all three quality/test jobs
     needs: [call_commitlint, call_markdownlint, call_smoke_tests]
-    permissions:
-      contents: write
-      issues: write
-      pull-requests: write
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 'lts/*'
+      - name: 📦 Report Successful Staging Call
+        run: |
+          echo "###################################################"
+          echo "## STAGING WORKFLOW (Develop Branch) CALLED! ##"
+          echo "###################################################"
+          echo "All linting and smoke tests passed. Executing full integration tests and deploying to STAGING."
 
-      - name: Install Dependencies
-        run: npm install
-
-      - name: 🚀 Run Semantic Release (Beta)
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release
-          
       - name: Placeholder for Staging Deployment Steps
         run: |
-          echo "Deploying versioned beta build to Staging..."
+          echo "Running full integration tests..."
+          # ./scripts/run-integration-tests.sh
+          echo "Deploying built assets to Staging Server..."
+          # ./scripts/deploy-staging.sh
