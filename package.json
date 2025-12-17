@@ -1,4 +1,6 @@
 {
+  "name": "sandbox",
+  "version": "0.1.0",
   "type": "module",
   "devDependencies": {
     "@commitlint/config-conventional": "^20.2.0",
