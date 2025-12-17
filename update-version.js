@@ -15,7 +15,7 @@ const revision = parsed.prerelease[1] || 0;
 const gmVersion = `${major}.${minor}.${patch}.${revision}`;
 
 // 3. Update the .yyp file
-const yypPath = 'YourProjectName.yyp';
+const yypPath = 'Grid Utility.yyp';
 const yypContent = JSON.parse(fs.readFileSync(yypPath, 'utf8'));
 
 yypContent.resourceVersion = gmVersion; // In GM Monthly
