@@ -27,7 +27,6 @@ const SENTENCE_CASE = 'sentence-case';
 
 // Special strings
 const SIGNED_OFF_BY = 'Signed-off-by';
-const DUPLICATE_COMMIT = 'duplicate-commit'
 
 export default {
   // Extend the conventional commit config
