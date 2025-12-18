@@ -48,23 +48,19 @@ jobs:
           git_user_signingkey: true
           git_commit_gpgsign: true
 
-      - name: 🔥 Force Signed Identity
-        run: |
-          # 1. Set identity to EXACTLY what the GPG key expects
-          git config --local user.name "${{ steps.import-gpg.outputs.name }}"
-          git config --local user.email "${{ steps.import-gpg.outputs.email }}"
-          
-          # 2. Point specifically to the imported key ID
-          git config --local user.signingkey "${{ steps.import-gpg.outputs.keyid }}"
-          
-          # 3. Tell Git that EVERY commit and EVERY push must be signed
-          git config --local commit.gpgsign true
-          
-          # 4. Debug: Print the config to the logs so we can verify it's set
-          echo "Committing as: ${{ steps.import-gpg.outputs.email }} with key: ${{ steps.import-gpg.outputs.keyid }}"
-
       - name: Run Semantic Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }} 
-        run: npx semantic-release
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: |
+          # 1. Immediate local config to ensure the plugin sees it
+          git config --local user.name "${{ steps.import-gpg.outputs.name }}"
+          git config --local user.email "${{ steps.import-gpg.outputs.email }}"
+          git config --local user.signingkey "${{ steps.import-gpg.outputs.keyid }}"
+          git config --local commit.gpgsign true
+          
+          # 2. Fix the 'push certificate' warning seen in your logs
+          git config --local push.gpgSign if-asked
+
+          # 3. Execute
+          npx semantic-release
