@@ -21,18 +21,31 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Critical for commit analysis
+          fetch-depth: 0 
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 'lts/*'
-          cache: 'npm' # Speeds up subsequent runs
+          cache: 'npm'
 
       - name: Install Dependencies
-        run: npm ci # Uses package-lock.json for consistency
+        run: npm ci
+
+      # --- START GPG SIGNING SETUP ---
+      - name: Import GPG key
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          git_config_global: true
+          git_user_signingkey: true
+          git_commit_gpgsign: true
+      # --- END GPG SIGNING SETUP ---
 
       - name: Run Semantic Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Some plugins also require these env vars for signing
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }} 
         run: npx semantic-release
