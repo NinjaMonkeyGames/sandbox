@@ -53,7 +53,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
-          # 1. Immediate local config to ensure the plugin sees it
+          # 1. Immediate local config to ensure the plugin sees it.
           git config --local user.name "${{ steps.import-gpg.outputs.name }}"
           git config --local user.email "${{ steps.import-gpg.outputs.email }}"
           git config --local user.signingkey "${{ steps.import-gpg.outputs.keyid }}"
