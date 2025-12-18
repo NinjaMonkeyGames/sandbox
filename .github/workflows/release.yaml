@@ -2,22 +2,30 @@ name: Release / Pre-Production CI/CD Workflow
 
 on:
   workflow_call:
+    secrets:
+      GPG_PRIVATE_KEY:
+        required: false
+      GPG_PASSPHRASE:
+        required: false
 
 jobs:
   # Job 1: Commit Lint Check
   call_commitlint:
     name: ⚙️ Commit Lint Check
     uses: ./.github/workflows/commitlint.yaml
+    secrets: inherit
 
   # Job 2: Markdown Lint Check
   call_markdownlint:
     name: 📄 Markdown Lint Check
     uses: ./.github/workflows/markdownlint.yaml
+    secrets: inherit
       
   # Job 3: NEW JOB - Smoke Tests Call
   call_smoke_tests:
     name: 💨 Run Smoke Tests
     uses: ./.github/workflows/smoke-tests.yaml
+    secrets: inherit
 
   # Job 4: Core Environment Steps (Staging/Pre-Prod)
   release_checks:
@@ -31,6 +39,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      # 
       - name: 📢 Report Successful Release Call
         run: |
           echo "#################################################"
