@@ -27,7 +27,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 
+          fetch-depth: 0 # Critical for commit analysis
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -38,6 +38,7 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
+      # 1. Import the GPG Key
       - name: Import GPG key
         id: import-gpg
         uses: crazy-max/ghaction-import-gpg@v6
@@ -48,19 +49,17 @@ jobs:
           git_user_signingkey: true
           git_commit_gpgsign: true
 
+      # 2. Force Git Identity to match the Key
+      # GitHub requires the Committer Email to match the GPG Key Email for "Verification"
+      - name: Configure Git Identity
+        run: |
+          git config --global user.name "${{ steps.import-gpg.outputs.name }}"
+          git config --global user.email "${{ steps.import-gpg.outputs.email }}"
+          git config --global user.signingkey "${{ steps.import-gpg.outputs.keyid }}"
+
+      # 3. Run Semantic Release
       - name: Run Semantic Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-        run: |
-          # 1. Immediate local config to ensure the plugin sees it.
-          git config --local user.name "${{ steps.import-gpg.outputs.name }}"
-          git config --local user.email "${{ steps.import-gpg.outputs.email }}"
-          git config --local user.signingkey "${{ steps.import-gpg.outputs.keyid }}"
-          git config --local commit.gpgsign true
-          
-          # 2. Fix the 'push certificate' warning seen in your logs
-          git config --local push.gpgSign if-asked
-
-          # 3. Execute
-          npx semantic-release
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }} 
+        run: npx semantic-release
