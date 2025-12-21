@@ -182,7 +182,7 @@
 <div class="main">
     <div class="pane">
         <div class="label">Editor <span id="stats">Words: 0 | Chars: 0</span></div>
-        <textarea id="editor" spellcheck="false" oninput="render()"></textarea>
+        <textarea id="editor" spellcheck="false" oninput="handleInput()"></textarea>
     </div>
     <div class="pane">
         <div class="label">Preview (Drag items to reorder)</div>
@@ -195,6 +195,62 @@
     const editor = document.getElementById('editor'), preview = document.getElementById('preview'), 
           overlay = document.getElementById('overlay'), titleInput = document.getElementById('mainTitle'),
           stats = document.getElementById('stats');
+
+    // HISTORY STATE
+    let historyStack = [];
+    let historyIndex = -1;
+    const MAX_HISTORY = 50;
+
+    function saveState() {
+        const state = { content: editor.value, title: titleInput.value };
+        // Don't save if it's the same as current
+        if (historyIndex >= 0 && historyStack[historyIndex].content === state.content && historyStack[historyIndex].title === state.title) return;
+        
+        historyStack = historyStack.slice(0, historyIndex + 1);
+        historyStack.push(state);
+        if (historyStack.length > MAX_HISTORY) historyStack.shift();
+        historyIndex = historyStack.length - 1;
+    }
+
+    function undo() {
+        if (historyIndex > 0) {
+            historyIndex--;
+            applyState(historyStack[historyIndex]);
+        }
+    }
+
+    function redo() {
+        if (historyIndex < historyStack.length - 1) {
+            historyIndex++;
+            applyState(historyStack[historyIndex]);
+        }
+    }
+
+    function applyState(state) {
+        editor.value = state.content;
+        titleInput.value = state.title;
+        render();
+    }
+
+    // Capture Undo/Redo Shortcuts
+    window.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+            e.preventDefault();
+            if (e.shiftKey) redo(); else undo();
+        }
+        if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
+            e.preventDefault();
+            redo();
+        }
+    });
+
+    // Handle normal typing
+    let typingTimer;
+    function handleInput() {
+        clearTimeout(typingTimer);
+        typingTimer = setTimeout(saveState, 500); // Save state after 500ms of no typing
+        render();
+    }
 
     let gridRows = 2, gridCols = 2;
 
@@ -218,6 +274,7 @@
                 newText.push(decodeURIComponent(item.dataset.raw));
             });
             editor.value = newText.join('\n\n');
+            saveState(); // Capture the drag action
             render();
         }
     });
@@ -229,6 +286,7 @@
         const start = editor.selectionStart, end = editor.selectionEnd;
         const val = before + (customText || editor.value.substring(start, end)) + after;
         editor.value = editor.value.substring(0, start) + val + editor.value.substring(end);
+        saveState(); // Capture programmatic insertion
         render();
     }
 
@@ -236,6 +294,7 @@
         const blocks = editor.value.split(/\n\n+/);
         blocks.splice(index, 1);
         editor.value = blocks.join('\n\n');
+        saveState(); // Capture deletion
         render();
     }
 
@@ -374,14 +433,20 @@
     }
     function openHeaderModal() { document.getElementById('headerModal').style.display = 'block'; overlay.style.display = 'block'; }
     function insertHeaderFinal() { const t = document.getElementById('headerText').value; if(t) insert("\n\n" + "#".repeat(document.getElementById('headerLevel').value) + " " + t + "\n\n", ""); closeAllModals(); }
-    function clearAll() { if(confirm("Wipe everything?")) { titleInput.value = ""; editor.value = ""; render(); } }
+    
+    // Updated ClearAll to be Undoable
+    function clearAll() { if(confirm("Wipe everything?")) { titleInput.value = ""; editor.value = ""; saveState(); render(); } }
+    
     function copyToClipboard() { navigator.clipboard.writeText((titleInput.value ? `# ${titleInput.value}\n\n` : "") + editor.value); alert("Copied!"); }
     function downloadMD() {
         const blob = new Blob([(titleInput.value ? `# ${titleInput.value}\n\n` : "") + editor.value], { type: 'text/markdown' });
         const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `${titleInput.value.replace(/[^a-z0-9]/gi, '_') || "doc"}.md`; a.click();
     }
 
-    initLangs(); render();
+    // INITIAL SETUP
+    initLangs(); 
+    saveState(); // Capture initial blank state
+    render();
 </script>
 </body>
 </html>
