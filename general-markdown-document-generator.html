@@ -52,21 +52,27 @@
 
         .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--item-bg); padding: 25px; border-radius: 12px; z-index: 100; width: 450px; border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.3); color: var(--text); }
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 99; backdrop-filter: blur(2px); }
-        .grid-builder input { width: 100%; border: 1px solid var(--border); padding: 6px; background: var(--input-bg); color: var(--text); box-sizing: border-box; }
         .wide-text, select, .modal input[type="text"] { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 4px; margin-bottom: 15px; background: var(--input-bg); color: var(--text); box-sizing: border-box; }
     </style>
 </head>
-<body>
+<body class="dark-mode">
 
 <div class="modal-overlay" id="overlay" onclick="closeModals()"></div>
 
-<div id="codeModal" class="modal"><h3>Insert Code Block</h3><select id="codeLangSelect"></select><textarea id="codeContent" class="wide-text" placeholder="Paste code here..."></textarea><div style="text-align:right;"><button onclick="closeModals()">Cancel</button> <button onclick="insertCodeFinal()" style="background:var(--primary); color:white">Insert Code</button></div></div>
-<div id="tableModal" class="modal" style="width:650px;"><h3>Table Builder</h3><div style="margin-bottom:10px; display:flex; gap:8px;"><button onclick="adjustGrid(1,0)">+ Row</button><button onclick="adjustGrid(0,1)">+ Col</button><button onclick="resetGrid()" style="background:#ef4444; color:white;">Reset</button></div><div style="overflow-x:auto;"><table class="grid-builder"><thead><tr id="gridHead"></tr></thead><tbody id="gridBody"></tbody></table></div><div style="text-align:right; margin-top:15px;"><button onclick="closeModals()">Cancel</button><button onclick="insertTableFinal()" style="background:var(--primary); color:white">Insert Table</button></div></div>
-<div id="linkModal" class="modal"><h3>Link</h3><input type="text" id="linkText" placeholder="Text"><input type="text" id="linkUrl" placeholder="URL"><div style="text-align:right;"><button onclick="closeModals()">Cancel</button> <button onclick="insertLinkFinal()" style="background:var(--primary); color:white">Insert</button></div></div>
-<div id="anchorModal" class="modal"><h3>Anchor Link</h3><select id="anchorSelect"></select><div style="text-align:right;"><button onclick="closeModals()">Cancel</button> <button onclick="insertAnchorFinal()" style="background:var(--primary); color:white">Insert</button></div></div>
-<div id="imageModal" class="modal"><h3>Image</h3><input type="text" id="imgAlt" placeholder="Alt text"><input type="text" id="imgUrl" placeholder="URL"><div style="text-align:right;"><button onclick="closeModals()">Cancel</button> <button onclick="insertImageFinal()" style="background:var(--primary); color:white">Insert</button></div></div>
-<div id="listModal" class="modal"><h3>Add Items</h3><div id="listItemsContainer"></div><button onclick="addListRow()" style="background:#334155; color:white; width:100%; margin-bottom:15px; padding:8px;">+ Add Item</button><div style="text-align:right;"><button onclick="closeModals()">Cancel</button> <button id="listSubmitBtn" style="background:var(--primary); color:white">Insert</button></div></div>
-<div id="headerModal" class="modal"><h3>Sub-Heading</h3><select id="headerLevel"><option value="2">H2</option><option value="3">H3</option><option value="4">H4</option></select><input type="text" id="headerText" placeholder="Heading text..."><div style="text-align:right;"><button onclick="closeModals()">Cancel</button> <button onclick="insertHeaderFinal()" style="background:var(--primary); color:white">Insert</button></div></div>
+<div id="calloutModal" class="modal">
+    <h3>Insert Callout</h3>
+    <select id="calloutType">
+        <option value="ℹ️  ">Info ℹ️</option>
+        <option value="💡  ">Tip 💡</option>
+        <option value="⚠️  ">Caution ⚠️</option>
+        <option value="🚨  ">Warning 🚨</option>
+    </select>
+    <input type="text" id="calloutText" placeholder="Enter message here...">
+    <div style="text-align:right;">
+        <button onclick="closeModals()">Cancel</button> 
+        <button onclick="insertCalloutFinal()" style="background:var(--primary); color:white">Insert</button>
+    </div>
+</div>
 
 <div class="toolbar">
     <input type="text" id="mainTitle" class="main-title-input" placeholder="Main Title (H1)" oninput="handleInput()">
@@ -74,7 +80,7 @@
         <button onclick="openModal('headerModal')">H#</button>
         <button onclick="insert('**', '**')">B</button>
         <button onclick="insert('*', '*')">I</button>
-        <button onclick="insert('~~', '~~')" style="text-decoration:line-through;">abc</button>
+        <button onclick="insert('~~', '~~')">abc</button>
         <button onclick="insert('`', '`')">` `</button>
         <button onclick="openModal('codeModal')">[ { } ]</button>
     </div>
@@ -86,7 +92,8 @@
         <button onclick="openModal('imageModal')">🖼 Img</button>
         <button onclick="openModal('linkModal')">🔗 Link</button>
         <button onclick="openAnchorModal()">⚓ Anchor</button>
-        <button onclick="insert('\n\n---\n\n', '')" title="Line Break">⁝ Break</button>
+        <button onclick="openModal('calloutModal')" title="Insert Callout">📢 Callout</button>
+        <button onclick="insert('\n\n---\n\n', '')">⁝ Break</button>
         <button onclick="insertTOC()" style="background:#8b5cf6; color:white;">📋 TOC</button>
         <button onclick="insert('\n\n---\n\n[Back to Top](#top)\n\n---\n\n', '')">🔝 Top</button>
     </div>
@@ -120,13 +127,10 @@
 </div>
 
 <script>
-    const gfm_langs = ["bash", "c", "cpp", "csharp", "css", "go", "html", "java", "javascript", "json", "python", "ruby", "rust", "sql", "typescript", "xml", "yaml"];
     const editor = document.getElementById('editor'), preview = document.getElementById('preview'), 
           lineNums = document.getElementById('lineNumbers'), prevLineNums = document.getElementById('previewLineNumbers'),
           titleInput = document.getElementById('mainTitle'), titleDisplay = document.getElementById('editor-title-display'),
           overlay = document.getElementById('overlay');
-
-    let gridRows = 2, gridCols = 2;
 
     function handleInput() {
         titleDisplay.innerText = titleInput.value.trim() ? "# " + titleInput.value.trim() : "";
@@ -138,11 +142,6 @@
         const count = editor.value.split('\n').length + (titleInput.value.trim() ? 2 : 0);
         const html = Array.from({length: count}, (_, i) => `<span>${i + 1}</span>`).join('');
         lineNums.innerHTML = prevLineNums.innerHTML = html;
-    }
-
-    function syncScroll(s) {
-        if (s === 'e') lineNums.scrollTop = editor.scrollTop;
-        else prevLineNums.scrollTop = preview.scrollTop;
     }
 
     function render() {
@@ -157,94 +156,60 @@
             wrap.className = 'preview-item'; wrap.dataset.raw = encodeURIComponent(block);
             
             let h = block
-                         .replace(/^# (.*$)/gm, (m, g1) => `<h1 id="${getSlug(g1)}">${g1}</h1>`)
-                         .replace(/^##+ (.*$)/gm, (m, g1) => `<h2 id="${getSlug(g1)}">${g1}</h2>`)
-                         .replace(/```(\w*)\n([\s\S]*?)```/gm, '<pre><code>$2</code></pre>')
-                         .replace(/^- \[( |x)\] (.*)/gm, '<div>☐ $2</div>')
-                         .replace(/^- (.*)/gm, '<li>$1</li>').replace(/^\d+\. (.*)/gm, '<li>$1</li>')
-                         .replace(/\|(.+)\|/g, m => m.match(/^[|\s-]+$/) ? '' : '<tr>' + m.split('|').filter(c => c.trim()).map(c => `<td>${c}</td>`).join('') + '</tr>')
-                         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\*(.*?)\*/g, '<em>$1</em>').replace(/~~(.*?)~~/g, '<del>$1</del>')
-                         .replace(/`([^`]+)`/g, '<code>$1</code>').replace(/!\[(.*?)\]\((.*?)\)/g, '<img src="$2">')
-                         .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>').replace(/\n/g, '<br>')
-                         .replace(/^---$/gm, '<hr>'); // Line break rendering
+                 .replace(/^# (.*$)/gm, (m, g1) => `<h1 id="${getSlug(g1)}">${g1}</h1>`)
+                 .replace(/^##+ (.*$)/gm, (m, g1) => `<h2 id="${getSlug(g1)}">${g1}</h2>`)
+                 .replace(/```(\w*)\n([\s\S]*?)```/gm, '<pre><code>$2</code></pre>')
+                 .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                 .replace(/~~(.*?)~~/g, '<del>$1</del>')
+                 .replace(/\n/g, '<br>')
+                 .replace(/^---$/gm, '<hr>');
             
-            if (h.includes('<li>')) h = `<ul>${h}</ul>`;
-            if (h.includes('<tr>')) h = `<table>${h}</table>`;
             wrap.innerHTML = `<div class="preview-controls"><div class="gui-btn gui-drag">⠿</div><div class="gui-btn" style="color:red" onclick="deleteBlock(${idx})">✕</div></div>${h}`;
             preview.appendChild(wrap);
         });
     }
 
-    function openModal(id, callback) { document.getElementById(id).style.display = 'block'; overlay.style.display = 'block'; if(callback) callback(); }
+    function insertCalloutFinal() {
+        const type = document.getElementById('calloutType').value;
+        let text = document.getElementById('calloutText').value.trim();
+        if (text) {
+            text = text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+            // Printing formatted: Emoji + Double Space + **Bold Text**
+            insert(`\n${type}**${text}**\n\n`, "");
+            document.getElementById('calloutText').value = "";
+            closeModals();
+        }
+    }
+
+    function openModal(id, callback) { 
+        document.getElementById(id).style.display = 'block'; 
+        overlay.style.display = 'block'; 
+        if(callback) callback();
+        const input = document.getElementById(id).querySelector('input[type="text"]');
+        if(input) setTimeout(() => input.focus(), 50);
+    }
+    
     function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); overlay.style.display = 'none'; }
-    function insert(pre, post, content = null) {
+    function insert(pre, post) {
         const s = editor.selectionStart, e = editor.selectionEnd;
-        editor.value = editor.value.slice(0, s) + pre + (content || editor.value.slice(s, e)) + post + editor.value.slice(e);
+        editor.value = editor.value.slice(0, s) + pre + editor.value.slice(s, e) + post + editor.value.slice(e);
         handleInput();
     }
 
-    function updateGridUI() {
-        const h = document.getElementById('gridHead'), b = document.getElementById('gridBody');
-        h.innerHTML = Array(gridCols).fill(0).map((_,i)=>`<th><input type="text" placeholder="H${i+1}" class="gh"></th>`).join('');
-        b.innerHTML = Array(gridRows).fill(0).map(()=>`<tr>${Array(gridCols).fill(0).map(()=>`<td><input type="text" class="gb"></td>`).join('')}</tr>`).join('');
-    }
-    function adjustGrid(r, c) { gridRows += r; gridCols += c; updateGridUI(); }
-    function resetGrid() { gridRows = 2; gridCols = 2; updateGridUI(); }
-    function insertTableFinal() {
-        const hs = Array.from(document.querySelectorAll('.gh')).map(i => i.value || " ");
-        const bs = Array.from(document.querySelectorAll('.gb')).map(i => i.value || " ");
-        let md = `\n| ${hs.join(' | ')} |\n| ${hs.map(()=>'---').join(' | ')} |\n`;
-        for(let r=0; r<gridRows; r++) md += `| ${bs.slice(r*gridCols, (r+1)*gridCols).join(' | ')} |\n`;
-        insert(md + "\n", ""); closeModals();
-    }
-
-    function insertCodeFinal() { insert(`\n\`\`\`${document.getElementById('codeLangSelect').value}\n${document.getElementById('codeContent').value}\n\`\`\`\n`, ""); closeModals(); }
-    function openListModal(type) {
-        document.getElementById('listItemsContainer').innerHTML = '<input type="text" class="li-in" placeholder="Item 1">';
-        openModal('listModal');
-        document.getElementById('listSubmitBtn').onclick = () => {
-            let md = "\n";
-            document.querySelectorAll('.li-in').forEach((input, i) => { if(input.value) md += (type === '1.' ? `${i+1}. ` : (type === '-' ? '- ' : '- [ ] ')) + input.value + "\n"; });
-            insert(md + "\n", ""); closeModals();
-        };
-    }
-    function addListRow() { const i = document.createElement('input'); i.className = "li-in"; i.placeholder = "Next item"; document.getElementById('listItemsContainer').appendChild(i); i.focus(); }
-
-    function openAnchorModal() {
-        const s = document.getElementById('anchorSelect'); s.innerHTML = "";
-        editor.value.split('\n').forEach(l => { const m = l.match(/^##+ (.*)/); if(m) s.add(new Option(m[1].trim(), getSlug(m[1]))); });
-        openModal('anchorModal');
-    }
-    function insertAnchorFinal() { const s = document.getElementById('anchorSelect'); insert(`[${s.options[s.selectedIndex].text}](#${s.value})`, ""); closeModals(); }
-    function insertTOC() {
-        let md = "## Table of Contents\n";
-        editor.value.split('\n').forEach(l => { const m = l.match(/^##+ (.*)/); if(m) md += `${"  ".repeat(m[0].split('#').length-3)}- [${m[1].trim()}](#${getSlug(m[1])})\n`; });
-        insert("\n" + md + "\n", "");
-    }
-
-    function getSlug(t) { return t.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-'); }
-    function deleteBlock(i) { const b = editor.value.split(/\n\n+/); b.splice(i,1); editor.value = b.join('\n\n'); handleInput(); }
-    
     function toggleTheme() { 
         document.body.classList.toggle('light-mode');
-        const isLight = document.body.classList.contains('light-mode');
-        document.getElementById('themeBtn').innerText = isLight ? '🌙 Dark Mode' : '☀️ Light Mode';
+        document.getElementById('themeBtn').innerText = document.body.classList.contains('light-mode') ? '🌙 Dark Mode' : '☀️ Light Mode';
     }
     
-    function toggleLock() { editor.disabled = document.getElementById('lockEditor').checked; }
-    function clearAll() { if(confirm("Clear everything?")) { titleInput.value = editor.value = ""; handleInput(); } }
+    function getSlug(t) { return t.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-'); }
+    function deleteBlock(i) { const b = editor.value.split(/\n\n+/); b.splice(i,1); editor.value = b.join('\n\n'); handleInput(); }
     function copyToClipboard() { navigator.clipboard.writeText((titleInput.value ? `# ${titleInput.value}\n\n` : "") + editor.value); alert("Copied!"); }
-    function downloadMD() {
-        const b = new Blob([(titleInput.value ? `# ${titleInput.value}\n\n` : "") + editor.value], {type:'text/markdown'});
-        const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = "doc.md"; a.click();
-    }
-    
+
     Sortable.create(preview, { handle: '.gui-drag', animation: 150, onEnd: () => {
         editor.value = Array.from(preview.querySelectorAll('.preview-item')).map(i => i.dataset.raw ? decodeURIComponent(i.dataset.raw) : "").filter(t=>t).join('\n\n');
         handleInput();
     }});
 
-    gfm_langs.sort().forEach(l => document.getElementById('codeLangSelect').add(new Option(l, l)));
     handleInput();
 </script>
 </body>
