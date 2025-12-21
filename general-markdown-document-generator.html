@@ -203,7 +203,6 @@
 
     function saveState() {
         const state = { content: editor.value, title: titleInput.value };
-        // Don't save if it's the same as current
         if (historyIndex >= 0 && historyStack[historyIndex].content === state.content && historyStack[historyIndex].title === state.title) return;
         
         historyStack = historyStack.slice(0, historyIndex + 1);
@@ -232,23 +231,43 @@
         render();
     }
 
-    // Capture Undo/Redo Shortcuts
+    // Capture Keyboard Shortcuts (Global + Modal)
     window.addEventListener('keydown', (e) => {
+        // 1. History Shortcuts
         if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
             e.preventDefault();
             if (e.shiftKey) redo(); else undo();
+            return;
         }
         if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
             e.preventDefault();
             redo();
+            return;
+        }
+
+        // 2. Modal Controls
+        const activeModal = Array.from(document.querySelectorAll('.modal')).find(m => m.style.display === 'block');
+        if (activeModal) {
+            if (e.key === 'Escape') {
+                closeAllModals();
+            }
+            if (e.key === 'Enter') {
+                const isTextarea = e.target.tagName === 'TEXTAREA';
+                // Only prevent default and click if it's not a textarea OR if Ctrl is held in a textarea
+                if (!isTextarea || (isTextarea && (e.ctrlKey || e.metaKey))) {
+                    e.preventDefault();
+                    const primaryBtn = activeModal.querySelector('button[style*="var(--primary)"]') || 
+                                     activeModal.querySelector('#listSubmitBtn');
+                    if (primaryBtn) primaryBtn.click();
+                }
+            }
         }
     });
 
-    // Handle normal typing
     let typingTimer;
     function handleInput() {
         clearTimeout(typingTimer);
-        typingTimer = setTimeout(saveState, 500); // Save state after 500ms of no typing
+        typingTimer = setTimeout(saveState, 500);
         render();
     }
 
@@ -274,7 +293,7 @@
                 newText.push(decodeURIComponent(item.dataset.raw));
             });
             editor.value = newText.join('\n\n');
-            saveState(); // Capture the drag action
+            saveState();
             render();
         }
     });
@@ -286,7 +305,7 @@
         const start = editor.selectionStart, end = editor.selectionEnd;
         const val = before + (customText || editor.value.substring(start, end)) + after;
         editor.value = editor.value.substring(0, start) + val + editor.value.substring(end);
-        saveState(); // Capture programmatic insertion
+        saveState();
         render();
     }
 
@@ -294,11 +313,10 @@
         const blocks = editor.value.split(/\n\n+/);
         blocks.splice(index, 1);
         editor.value = blocks.join('\n\n');
-        saveState(); // Capture deletion
+        saveState();
         render();
     }
 
-    // TABLE BUILDER
     function openTableModal() {
         document.getElementById('tableModal').style.display = 'block';
         overlay.style.display = 'block';
@@ -397,10 +415,9 @@
         });
     }
 
-    // MODAL HELPERS
-    function openCodeModal() { document.getElementById('codeContent').value = ""; document.getElementById('codeModal').style.display = 'block'; overlay.style.display = 'block'; }
+    function openCodeModal() { document.getElementById('codeContent').value = ""; document.getElementById('codeModal').style.display = 'block'; overlay.style.display = 'block'; document.getElementById('codeContent').focus(); }
     function insertCodeFinal() { insert(`\n\n\`\`\`${document.getElementById('codeLangSelect').value}\n${document.getElementById('codeContent').value}\n\`\`\`\n\n`, ""); closeAllModals(); }
-    function openLinkModal() { document.getElementById('linkModal').style.display = 'block'; overlay.style.display = 'block'; }
+    function openLinkModal() { document.getElementById('linkModal').style.display = 'block'; overlay.style.display = 'block'; document.getElementById('linkText').focus(); }
     function insertLinkFinal() { const url = document.getElementById('linkUrl').value; if(url) insert(`[${document.getElementById('linkText').value || "link"}](${url})`, ""); closeAllModals(); }
     function openAnchorModal() {
         const select = document.getElementById('anchorSelect'); select.innerHTML = "";
@@ -411,14 +428,15 @@
         document.getElementById('anchorModal').style.display = 'block'; overlay.style.display = 'block';
     }
     function insertAnchorFinal() { const select = document.getElementById('anchorSelect'); insert(`[${select.options[select.selectedIndex].text}](#${select.value})`, ""); closeAllModals(); }
-    function openImageModal() { document.getElementById('imageModal').style.display = 'block'; overlay.style.display = 'block'; }
+    function openImageModal() { document.getElementById('imageModal').style.display = 'block'; overlay.style.display = 'block'; document.getElementById('imgAlt').focus(); }
     function insertImageFinal() { const url = document.getElementById('imgUrl').value; if(url) insert(`\n\n![${document.getElementById('imgAlt').value || "image"}](${url})\n\n`, ""); closeAllModals(); }
     function closeAllModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); overlay.style.display = 'none'; }
-    function openParaModal() { document.getElementById('paraTextArea').value = ""; document.getElementById('paraModal').style.display = 'block'; overlay.style.display = 'block'; }
+    function openParaModal() { document.getElementById('paraTextArea').value = ""; document.getElementById('paraModal').style.display = 'block'; overlay.style.display = 'block'; document.getElementById('paraTextArea').focus(); }
     function insertParagraphFinal() { insert(`\n\n${document.getElementById('paraTextArea').value}\n\n`, ""); closeAllModals(); }
     function openListModal(type) {
         document.getElementById('listItemsContainer').innerHTML = '<input type="text" class="list-item-input" placeholder="Item 1" style="width:100%; padding:8px; margin-bottom:8px; border:1px solid #ddd; border-radius:4px;">';
         document.getElementById('listModal').style.display = 'block'; overlay.style.display = 'block';
+        document.querySelector('.list-item-input').focus();
         document.getElementById('listSubmitBtn').onclick = () => {
             let listMd = "\n\n";
             document.querySelectorAll('.list-item-input').forEach((input, i) => {
@@ -431,21 +449,18 @@
         const input = document.createElement('input'); input.className = "list-item-input"; input.style.cssText = "width:100%; padding:8px; margin-bottom:8px; border:1px solid #ddd; border-radius:4px;";
         document.getElementById('listItemsContainer').appendChild(input); input.focus();
     }
-    function openHeaderModal() { document.getElementById('headerModal').style.display = 'block'; overlay.style.display = 'block'; }
+    function openHeaderModal() { document.getElementById('headerModal').style.display = 'block'; overlay.style.display = 'block'; document.getElementById('headerText').focus(); }
     function insertHeaderFinal() { const t = document.getElementById('headerText').value; if(t) insert("\n\n" + "#".repeat(document.getElementById('headerLevel').value) + " " + t + "\n\n", ""); closeAllModals(); }
     
-    // Updated ClearAll to be Undoable
     function clearAll() { if(confirm("Wipe everything?")) { titleInput.value = ""; editor.value = ""; saveState(); render(); } }
-    
     function copyToClipboard() { navigator.clipboard.writeText((titleInput.value ? `# ${titleInput.value}\n\n` : "") + editor.value); alert("Copied!"); }
     function downloadMD() {
         const blob = new Blob([(titleInput.value ? `# ${titleInput.value}\n\n` : "") + editor.value], { type: 'text/markdown' });
         const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `${titleInput.value.replace(/[^a-z0-9]/gi, '_') || "doc"}.md`; a.click();
     }
 
-    // INITIAL SETUP
     initLangs(); 
-    saveState(); // Capture initial blank state
+    saveState(); 
     render();
 </script>
 </body>
