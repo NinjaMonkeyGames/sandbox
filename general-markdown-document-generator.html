@@ -16,6 +16,8 @@
             --border: #cbd5e1;
             --item-bg: #ffffff;
             --input-bg: #ffffff;
+            --line-numbers-bg: #f1f5f9;
+            --line-numbers-text: #64748b;
         }
 
         body.dark-mode {
@@ -27,9 +29,11 @@
             --border: #475569; 
             --item-bg: #1e293b; 
             --input-bg: #0f172a;
+            --line-numbers-bg: #1e293b;
+            --line-numbers-text: #94a3b8;
         }
 
-        body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; background: var(--bg); color: var(--text); display: flex; flex-direction: column; height: 100vh; transition: background 0.2s; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; background: var(--bg); color: var(--text); display: flex; flex-direction: column; height: 100vh; transition: background 0.2s; overflow: hidden;}
         
         .toolbar { background: var(--toolbar-bg); padding: 12px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 10; }
         .group { display: flex; gap: 2px; background: #334155; padding: 4px; border-radius: 6px; align-items: center; }
@@ -40,46 +44,64 @@
         .strike-btn { text-decoration: line-through; }
 
         .theme-btn { background: #475569; color: white; border: 1px solid #64748b; margin-left: 10px; }
-
         .lock-container { color: white; font-size: 12px; display: flex; align-items: center; gap: 5px; margin-left: 10px; border-left: 1px solid #475569; padding-left: 15px; }
 
         .main { display: flex; flex: 1; overflow: hidden; position: relative; }
-        .pane { flex: 1; display: flex; flex-direction: column; background: var(--pane-bg); }
+        .pane { flex: 1; display: flex; flex-direction: column; background: var(--pane-bg); min-width: 0; border-right: 1px solid var(--border); }
         .label { background: var(--label-bg); padding: 6px 15px; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); color: var(--text); }
-        textarea { flex: 1; padding: 20px; border: none; resize: none; outline: none; font-family: 'Fira Code', monospace; font-size: 14px; line-height: 1.5; background: var(--input-bg); color: var(--text); }
+
+        /* SHARED LINE NUMBERS STYLE */
+        .line-numbers { 
+            width: 45px; 
+            padding: 20px 0; 
+            text-align: right; 
+            background: var(--line-numbers-bg); 
+            color: var(--line-numbers-text); 
+            font-family: 'Fira Code', monospace; 
+            font-size: 14px; 
+            line-height: 1.5; 
+            user-select: none;
+            border-right: 2px solid var(--border);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .line-numbers span { display: block; padding-right: 10px; }
+
+        /* EDITOR STYLES */
+        .editor-container { display: flex; flex: 1; overflow: hidden; background: var(--input-bg); position: relative; }
+        
+        /* The Title Overlay for the Editor */
+        #editor-title-display {
+            padding: 20px 20px 0 20px;
+            font-family: 'Fira Code', monospace;
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+            display: block;
+            background: var(--input-bg);
+        }
+
+        .editor-wrapper { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+        textarea { flex: 1; padding: 10px 20px 20px 20px; border: none; resize: none; outline: none; font-family: 'Fira Code', monospace; font-size: 14px; line-height: 1.5; background: transparent; color: var(--text); overflow-x: auto; }
         textarea:disabled { background: var(--bg); color: #64748b; cursor: not-allowed; }
         
-        .preview { flex: 1; padding: 20px; overflow-y: auto; background: var(--pane-bg); border-left: 1px solid var(--border); scroll-behavior: smooth; }
-        
-        .preview-item { 
-            position: relative; 
-            margin-bottom: 15px; 
-            padding: 15px; 
-            border: 1px solid var(--border); 
-            border-radius: 8px; 
-            background: var(--item-bg);
-            transition: all 0.2s ease;
+        /* PREVIEW STYLES */
+        .preview-container { display: flex; flex: 1; overflow: hidden; background: var(--pane-bg); }
+        .preview { 
+            flex: 1; 
+            padding: 20px; 
+            overflow-y: auto; 
+            background: var(--pane-bg); 
+            scroll-behavior: smooth; 
         }
+        
+        .preview-item { position: relative; margin-bottom: 15px; padding: 15px; border: 1px solid var(--border); border-radius: 8px; background: var(--item-bg); transition: all 0.2s ease; }
         .preview-item:hover { border-color: var(--primary); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-        
-        .preview-controls { 
-            position: absolute; 
-            top: -10px; 
-            right: 10px; 
-            display: none; 
-            gap: 5px; 
-            z-index: 20; 
-        }
+        .preview-controls { position: absolute; top: -10px; right: 10px; display: none; gap: 5px; z-index: 20; }
         .preview-item:hover .preview-controls { display: flex; }
         
-        .gui-btn { 
-            width: 26px; height: 26px; 
-            display: flex; align-items: center; justify-content: center; 
-            border-radius: 6px; cursor: pointer; 
-            font-size: 14px; border: 1px solid var(--border); 
-            background: var(--label-bg);
-            color: var(--text);
-        }
+        .gui-btn { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; border-radius: 6px; cursor: pointer; font-size: 14px; border: 1px solid var(--border); background: var(--label-bg); color: var(--text); }
         .gui-del { background: #ef4444; color: white; border-color: #dc2626; }
 
         .preview pre { background: #1e1e1e; color: #dcdcdc; padding: 15px; border-radius: 6px; overflow-x: auto; font-family: 'Fira Code', monospace; font-size: 13px; }
@@ -90,90 +112,32 @@
         .preview hr { border: 0; border-top: 2px solid var(--border); margin: 20px 0; }
         .preview a { color: #60a5fa; text-decoration: none; font-weight: bold; }
 
+        /* Modals */
         .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--item-bg); color: var(--text); padding: 25px; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); z-index: 100; width: 450px; border: 1px solid var(--border); }
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 99; backdrop-filter: blur(2px); }
-        
         #tableModal { width: 650px; max-height: 85vh; overflow-y: auto; }
         .grid-builder { border-collapse: collapse; width: 100%; margin: 15px 0; }
         .grid-builder input { width: 100%; border: 1px solid var(--border); padding: 6px; box-sizing: border-box; font-size: 13px; background: var(--input-bg); color: var(--text); }
         .grid-builder th { background: var(--label-bg); padding: 4px; }
-
         .wide-text { width: 100%; min-height: 120px; padding: 10px; border: 1px solid var(--border); border-radius: 4px; box-sizing: border-box; background: var(--input-bg); color: var(--text); }
         select, input[type="text"] { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 4px; margin-bottom: 15px; box-sizing: border-box; background: var(--input-bg); color: var(--text); }
     </style>
 </head>
-<body class="">
+<body>
 
 <div class="modal-overlay" id="overlay" onclick="closeAllModals()"></div>
 
-<div id="codeModal" class="modal">
-    <h3>Insert Code Block</h3>
-    <select id="codeLangSelect"></select>
-    <textarea id="codeContent" class="wide-text" placeholder="Paste code here..."></textarea>
-    <div style="text-align:right;"><button onclick="closeAllModals()">Cancel</button> <button onclick="insertCodeFinal()" style="background:var(--primary); color:white">Insert Code</button></div>
-</div>
-
-<div id="tableModal" class="modal">
-    <h3>Interactive Table Builder</h3>
-    <div style="margin-bottom: 10px; display: flex; gap: 8px;">
-        <button onclick="adjustGrid(1,0)">+ Row</button>
-        <button onclick="adjustGrid(0,1)">+ Col</button>
-        <button onclick="resetGrid()" style="background: #ef4444; color:white;">Reset</button>
-    </div>
-    <div style="overflow-x: auto;">
-        <table class="grid-builder">
-            <thead><tr id="gridHead"></tr></thead>
-            <tbody id="gridBody"></tbody>
-        </table>
-    </div>
-    <div style="text-align:right; margin-top:15px;">
-        <button onclick="closeAllModals()">Cancel</button>
-        <button onclick="insertTableFinal()" style="background:var(--primary); color:white">Insert Table</button>
-    </div>
-</div>
-
-<div id="linkModal" class="modal">
-    <h3>Insert Link</h3>
-    <input type="text" id="linkText" placeholder="Display Text">
-    <input type="text" id="linkUrl" placeholder="URL (https://...)">
-    <div style="text-align:right;"><button onclick="closeAllModals()">Cancel</button> <button onclick="insertLinkFinal()" style="background:var(--primary); color:white">Insert Link</button></div>
-</div>
-
-<div id="anchorModal" class="modal">
-    <h3>Insert In-Document Link</h3>
-    <select id="anchorSelect"></select>
-    <div style="text-align:right;"><button onclick="closeAllModals()">Cancel</button> <button onclick="insertAnchorFinal()" style="background:var(--primary); color:white">Insert Link</button></div>
-</div>
-
-<div id="imageModal" class="modal">
-    <h3>Insert Image</h3>
-    <input type="text" id="imgAlt" placeholder="Alt description">
-    <input type="text" id="imgUrl" placeholder="Image URL">
-    <div style="text-align:right;"><button onclick="closeAllModals()">Cancel</button> <button onclick="insertImageFinal()" style="background:var(--primary); color:white">Insert Image</button></div>
-</div>
-
-<div id="listModal" class="modal">
-    <h3 id="listTitle">Add Items</h3>
-    <div id="listItemsContainer"></div>
-    <button onclick="addListRow()" style="background:#334155; color:white; width:100%; margin-bottom:15px; padding:8px; border-radius:4px;">+ Add Item</button>
-    <div style="text-align:right;"><button onclick="closeAllModals()">Cancel</button> <button id="listSubmitBtn" style="background:var(--primary); color:white">Insert</button></div>
-</div>
-
-<div id="paraModal" class="modal">
-    <h3>Insert Paragraph</h3>
-    <textarea id="paraTextArea" class="wide-text" placeholder="Wraps at 120 chars..."></textarea>
-    <div style="text-align:right;"><button onclick="closeAllModals()">Cancel</button> <button onclick="insertParagraphFinal()" style="background:var(--primary); color:white">Insert</button></div>
-</div>
-
-<div id="headerModal" class="modal">
-    <h3>Sub-Heading</h3>
-    <select id="headerLevel"><option value="2">Heading 2</option><option value="3">Heading 3</option><option value="4">Heading 4</option></select>
-    <input type="text" id="headerText" placeholder="Heading text...">
-    <div style="text-align:right;"><button onclick="closeAllModals()">Cancel</button> <button onclick="insertHeaderFinal()" style="background:var(--primary); color:white">Insert</button></div>
-</div>
+<div id="codeModal" class="modal"><h3>Insert Code Block</h3><select id="codeLangSelect"></select><textarea id="codeContent" class="wide-text" placeholder="Paste code here..."></textarea><div style="text-align:right;"><button onclick="closeAllModals()">Cancel</button> <button onclick="insertCodeFinal()" style="background:var(--primary); color:white">Insert Code</button></div></div>
+<div id="tableModal" class="modal"><h3>Interactive Table Builder</h3><div style="margin-bottom: 10px; display: flex; gap: 8px;"><button onclick="adjustGrid(1,0)">+ Row</button><button onclick="adjustGrid(0,1)">+ Col</button><button onclick="resetGrid()" style="background: #ef4444; color:white;">Reset</button></div><div style="overflow-x: auto;"><table class="grid-builder"><thead><tr id="gridHead"></tr></thead><tbody id="gridBody"></tbody></table></div><div style="text-align:right; margin-top:15px;"><button onclick="closeAllModals()">Cancel</button><button onclick="insertTableFinal()" style="background:var(--primary); color:white">Insert Table</button></div></div>
+<div id="linkModal" class="modal"><h3>Insert Link</h3><input type="text" id="linkText" placeholder="Display Text"><input type="text" id="linkUrl" placeholder="URL (https://...)"><div style="text-align:right;"><button onclick="closeAllModals()">Cancel</button> <button onclick="insertLinkFinal()" style="background:var(--primary); color:white">Insert Link</button></div></div>
+<div id="anchorModal" class="modal"><h3>Insert In-Document Link</h3><select id="anchorSelect"></select><div style="text-align:right;"><button onclick="closeAllModals()">Cancel</button> <button onclick="insertAnchorFinal()" style="background:var(--primary); color:white">Insert Link</button></div></div>
+<div id="imageModal" class="modal"><h3>Insert Image</h3><input type="text" id="imgAlt" placeholder="Alt description"><input type="text" id="imgUrl" placeholder="Image URL"><div style="text-align:right;"><button onclick="closeAllModals()">Cancel</button> <button onclick="insertImageFinal()" style="background:var(--primary); color:white">Insert Image</button></div></div>
+<div id="listModal" class="modal"><h3 id="listTitle">Add Items</h3><div id="listItemsContainer"></div><button onclick="addListRow()" style="background:#334155; color:white; width:100%; margin-bottom:15px; padding:8px; border-radius:4px;">+ Add Item</button><div style="text-align:right;"><button onclick="closeAllModals()">Cancel</button> <button id="listSubmitBtn" style="background:var(--primary); color:white">Insert</button></div></div>
+<div id="paraModal" class="modal"><h3>Insert Paragraph</h3><textarea id="paraTextArea" class="wide-text" placeholder="Wraps at 120 chars..."></textarea><div style="text-align:right;"><button onclick="closeAllModals()">Cancel</button> <button onclick="insertParagraphFinal()" style="background:var(--primary); color:white">Insert</button></div></div>
+<div id="headerModal" class="modal"><h3>Sub-Heading</h3><select id="headerLevel"><option value="2">Heading 2</option><option value="3">Heading 3</option><option value="4">Heading 4</option></select><input type="text" id="headerText" placeholder="Heading text..."><div style="text-align:right;"><button onclick="closeAllModals()">Cancel</button> <button onclick="insertHeaderFinal()" style="background:var(--primary); color:white">Insert</button></div></div>
 
 <div class="toolbar">
-    <input type="text" id="mainTitle" class="main-title-input" placeholder="Main Title (H1)" oninput="render()">
+    <input type="text" id="mainTitle" class="main-title-input" placeholder="Main Title (H1)" oninput="handleInput()">
     <div class="group">
         <button onclick="openHeaderModal()">H#</button>
         <button onclick="insert('**', '**')">B</button>
@@ -207,21 +171,55 @@
 <div class="main">
     <div class="pane">
         <div class="label">Editor <span id="stats">Words: 0 | Chars: 0</span></div>
-        <textarea id="editor" spellcheck="false" oninput="handleInput()"></textarea>
+        <div class="editor-container">
+            <div id="lineNumbers" class="line-numbers"></div>
+            <div class="editor-wrapper">
+                <div id="editor-title-display"></div>
+                <textarea id="editor" spellcheck="false" oninput="handleInput()" onscroll="syncScroll('editor')"></textarea>
+            </div>
+        </div>
     </div>
     <div class="pane">
         <div class="label">Preview (Drag items to reorder)</div>
-        <div id="preview" class="preview"></div>
+        <div class="preview-container">
+            <div id="previewLineNumbers" class="line-numbers"></div>
+            <div id="preview" class="preview" onscroll="syncScroll('preview')"></div>
+        </div>
     </div>
 </div>
 
 <script>
     const gfm_langs = ["bash", "c", "cpp", "csharp", "css", "go", "html", "java", "javascript", "json", "python", "ruby", "rust", "sql", "typescript", "xml", "yaml"];
-    const editor = document.getElementById('editor'), preview = document.getElementById('preview'), 
-          overlay = document.getElementById('overlay'), titleInput = document.getElementById('mainTitle'),
+    const editor = document.getElementById('editor'), 
+          preview = document.getElementById('preview'), 
+          lineNumbers = document.getElementById('lineNumbers'),
+          previewLineNumbers = document.getElementById('previewLineNumbers'),
+          overlay = document.getElementById('overlay'), 
+          titleInput = document.getElementById('mainTitle'),
+          titleDisplay = document.getElementById('editor-title-display'),
           stats = document.getElementById('stats');
 
-    // THEME LOGIC
+    function updateLineNumbers() {
+        const titleText = titleInput.value.trim();
+        const lines = editor.value.split('\n');
+        
+        // If there's a title, we account for it being "Line 1"
+        let totalLines = lines.length;
+        if(titleText) totalLines += 2; // Title line + spacing line
+
+        const lineArr = Array.from({length: totalLines}, (_, i) => `<span>${i + 1}</span>`).join('');
+        lineNumbers.innerHTML = lineArr;
+        previewLineNumbers.innerHTML = lineArr;
+    }
+
+    function syncScroll(source) {
+        if (source === 'editor') {
+            lineNumbers.scrollTop = editor.scrollTop;
+        } else {
+            previewLineNumbers.scrollTop = preview.scrollTop;
+        }
+    }
+
     function toggleDarkMode() {
         document.body.classList.toggle('dark-mode');
         const isDark = document.body.classList.contains('dark-mode');
@@ -230,7 +228,6 @@
     }
     if(localStorage.getItem('builder-theme') === 'dark') toggleDarkMode();
 
-    // HISTORY STATE
     let historyStack = [];
     let historyIndex = -1;
     const MAX_HISTORY = 50;
@@ -238,44 +235,19 @@
     function saveState() {
         const state = { content: editor.value, title: titleInput.value };
         if (historyIndex >= 0 && historyStack[historyIndex].content === state.content && historyStack[historyIndex].title === state.title) return;
-        
         historyStack = historyStack.slice(0, historyIndex + 1);
         historyStack.push(state);
         if (historyStack.length > MAX_HISTORY) historyStack.shift();
         historyIndex = historyStack.length - 1;
     }
 
-    function undo() {
-        if (historyIndex > 0) {
-            historyIndex--;
-            applyState(historyStack[historyIndex]);
-        }
-    }
-
-    function redo() {
-        if (historyIndex < historyStack.length - 1) {
-            historyIndex++;
-            applyState(historyStack[historyIndex]);
-        }
-    }
-
-    function applyState(state) {
-        editor.value = state.content;
-        titleInput.value = state.title;
-        render();
-    }
+    function undo() { if (historyIndex > 0) { historyIndex--; applyState(historyStack[historyIndex]); } }
+    function redo() { if (historyIndex < historyStack.length - 1) { historyIndex++; applyState(historyStack[historyIndex]); } }
+    function applyState(state) { editor.value = state.content; titleInput.value = state.title; render(); }
 
     window.addEventListener('keydown', (e) => {
-        if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
-            e.preventDefault();
-            if (e.shiftKey) redo(); else undo();
-            return;
-        }
-        if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
-            e.preventDefault();
-            redo();
-            return;
-        }
+        if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); if (e.shiftKey) redo(); else undo(); return; }
+        if ((e.ctrlKey || e.metaKey) && e.key === 'y') { e.preventDefault(); redo(); return; }
         const activeModal = Array.from(document.querySelectorAll('.modal')).find(m => m.style.display === 'block');
         if (activeModal) {
             if (e.key === 'Escape') closeAllModals();
@@ -292,13 +264,14 @@
 
     let typingTimer;
     function handleInput() {
+        titleDisplay.innerText = titleInput.value.trim() ? "# " + titleInput.value.trim() : "";
+        updateLineNumbers();
         clearTimeout(typingTimer);
         typingTimer = setTimeout(saveState, 500);
         render();
     }
 
     let gridRows = 2, gridCols = 2;
-
     function initLangs() {
         const sel = document.getElementById('codeLangSelect');
         sel.innerHTML = '<option value="">(Plain Text)</option>';
@@ -315,9 +288,7 @@
         onEnd: function() {
             const items = preview.querySelectorAll('.preview-item');
             let newText = [];
-            items.forEach(item => {
-                newText.push(decodeURIComponent(item.dataset.raw));
-            });
+            items.forEach(item => { if(item.dataset.raw) newText.push(decodeURIComponent(item.dataset.raw)); });
             editor.value = newText.join('\n\n');
             saveState();
             render();
@@ -343,23 +314,15 @@
         render();
     }
 
-    function openTableModal() {
-        document.getElementById('tableModal').style.display = 'block';
-        overlay.style.display = 'block';
-        updateGridUI();
-    }
+    function openTableModal() { document.getElementById('tableModal').style.display = 'block'; overlay.style.display = 'block'; updateGridUI(); }
     function updateGridUI() {
         const head = document.getElementById('gridHead');
         const body = document.getElementById('gridBody');
         head.innerHTML = ""; body.innerHTML = "";
-        for(let c=0; c<gridCols; c++) {
-            head.innerHTML += `<th><input type="text" placeholder="Header ${c+1}" class="grid-input-h"></th>`;
-        }
+        for(let c=0; c<gridCols; c++) { head.innerHTML += `<th><input type="text" placeholder="Header ${c+1}" class="grid-input-h"></th>`; }
         for(let r=0; r<gridRows; r++) {
             let rowHtml = "<tr>";
-            for(let c=0; c<gridCols; c++) {
-                rowHtml += `<td><input type="text" class="grid-input-b" placeholder="cell"></td>`;
-            }
+            for(let c=0; c<gridCols; c++) { rowHtml += `<td><input type="text" class="grid-input-b" placeholder="cell"></td>`; }
             body.innerHTML += rowHtml + "</tr>";
         }
     }
@@ -374,8 +337,7 @@
             let rowData = cells.slice(r * gridCols, (r + 1) * gridCols);
             md += `| ${rowData.join(' | ')} |\n`;
         }
-        insert(md + "\n", "");
-        closeAllModals();
+        insert(md + "\n", ""); closeAllModals();
     }
 
     function insertTOC() {
@@ -400,14 +362,18 @@
 
     function render() {
         const raw = editor.value;
+        updateLineNumbers();
         stats.innerText = `Words: ${raw.trim() ? raw.trim().split(/\s+/).length : 0} | Chars: ${raw.length}`;
         const blocks = raw.split(/\n\n+/);
         preview.innerHTML = "";
-
+        
         if (titleInput.value.trim()) {
-            const h1 = document.createElement('h1');
-            h1.innerText = titleInput.value.trim(); h1.id = "top";
-            preview.appendChild(h1);
+            const titleBlock = document.createElement('div');
+            titleBlock.className = 'preview-item';
+            titleBlock.style.border = "none";
+            titleBlock.style.background = "transparent";
+            titleBlock.innerHTML = `<h1 id="top" style="margin-top:0;">${titleInput.value.trim()}</h1>`;
+            preview.appendChild(titleBlock);
         }
 
         blocks.forEach((block, index) => {
@@ -416,7 +382,6 @@
             wrapper.className = 'preview-item';
             wrapper.dataset.index = index;
             wrapper.dataset.raw = encodeURIComponent(block);
-
             let html = block
                 .replace(/^# (.*$)/gim, (m, g1) => `<h1 id="${getSlug(g1)}">${g1}</h1>`)
                 .replace(/^## (.*$)/gim, (m, g1) => `<h2 id="${getSlug(g1)}">${g1}</h2>`)
@@ -432,16 +397,16 @@
                 .replace(/^---$/gm, '<hr>')
                 .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>')
                 .replace(/\n/g, '<br>');
-
             if (html.includes('<li>')) html = html.replace(/(<li>[\s\S]*?<\/li>)/g, '<ul>$1</ul>').replace(/<\/ul><br><ul>/g, '').replace(/<\/ul><ul>/g, '');
             if (html.includes('<tr>')) html = html.replace(/(<tr>[\s\S]*?<\/tr>)/g, '<table>$1</table>').replace(/<\/table><table>/g, '');
-
             wrapper.innerHTML = `<div class="preview-controls"><div class="gui-btn gui-drag">⠿</div><div class="gui-btn gui-del" onclick="deleteBlock(${index})">✕</div></div><div class="content">${html}</div>`;
             preview.appendChild(wrapper);
         });
+        
+        syncScroll('preview');
     }
 
-    // MODALS
+    // Modal logic functions
     function openCodeModal() { document.getElementById('codeContent').value = ""; document.getElementById('codeModal').style.display = 'block'; overlay.style.display = 'block'; document.getElementById('codeContent').focus(); }
     function insertCodeFinal() { insert(`\n\n\`\`\`${document.getElementById('codeLangSelect').value}\n${document.getElementById('codeContent').value}\n\`\`\`\n\n`, ""); closeAllModals(); }
     function openLinkModal() { document.getElementById('linkModal').style.display = 'block'; overlay.style.display = 'block'; document.getElementById('linkText').focus(); }
@@ -466,9 +431,7 @@
         document.querySelector('.list-item-input').focus();
         document.getElementById('listSubmitBtn').onclick = () => {
             let listMd = "\n\n";
-            document.querySelectorAll('.list-item-input').forEach((input, i) => {
-                if(input.value.trim()) listMd += (type === '1.' ? `${i+1}. ` : (type === '-' ? '- ' : '- [ ] ')) + input.value.trim() + "\n";
-            });
+            document.querySelectorAll('.list-item-input').forEach((input, i) => { if(input.value.trim()) listMd += (type === '1.' ? `${i+1}. ` : (type === '-' ? '- ' : '- [ ] ')) + input.value.trim() + "\n"; });
             insert(listMd + "\n", ""); closeAllModals();
         };
     }
@@ -477,18 +440,22 @@
         document.getElementById('listItemsContainer').appendChild(input); input.focus();
     }
     function openHeaderModal() { document.getElementById('headerModal').style.display = 'block'; overlay.style.display = 'block'; document.getElementById('headerText').focus(); }
-    function insertHeaderFinal() { const t = document.getElementById('headerText').value; if(t) insert("\n\n" + "#".repeat(document.getElementById('headerLevel').value) + " " + t + "\n\n", ""); closeAllModals(); }
+    function insertHeaderFinal() { 
+        const level = document.getElementById('headerLevel').value;
+        const text = document.getElementById('headerText').value || "Heading";
+        const md = "\n\n" + "#".repeat(level) + " " + text + "\n\n";
+        insert(md, ""); 
+        closeAllModals(); 
+    }
     
-    function clearAll() { if(confirm("Wipe everything?")) { titleInput.value = ""; editor.value = ""; saveState(); render(); } }
+    function clearAll() { if(confirm("Wipe everything?")) { titleInput.value = ""; editor.value = ""; handleInput(); } }
     function copyToClipboard() { navigator.clipboard.writeText((titleInput.value ? `# ${titleInput.value}\n\n` : "") + editor.value); alert("Copied!"); }
     function downloadMD() {
         const blob = new Blob([(titleInput.value ? `# ${titleInput.value}\n\n` : "") + editor.value], { type: 'text/markdown' });
         const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `${titleInput.value.replace(/[^a-z0-9]/gi, '_') || "doc"}.md`; a.click();
     }
 
-    initLangs(); 
-    saveState(); 
-    render();
+    initLangs(); saveState(); render();
 </script>
 </body>
 </html>

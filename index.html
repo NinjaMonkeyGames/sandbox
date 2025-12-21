@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro Markdown Builder</title>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="modal-overlay" id="overlay" onclick="UI.closeAllModals()"></div>
+
+    <div id="genericModal" class="modal">
+        <h3 id="modalTitle"></h3>
+        <div id="modalBody"></div>
+        <div class="modal-actions">
+            <button onclick="UI.closeAllModals()">Cancel</button>
+            <button id="modalSubmit" class="btn-primary">Insert</button>
+        </div>
+    </div>
+
+    <div id="tableModal" class="modal" style="width: 650px;">
+        <h3>Table Builder</h3>
+        <div class="modal-toolbar">
+            <button onclick="Plugins.Table.adjust(1,0)">+ Row</button>
+            <button onclick="Plugins.Table.adjust(0,1)">+ Col</button>
+            <button onclick="Plugins.Table.reset()" class="btn-danger">Reset</button>
+        </div>
+        <div class="grid-scroll"><table id="gridContainer" class="grid-builder"></table></div>
+        <div class="modal-actions"><button onclick="UI.closeAllModals()">Cancel</button> <button onclick="Plugins.Table.insert()" class="btn-primary">Insert Table</button></div>
+    </div>
+
+    <div class="toolbar">
+        <input type="text" id="mainTitle" class="main-title-input" placeholder="Main Title (H1)" oninput="Core.handleInput()">
+        <div class="group">
+            <button onclick="Plugins.Header.open()">H#</button>
+            <button onclick="Core.insert('**', '**')">B</button>
+            <button onclick="Core.insert('*', '*')">I</button>
+            <button onclick="Core.insert('~~', '~~')" class="strike-btn">abc</button>
+            <button onclick="Core.insert('`', '`')">` `</button>
+            <button onclick="Plugins.Code.open()">[ { } ]</button>
+        </div>
+        <div class="group">
+            <button onclick="Plugins.Paragraph.open()">¶ Para</button>
+            <button onclick="Plugins.List.open('-')">- List</button>
+            <button onclick="Plugins.List.open('1.')">1. List</button>
+            <button onclick="Plugins.List.open('checkbox')">☑ Check</button>
+            <button onclick="Plugins.Table.open()">田 Table</button>
+            <button onclick="Plugins.Image.open()">🖼 Img</button>
+            <button onclick="Plugins.Link.open()">🔗 Link</button>
+            <button onclick="Plugins.Anchor.open()">⚓ Anchor</button>
+            <button onclick="Core.insert('\n\n---\n\n', '')">⁝ Break</button>
+            <button onclick="Plugins.TOC.run()" style="background: #8b5cf6; color: white;">📋 TOC</button>
+        </div>
+        <button onclick="UI.toggleDarkMode()" class="theme-btn" id="themeBtn">🌙 Dark Mode</button>
+        <div class="lock-container"><input type="checkbox" id="lockEditor" onchange="Core.toggleLock()"><label for="lockEditor">Lock</label></div>
+        <div style="margin-left:auto; display:flex; gap:5px;">
+            <button onclick="Core.clearAll()" class="btn-danger">Clear</button>
+            <button onclick="Core.copy()" class="btn-accent">Copy</button>
+            <button onclick="Core.download()" class="btn-success">Save</button>
+        </div>
+    </div>
+
+    <div class="main">
+        <div class="pane">
+            <div class="label">Editor <span id="stats">Words: 0 | Chars: 0</span></div>
+            <textarea id="editor" spellcheck="false" oninput="Core.handleInput()"></textarea>
+        </div>
+        <div class="pane">
+            <div class="label">Preview (Drag items to reorder)</div>
+            <div id="preview" class="preview"></div>
+        </div>
+    </div>
+
+    <script src="editor.js"></script>
+    <script src="plugins.js"></script>
+</body>
+</html>
