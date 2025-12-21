@@ -224,13 +224,11 @@
         }
         
         lines.forEach(line => {
-            // Match H2, H3, H4
             const match = line.match(/^(##|###|####) (.*)/);
             if (match && match[2].trim() !== "Table of Contents") {
                 const level = match[1].length;
                 const title = match[2].trim();
                 const slug = getSlug(title);
-                // Indent: H2=0, H3=2 spaces, H4=4 spaces
                 const indent = "  ".repeat(level - 2);
                 tocMd += `${indent}- [${title}](#${slug})\n`;
                 found = true;
