@@ -3,459 +3,249 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pro Markdown Builder</title>
+    <title>Pro Markdown Builder (Optimized)</title>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <style>
         :root { 
-            --primary: #2563eb; 
-            --bg: #f8fafc; 
-            --text: #1e293b; 
-            --toolbar-bg: #1e293b;
-            --pane-bg: #ffffff;
-            --label-bg: #e2e8f0;
-            --border: #cbd5e1;
-            --item-bg: #ffffff;
-            --input-bg: #ffffff;
-            --line-numbers-bg: #f1f5f9;
-            --line-numbers-text: #64748b;
+            --primary: #2563eb; --bg: #f8fafc; --text: #1e293b; --toolbar-bg: #1e293b;
+            --pane-bg: #ffffff; --label-bg: #e2e8f0; --border: #cbd5e1; --item-bg: #ffffff;
+            --input-bg: #ffffff; --line-numbers-bg: #f1f5f9; --line-numbers-text: #64748b;
         }
-
         body.dark-mode {
-            --bg: #0f172a; 
-            --text: #f1f5f9; 
-            --toolbar-bg: #020617; 
-            --pane-bg: #1e293b; 
-            --label-bg: #334155;
-            --border: #475569; 
-            --item-bg: #1e293b; 
-            --input-bg: #0f172a;
-            --line-numbers-bg: #1e293b;
-            --line-numbers-text: #94a3b8;
+            --bg: #0f172a; --text: #f1f5f9; --toolbar-bg: #020617; --pane-bg: #1e293b; 
+            --label-bg: #334155; --border: #475569; --item-bg: #1e293b; --input-bg: #0f172a;
+            --line-numbers-bg: #1e293b; --line-numbers-text: #94a3b8;
         }
 
-        body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; background: var(--bg); color: var(--text); display: flex; flex-direction: column; height: 100vh; transition: background 0.2s; overflow: hidden;}
+        body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; background: var(--bg); color: var(--text); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
         
-        .toolbar { background: var(--toolbar-bg); padding: 12px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 10; }
+        /* Toolbar */
+        .toolbar { background: var(--toolbar-bg); padding: 12px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .group { display: flex; gap: 2px; background: #334155; padding: 4px; border-radius: 6px; align-items: center; }
-        
         .main-title-input { background: #0f172a; color: #38bdf8; border: 1px solid #334155; padding: 6px 12px; border-radius: 4px; font-weight: bold; width: 250px; outline: none; }
-        button { border: none; background: #f1f5f9; color: #0f172a; padding: 6px 10px; cursor: pointer; border-radius: 4px; font-weight: 600; font-size: 13px; transition: 0.2s; }
+        button { border: none; background: #f1f5f9; color: #0f172a; padding: 6px 10px; cursor: pointer; border-radius: 4px; font-weight: 600; font-size: 13px; }
         button:hover { background: var(--primary); color: white; }
-        .strike-btn { text-decoration: line-through; }
-
-        .theme-btn { background: #475569; color: white; border: 1px solid #64748b; margin-left: 10px; }
         .lock-container { color: white; font-size: 12px; display: flex; align-items: center; gap: 5px; margin-left: 10px; border-left: 1px solid #475569; padding-left: 15px; }
 
-        .main { display: flex; flex: 1; overflow: hidden; position: relative; }
-        .pane { flex: 1; display: flex; flex-direction: column; background: var(--pane-bg); min-width: 0; border-right: 1px solid var(--border); }
-        .label { background: var(--label-bg); padding: 6px 15px; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); color: var(--text); }
+        /* Panes */
+        .main { display: flex; flex: 1; overflow: hidden; }
+        .pane { flex: 1; display: flex; flex-direction: column; background: var(--pane-bg); border-right: 1px solid var(--border); overflow: hidden; }
+        .label { background: var(--label-bg); padding: 6px 15px; font-size: 11px; font-weight: bold; text-transform: uppercase; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; }
 
-        /* SHARED LINE NUMBERS STYLE */
+        /* Shared Viewport Logic */
+        .viewport { display: flex; flex: 1; overflow: hidden; background: var(--input-bg); }
         .line-numbers { 
-            width: 45px; 
-            padding: 20px 0; 
-            text-align: right; 
-            background: var(--line-numbers-bg); 
-            color: var(--line-numbers-text); 
-            font-family: 'Fira Code', monospace; 
-            font-size: 14px; 
-            line-height: 1.5; 
-            user-select: none;
-            border-right: 2px solid var(--border);
-            overflow: hidden;
-            flex-shrink: 0;
+            width: 45px; padding: 20px 0; text-align: right; background: var(--line-numbers-bg); 
+            color: var(--line-numbers-text); font-family: 'Fira Code', monospace; font-size: 14px; 
+            line-height: 1.5; border-right: 2px solid var(--border); overflow: hidden; flex-shrink: 0;
         }
         .line-numbers span { display: block; padding-right: 10px; }
 
-        /* EDITOR STYLES */
-        .editor-container { display: flex; flex: 1; overflow: hidden; background: var(--input-bg); position: relative; }
-        
-        /* The Title Overlay for the Editor */
-        #editor-title-display {
-            padding: 20px 20px 0 20px;
-            font-family: 'Fira Code', monospace;
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--primary);
-            display: block;
-            background: var(--input-bg);
-        }
-
         .editor-wrapper { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
-
-        textarea { flex: 1; padding: 10px 20px 20px 20px; border: none; resize: none; outline: none; font-family: 'Fira Code', monospace; font-size: 14px; line-height: 1.5; background: transparent; color: var(--text); overflow-x: auto; }
-        textarea:disabled { background: var(--bg); color: #64748b; cursor: not-allowed; }
+        #editor-title-display { padding: 20px 20px 0; font-family: 'Fira Code', monospace; font-size: 24px; font-weight: bold; color: var(--primary); background: var(--input-bg); }
+        textarea, .preview { flex: 1; padding: 10px 20px; border: none; outline: none; font-family: 'Fira Code', monospace; font-size: 14px; line-height: 1.5; background: transparent; color: var(--text); overflow-y: auto; }
         
-        /* PREVIEW STYLES */
-        .preview-container { display: flex; flex: 1; overflow: hidden; background: var(--pane-bg); }
-        .preview { 
-            flex: 1; 
-            padding: 20px; 
-            overflow-y: auto; 
-            background: var(--pane-bg); 
-            scroll-behavior: smooth; 
-        }
-        
-        .preview-item { position: relative; margin-bottom: 15px; padding: 15px; border: 1px solid var(--border); border-radius: 8px; background: var(--item-bg); transition: all 0.2s ease; }
-        .preview-item:hover { border-color: var(--primary); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        /* Preview Items */
+        .preview-item { position: relative; margin-bottom: 15px; padding: 15px; border: 1px solid var(--border); border-radius: 8px; background: var(--item-bg); }
         .preview-controls { position: absolute; top: -10px; right: 10px; display: none; gap: 5px; z-index: 20; }
         .preview-item:hover .preview-controls { display: flex; }
-        
-        .gui-btn { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; border-radius: 6px; cursor: pointer; font-size: 14px; border: 1px solid var(--border); background: var(--label-bg); color: var(--text); }
-        .gui-del { background: #ef4444; color: white; border-color: #dc2626; }
+        .gui-btn { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; border-radius: 6px; cursor: pointer; border: 1px solid var(--border); background: var(--label-bg); }
 
-        .preview pre { background: #1e1e1e; color: #dcdcdc; padding: 15px; border-radius: 6px; overflow-x: auto; font-family: 'Fira Code', monospace; font-size: 13px; }
-        .preview img { max-width: 100%; height: auto; border-radius: 8px; margin: 10px 0; }
-        .preview code { background: var(--label-bg); padding: 2px 5px; border-radius: 4px; font-family: monospace; color: #e11d48; }
-        .preview table { border-collapse: collapse; width: 100%; margin: 5px 0; }
+        .preview pre { background: #1e1e1e; color: #dcdcdc; padding: 15px; border-radius: 6px; overflow-x: auto; }
+        .preview table { border-collapse: collapse; width: 100%; margin: 10px 0; }
         .preview th, .preview td { border: 1px solid var(--border); padding: 8px; text-align: left; }
-        .preview hr { border: 0; border-top: 2px solid var(--border); margin: 20px 0; }
-        .preview a { color: #60a5fa; text-decoration: none; font-weight: bold; }
 
         /* Modals */
-        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--item-bg); color: var(--text); padding: 25px; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); z-index: 100; width: 450px; border: 1px solid var(--border); }
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 99; backdrop-filter: blur(2px); }
-        #tableModal { width: 650px; max-height: 85vh; overflow-y: auto; }
-        .grid-builder { border-collapse: collapse; width: 100%; margin: 15px 0; }
-        .grid-builder input { width: 100%; border: 1px solid var(--border); padding: 6px; box-sizing: border-box; font-size: 13px; background: var(--input-bg); color: var(--text); }
-        .grid-builder th { background: var(--label-bg); padding: 4px; }
-        .wide-text { width: 100%; min-height: 120px; padding: 10px; border: 1px solid var(--border); border-radius: 4px; box-sizing: border-box; background: var(--input-bg); color: var(--text); }
-        select, input[type="text"] { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 4px; margin-bottom: 15px; box-sizing: border-box; background: var(--input-bg); color: var(--text); }
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--item-bg); padding: 25px; border-radius: 12px; z-index: 100; width: 450px; border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 99; backdrop-filter: blur(2px); }
+        .grid-builder input { width: 100%; border: 1px solid var(--border); padding: 6px; background: var(--input-bg); color: var(--text); box-sizing: border-box; }
+        .wide-text, select, .modal input[type="text"] { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 4px; margin-bottom: 15px; background: var(--input-bg); color: var(--text); box-sizing: border-box; }
     </style>
 </head>
 <body>
 
-<div class="modal-overlay" id="overlay" onclick="closeAllModals()"></div>
+<div class="modal-overlay" id="overlay" onclick="closeModals()"></div>
 
-<div id="codeModal" class="modal"><h3>Insert Code Block</h3><select id="codeLangSelect"></select><textarea id="codeContent" class="wide-text" placeholder="Paste code here..."></textarea><div style="text-align:right;"><button onclick="closeAllModals()">Cancel</button> <button onclick="insertCodeFinal()" style="background:var(--primary); color:white">Insert Code</button></div></div>
-<div id="tableModal" class="modal"><h3>Interactive Table Builder</h3><div style="margin-bottom: 10px; display: flex; gap: 8px;"><button onclick="adjustGrid(1,0)">+ Row</button><button onclick="adjustGrid(0,1)">+ Col</button><button onclick="resetGrid()" style="background: #ef4444; color:white;">Reset</button></div><div style="overflow-x: auto;"><table class="grid-builder"><thead><tr id="gridHead"></tr></thead><tbody id="gridBody"></tbody></table></div><div style="text-align:right; margin-top:15px;"><button onclick="closeAllModals()">Cancel</button><button onclick="insertTableFinal()" style="background:var(--primary); color:white">Insert Table</button></div></div>
-<div id="linkModal" class="modal"><h3>Insert Link</h3><input type="text" id="linkText" placeholder="Display Text"><input type="text" id="linkUrl" placeholder="URL (https://...)"><div style="text-align:right;"><button onclick="closeAllModals()">Cancel</button> <button onclick="insertLinkFinal()" style="background:var(--primary); color:white">Insert Link</button></div></div>
-<div id="anchorModal" class="modal"><h3>Insert In-Document Link</h3><select id="anchorSelect"></select><div style="text-align:right;"><button onclick="closeAllModals()">Cancel</button> <button onclick="insertAnchorFinal()" style="background:var(--primary); color:white">Insert Link</button></div></div>
-<div id="imageModal" class="modal"><h3>Insert Image</h3><input type="text" id="imgAlt" placeholder="Alt description"><input type="text" id="imgUrl" placeholder="Image URL"><div style="text-align:right;"><button onclick="closeAllModals()">Cancel</button> <button onclick="insertImageFinal()" style="background:var(--primary); color:white">Insert Image</button></div></div>
-<div id="listModal" class="modal"><h3 id="listTitle">Add Items</h3><div id="listItemsContainer"></div><button onclick="addListRow()" style="background:#334155; color:white; width:100%; margin-bottom:15px; padding:8px; border-radius:4px;">+ Add Item</button><div style="text-align:right;"><button onclick="closeAllModals()">Cancel</button> <button id="listSubmitBtn" style="background:var(--primary); color:white">Insert</button></div></div>
-<div id="paraModal" class="modal"><h3>Insert Paragraph</h3><textarea id="paraTextArea" class="wide-text" placeholder="Wraps at 120 chars..."></textarea><div style="text-align:right;"><button onclick="closeAllModals()">Cancel</button> <button onclick="insertParagraphFinal()" style="background:var(--primary); color:white">Insert</button></div></div>
-<div id="headerModal" class="modal"><h3>Sub-Heading</h3><select id="headerLevel"><option value="2">Heading 2</option><option value="3">Heading 3</option><option value="4">Heading 4</option></select><input type="text" id="headerText" placeholder="Heading text..."><div style="text-align:right;"><button onclick="closeAllModals()">Cancel</button> <button onclick="insertHeaderFinal()" style="background:var(--primary); color:white">Insert</button></div></div>
+<div id="codeModal" class="modal"><h3>Insert Code Block</h3><select id="codeLangSelect"></select><textarea id="codeContent" class="wide-text" placeholder="Paste code here..."></textarea><div style="text-align:right;"><button onclick="closeModals()">Cancel</button> <button onclick="insertCodeFinal()" style="background:var(--primary); color:white">Insert Code</button></div></div>
+<div id="tableModal" class="modal" style="width:650px;"><h3>Table Builder</h3><div style="margin-bottom:10px; display:flex; gap:8px;"><button onclick="adjustGrid(1,0)">+ Row</button><button onclick="adjustGrid(0,1)">+ Col</button><button onclick="resetGrid()" style="background:#ef4444; color:white;">Reset</button></div><div style="overflow-x:auto;"><table class="grid-builder"><thead><tr id="gridHead"></tr></thead><tbody id="gridBody"></tbody></table></div><div style="text-align:right; margin-top:15px;"><button onclick="closeModals()">Cancel</button><button onclick="insertTableFinal()" style="background:var(--primary); color:white">Insert Table</button></div></div>
+<div id="linkModal" class="modal"><h3>Link</h3><input type="text" id="linkText" placeholder="Text"><input type="text" id="linkUrl" placeholder="URL"><div style="text-align:right;"><button onclick="closeModals()">Cancel</button> <button onclick="insertLinkFinal()" style="background:var(--primary); color:white">Insert</button></div></div>
+<div id="anchorModal" class="modal"><h3>Anchor Link</h3><select id="anchorSelect"></select><div style="text-align:right;"><button onclick="closeModals()">Cancel</button> <button onclick="insertAnchorFinal()" style="background:var(--primary); color:white">Insert</button></div></div>
+<div id="imageModal" class="modal"><h3>Image</h3><input type="text" id="imgAlt" placeholder="Alt text"><input type="text" id="imgUrl" placeholder="URL"><div style="text-align:right;"><button onclick="closeModals()">Cancel</button> <button onclick="insertImageFinal()" style="background:var(--primary); color:white">Insert</button></div></div>
+<div id="listModal" class="modal"><h3>Add Items</h3><div id="listItemsContainer"></div><button onclick="addListRow()" style="background:#334155; color:white; width:100%; margin-bottom:15px; padding:8px;">+ Add Item</button><div style="text-align:right;"><button onclick="closeModals()">Cancel</button> <button id="listSubmitBtn" style="background:var(--primary); color:white">Insert</button></div></div>
+<div id="headerModal" class="modal"><h3>Sub-Heading</h3><select id="headerLevel"><option value="2">H2</option><option value="3">H3</option><option value="4">H4</option></select><input type="text" id="headerText" placeholder="Heading text..."><div style="text-align:right;"><button onclick="closeModals()">Cancel</button> <button onclick="insertHeaderFinal()" style="background:var(--primary); color:white">Insert</button></div></div>
 
 <div class="toolbar">
     <input type="text" id="mainTitle" class="main-title-input" placeholder="Main Title (H1)" oninput="handleInput()">
     <div class="group">
-        <button onclick="openHeaderModal()">H#</button>
+        <button onclick="openModal('headerModal')">H#</button>
         <button onclick="insert('**', '**')">B</button>
         <button onclick="insert('*', '*')">I</button>
-        <button onclick="insert('~~', '~~')" class="strike-btn">abc</button>
-        <button onclick="insert('`', '`')" title="Inline Code">` `</button>
-        <button onclick="openCodeModal()" title="Code Block">[ { } ]</button>
+        <button onclick="insert('~~', '~~')" style="text-decoration:line-through;">abc</button>
+        <button onclick="insert('`', '`')">` `</button>
+        <button onclick="openModal('codeModal')">[ { } ]</button>
     </div>
     <div class="group">
-        <button onclick="openParaModal()">¶ Para</button>
         <button onclick="openListModal('-')">- List</button>
         <button onclick="openListModal('1.')">1. List</button>
         <button onclick="openListModal('checkbox')">☑ Check</button>
-        <button onclick="openTableModal()">田 Table</button>
-        <button onclick="openImageModal()">🖼 Img</button>
-        <button onclick="openLinkModal()">🔗 Link</button>
+        <button onclick="openModal('tableModal', updateGridUI)">田 Table</button>
+        <button onclick="openModal('imageModal')">🖼 Img</button>
+        <button onclick="openModal('linkModal')">🔗 Link</button>
         <button onclick="openAnchorModal()">⚓ Anchor</button>
-        <button onclick="insert('\n\n---\n\n', '')" title="Section Break">⁝ Break</button>
-        <button onclick="insertTOC()" style="background: #8b5cf6; color: white;" title="Generate Table of Contents">📋 TOC</button>
-        <button onclick="insert('\n\n---\n\n[Back to Top](#top)\n\n---\n\n', '')" title="Back to Top Link">🔝 Top</button>
+        <button onclick="insertTOC()" style="background:#8b5cf6; color:white;">📋 TOC</button>
+        <button onclick="insert('\n\n---\n\n[Back to Top](#top)\n\n---\n\n', '')">🔝 Top</button>
     </div>
     <button onclick="toggleDarkMode()" class="theme-btn" id="themeBtn">🌙 Dark Mode</button>
     <div class="lock-container"><input type="checkbox" id="lockEditor" onchange="toggleLock()"><label for="lockEditor">Lock</label></div>
     <div style="margin-left:auto; display:flex; gap:5px;">
-        <button onclick="clearAll()" style="background: #ef4444; color: white;">Clear</button>
-        <button onclick="copyToClipboard()" style="background: #6366f1; color: white;">Copy</button>
-        <button onclick="downloadMD()" style="background: #10b981; color: white;">Save</button>
+        <button onclick="clearAll()" style="background:#ef4444; color:white;">Clear</button>
+        <button onclick="copyToClipboard()" style="background:#6366f1; color:white;">Copy</button>
+        <button onclick="downloadMD()" style="background:#10b981; color:white;">Save</button>
     </div>
 </div>
 
 <div class="main">
     <div class="pane">
-        <div class="label">Editor <span id="stats">Words: 0 | Chars: 0</span></div>
-        <div class="editor-container">
+        <div class="label">Editor <span id="stats">W: 0 | C: 0</span></div>
+        <div class="viewport">
             <div id="lineNumbers" class="line-numbers"></div>
             <div class="editor-wrapper">
                 <div id="editor-title-display"></div>
-                <textarea id="editor" spellcheck="false" oninput="handleInput()" onscroll="syncScroll('editor')"></textarea>
+                <textarea id="editor" spellcheck="false" oninput="handleInput()" onscroll="syncScroll('e')"></textarea>
             </div>
         </div>
     </div>
     <div class="pane">
-        <div class="label">Preview (Drag items to reorder)</div>
-        <div class="preview-container">
+        <div class="label">Preview (Drag to reorder)</div>
+        <div class="viewport">
             <div id="previewLineNumbers" class="line-numbers"></div>
-            <div id="preview" class="preview" onscroll="syncScroll('preview')"></div>
+            <div id="preview" class="preview" onscroll="syncScroll('p')"></div>
         </div>
     </div>
 </div>
 
 <script>
     const gfm_langs = ["bash", "c", "cpp", "csharp", "css", "go", "html", "java", "javascript", "json", "python", "ruby", "rust", "sql", "typescript", "xml", "yaml"];
-    const editor = document.getElementById('editor'), 
-          preview = document.getElementById('preview'), 
-          lineNumbers = document.getElementById('lineNumbers'),
-          previewLineNumbers = document.getElementById('previewLineNumbers'),
-          overlay = document.getElementById('overlay'), 
-          titleInput = document.getElementById('mainTitle'),
-          titleDisplay = document.getElementById('editor-title-display'),
-          stats = document.getElementById('stats');
-
-    function updateLineNumbers() {
-        const titleText = titleInput.value.trim();
-        const lines = editor.value.split('\n');
-        
-        // If there's a title, we account for it being "Line 1"
-        let totalLines = lines.length;
-        if(titleText) totalLines += 2; // Title line + spacing line
-
-        const lineArr = Array.from({length: totalLines}, (_, i) => `<span>${i + 1}</span>`).join('');
-        lineNumbers.innerHTML = lineArr;
-        previewLineNumbers.innerHTML = lineArr;
-    }
-
-    function syncScroll(source) {
-        if (source === 'editor') {
-            lineNumbers.scrollTop = editor.scrollTop;
-        } else {
-            previewLineNumbers.scrollTop = preview.scrollTop;
-        }
-    }
-
-    function toggleDarkMode() {
-        document.body.classList.toggle('dark-mode');
-        const isDark = document.body.classList.contains('dark-mode');
-        localStorage.setItem('builder-theme', isDark ? 'dark' : 'light');
-        document.getElementById('themeBtn').innerText = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
-    }
-    if(localStorage.getItem('builder-theme') === 'dark') toggleDarkMode();
-
-    let historyStack = [];
-    let historyIndex = -1;
-    const MAX_HISTORY = 50;
-
-    function saveState() {
-        const state = { content: editor.value, title: titleInput.value };
-        if (historyIndex >= 0 && historyStack[historyIndex].content === state.content && historyStack[historyIndex].title === state.title) return;
-        historyStack = historyStack.slice(0, historyIndex + 1);
-        historyStack.push(state);
-        if (historyStack.length > MAX_HISTORY) historyStack.shift();
-        historyIndex = historyStack.length - 1;
-    }
-
-    function undo() { if (historyIndex > 0) { historyIndex--; applyState(historyStack[historyIndex]); } }
-    function redo() { if (historyIndex < historyStack.length - 1) { historyIndex++; applyState(historyStack[historyIndex]); } }
-    function applyState(state) { editor.value = state.content; titleInput.value = state.title; render(); }
-
-    window.addEventListener('keydown', (e) => {
-        if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); if (e.shiftKey) redo(); else undo(); return; }
-        if ((e.ctrlKey || e.metaKey) && e.key === 'y') { e.preventDefault(); redo(); return; }
-        const activeModal = Array.from(document.querySelectorAll('.modal')).find(m => m.style.display === 'block');
-        if (activeModal) {
-            if (e.key === 'Escape') closeAllModals();
-            if (e.key === 'Enter') {
-                const isTextarea = e.target.tagName === 'TEXTAREA';
-                if (!isTextarea || (isTextarea && (e.ctrlKey || e.metaKey))) {
-                    e.preventDefault();
-                    const primaryBtn = activeModal.querySelector('button[style*="var(--primary)"]') || activeModal.querySelector('#listSubmitBtn');
-                    if (primaryBtn) primaryBtn.click();
-                }
-            }
-        }
-    });
-
-    let typingTimer;
-    function handleInput() {
-        titleDisplay.innerText = titleInput.value.trim() ? "# " + titleInput.value.trim() : "";
-        updateLineNumbers();
-        clearTimeout(typingTimer);
-        typingTimer = setTimeout(saveState, 500);
-        render();
-    }
+    const editor = document.getElementById('editor'), preview = document.getElementById('preview'), 
+          lineNums = document.getElementById('lineNumbers'), prevLineNums = document.getElementById('previewLineNumbers'),
+          titleInput = document.getElementById('mainTitle'), titleDisplay = document.getElementById('editor-title-display'),
+          overlay = document.getElementById('overlay');
 
     let gridRows = 2, gridCols = 2;
-    function initLangs() {
-        const sel = document.getElementById('codeLangSelect');
-        sel.innerHTML = '<option value="">(Plain Text)</option>';
-        gfm_langs.sort().forEach(l => {
-            const opt = document.createElement('option');
-            opt.value = l; opt.innerText = l;
-            sel.appendChild(opt);
-        });
-    }
 
-    const sortable = Sortable.create(preview, {
-        animation: 150,
-        handle: '.gui-drag',
-        onEnd: function() {
-            const items = preview.querySelectorAll('.preview-item');
-            let newText = [];
-            items.forEach(item => { if(item.dataset.raw) newText.push(decodeURIComponent(item.dataset.raw)); });
-            editor.value = newText.join('\n\n');
-            saveState();
-            render();
-        }
-    });
-
-    function toggleLock() { editor.disabled = document.getElementById('lockEditor').checked; }
-    function getSlug(text) { return text.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-').replace(/^-+|-+$/g, ''); }
-
-    function insert(before, after, customText = null) {
-        const start = editor.selectionStart, end = editor.selectionEnd;
-        const val = before + (customText || editor.value.substring(start, end)) + after;
-        editor.value = editor.value.substring(0, start) + val + editor.value.substring(end);
-        saveState();
+    // Core Logic
+    function handleInput() {
+        titleDisplay.innerText = titleInput.value.trim() ? "# " + titleInput.value.trim() : "";
+        updateLines();
         render();
     }
 
-    function deleteBlock(index) {
-        const blocks = editor.value.split(/\n\n+/);
-        blocks.splice(index, 1);
-        editor.value = blocks.join('\n\n');
-        saveState();
-        render();
+    function updateLines() {
+        const count = editor.value.split('\n').length + (titleInput.value.trim() ? 2 : 0);
+        const html = Array.from({length: count}, (_, i) => `<span>${i + 1}</span>`).join('');
+        lineNums.innerHTML = prevLineNums.innerHTML = html;
     }
 
-    function openTableModal() { document.getElementById('tableModal').style.display = 'block'; overlay.style.display = 'block'; updateGridUI(); }
-    function updateGridUI() {
-        const head = document.getElementById('gridHead');
-        const body = document.getElementById('gridBody');
-        head.innerHTML = ""; body.innerHTML = "";
-        for(let c=0; c<gridCols; c++) { head.innerHTML += `<th><input type="text" placeholder="Header ${c+1}" class="grid-input-h"></th>`; }
-        for(let r=0; r<gridRows; r++) {
-            let rowHtml = "<tr>";
-            for(let c=0; c<gridCols; c++) { rowHtml += `<td><input type="text" class="grid-input-b" placeholder="cell"></td>`; }
-            body.innerHTML += rowHtml + "</tr>";
-        }
-    }
-    function adjustGrid(r, c) { gridRows += r; gridCols += c; updateGridUI(); }
-    function resetGrid() { gridRows = 2; gridCols = 2; updateGridUI(); }
-    function insertTableFinal() {
-        const headers = Array.from(document.querySelectorAll('.grid-input-h')).map(i => i.value || " ");
-        const cells = Array.from(document.querySelectorAll('.grid-input-b')).map(i => i.value || " ");
-        let md = `\n| ${headers.join(' | ')} |\n`;
-        md += `| ${headers.map(() => '---').join(' | ')} |\n`;
-        for(let r=0; r<gridRows; r++) {
-            let rowData = cells.slice(r * gridCols, (r + 1) * gridCols);
-            md += `| ${rowData.join(' | ')} |\n`;
-        }
-        insert(md + "\n", ""); closeAllModals();
-    }
-
-    function insertTOC() {
-        const lines = editor.value.split('\n');
-        let tocMd = "## Table of Contents\n";
-        let found = false;
-        if (titleInput.value.trim()) { tocMd += `- [${titleInput.value.trim()}](#top)\n`; found = true; }
-        lines.forEach(line => {
-            const match = line.match(/^(##|###|####) (.*)/);
-            if (match && match[2].trim() !== "Table of Contents") {
-                const level = match[1].length;
-                const title = match[2].trim();
-                const slug = getSlug(title);
-                const indent = "  ".repeat(level - 2);
-                tocMd += `${indent}- [${title}](#${slug})\n`;
-                found = true;
-            }
-        });
-        if (!found) return alert("No headings found!");
-        insert(`\n\n${tocMd}\n\n`, "");
+    function syncScroll(s) {
+        if (s === 'e') lineNums.scrollTop = editor.scrollTop;
+        else prevLineNums.scrollTop = preview.scrollTop;
     }
 
     function render() {
         const raw = editor.value;
-        updateLineNumbers();
-        stats.innerText = `Words: ${raw.trim() ? raw.trim().split(/\s+/).length : 0} | Chars: ${raw.length}`;
+        document.getElementById('stats').innerText = `W: ${raw.trim() ? raw.trim().split(/\s+/).length : 0} | C: ${raw.length}`;
         const blocks = raw.split(/\n\n+/);
-        preview.innerHTML = "";
-        
-        if (titleInput.value.trim()) {
-            const titleBlock = document.createElement('div');
-            titleBlock.className = 'preview-item';
-            titleBlock.style.border = "none";
-            titleBlock.style.background = "transparent";
-            titleBlock.innerHTML = `<h1 id="top" style="margin-top:0;">${titleInput.value.trim()}</h1>`;
-            preview.appendChild(titleBlock);
-        }
+        preview.innerHTML = titleInput.value.trim() ? `<div class="preview-item" style="border:none;background:transparent;"><h1 id="top">${titleInput.value.trim()}</h1></div>` : "";
 
-        blocks.forEach((block, index) => {
+        blocks.forEach((block, idx) => {
             if (!block.trim()) return;
-            const wrapper = document.createElement('div');
-            wrapper.className = 'preview-item';
-            wrapper.dataset.index = index;
-            wrapper.dataset.raw = encodeURIComponent(block);
-            let html = block
-                .replace(/^# (.*$)/gim, (m, g1) => `<h1 id="${getSlug(g1)}">${g1}</h1>`)
-                .replace(/^## (.*$)/gim, (m, g1) => `<h2 id="${getSlug(g1)}">${g1}</h2>`)
-                .replace(/^### (.*$)/gim, (m, g1) => `<h3 id="${getSlug(g1)}">${g1}</h3>`)
-                .replace(/^- \[( |x)\] (.*)/gm, `<div class="task-item"><span>$2</span></div>`)
-                .replace(/^- (?!\[)(.*)/gm, '<li>$1</li>').replace(/^\d+\. (.*)/gm, '<li>$1</li>')
-                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\*(.*?)\*/g, '<em>$1</em>')
-                .replace(/~~(.*?)~~/g, '<del>$1</del>')
-                .replace(/```(\w*)\n([\s\S]*?)```/gm, '<pre><code>$2</code></pre>') 
-                .replace(/`([^`]+)`/g, '<code>$1</code>') 
-                .replace(/!\[(.*?)\]\((.*?)\)/g, '<img src="$2">')
-                .replace(/\|(.+)\|/g, (m) => m.match(/^[|\s-]+$/) ? '' : '<tr>' + m.split('|').filter(c => c.trim() !== "").map(c => `<td>${c}</td>`).join('') + '</tr>')
-                .replace(/^---$/gm, '<hr>')
-                .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>')
-                .replace(/\n/g, '<br>');
-            if (html.includes('<li>')) html = html.replace(/(<li>[\s\S]*?<\/li>)/g, '<ul>$1</ul>').replace(/<\/ul><br><ul>/g, '').replace(/<\/ul><ul>/g, '');
-            if (html.includes('<tr>')) html = html.replace(/(<tr>[\s\S]*?<\/tr>)/g, '<table>$1</table>').replace(/<\/table><table>/g, '');
-            wrapper.innerHTML = `<div class="preview-controls"><div class="gui-btn gui-drag">⠿</div><div class="gui-btn gui-del" onclick="deleteBlock(${index})">✕</div></div><div class="content">${html}</div>`;
-            preview.appendChild(wrapper);
+            const wrap = document.createElement('div');
+            wrap.className = 'preview-item'; wrap.dataset.raw = encodeURIComponent(block);
+            let h = block.replace(/^#+ (.*$)/gm, (m, g1) => `<h2 id="${getSlug(g1)}">${g1}</h2>`)
+                         .replace(/```(\w*)\n([\s\S]*?)```/gm, '<pre><code>$2</code></pre>')
+                         .replace(/^- \[( |x)\] (.*)/gm, '<div>☐ $2</div>')
+                         .replace(/^- (.*)/gm, '<li>$1</li>').replace(/^\d+\. (.*)/gm, '<li>$1</li>')
+                         .replace(/\|(.+)\|/g, m => m.match(/^[|\s-]+$/) ? '' : '<tr>' + m.split('|').filter(c => c.trim()).map(c => `<td>${c}</td>`).join('') + '</tr>')
+                         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\*(.*?)\*/g, '<em>$1</em>').replace(/~~(.*?)~~/g, '<del>$1</del>')
+                         .replace(/`([^`]+)`/g, '<code>$1</code>').replace(/!\[(.*?)\]\((.*?)\)/g, '<img src="$2">')
+                         .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>').replace(/\n/g, '<br>');
+            if (h.includes('<li>')) h = `<ul>${h}</ul>`;
+            if (h.includes('<tr>')) h = `<table>${h}</table>`;
+            wrap.innerHTML = `<div class="preview-controls"><div class="gui-btn gui-drag">⠿</div><div class="gui-btn" style="color:red" onclick="deleteBlock(${idx})">✕</div></div>${h}`;
+            preview.appendChild(wrap);
         });
-        
-        syncScroll('preview');
     }
 
-    // Modal logic functions
-    function openCodeModal() { document.getElementById('codeContent').value = ""; document.getElementById('codeModal').style.display = 'block'; overlay.style.display = 'block'; document.getElementById('codeContent').focus(); }
-    function insertCodeFinal() { insert(`\n\n\`\`\`${document.getElementById('codeLangSelect').value}\n${document.getElementById('codeContent').value}\n\`\`\`\n\n`, ""); closeAllModals(); }
-    function openLinkModal() { document.getElementById('linkModal').style.display = 'block'; overlay.style.display = 'block'; document.getElementById('linkText').focus(); }
-    function insertLinkFinal() { const url = document.getElementById('linkUrl').value; if(url) insert(`[${document.getElementById('linkText').value || "link"}](${url})`, ""); closeAllModals(); }
-    function openAnchorModal() {
-        const select = document.getElementById('anchorSelect'); select.innerHTML = "";
-        editor.value.split('\n').forEach(line => {
-            const match = line.match(/^(##|###|####) (.*)/);
-            if(match) { let opt = document.createElement('option'); opt.value = getSlug(match[2]); opt.innerText = match[2].trim(); select.appendChild(opt); }
-        });
-        document.getElementById('anchorModal').style.display = 'block'; overlay.style.display = 'block';
+    // Modal Helpers
+    function openModal(id, callback) { document.getElementById(id).style.display = 'block'; overlay.style.display = 'block'; if(callback) callback(); }
+    function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); overlay.style.display = 'none'; }
+    function insert(pre, post, content = null) {
+        const s = editor.selectionStart, e = editor.selectionEnd;
+        editor.value = editor.value.slice(0, s) + pre + (content || editor.value.slice(s, e)) + post + editor.value.slice(e);
+        handleInput();
     }
-    function insertAnchorFinal() { const select = document.getElementById('anchorSelect'); insert(`[${select.options[select.selectedIndex].text}](#${select.value})`, ""); closeAllModals(); }
-    function openImageModal() { document.getElementById('imageModal').style.display = 'block'; overlay.style.display = 'block'; document.getElementById('imgAlt').focus(); }
-    function insertImageFinal() { const url = document.getElementById('imgUrl').value; if(url) insert(`\n\n![${document.getElementById('imgAlt').value || "image"}](${url})\n\n`, ""); closeAllModals(); }
-    function closeAllModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); overlay.style.display = 'none'; }
-    function openParaModal() { document.getElementById('paraTextArea').value = ""; document.getElementById('paraModal').style.display = 'block'; overlay.style.display = 'block'; document.getElementById('paraTextArea').focus(); }
-    function insertParagraphFinal() { insert(`\n\n${document.getElementById('paraTextArea').value}\n\n`, ""); closeAllModals(); }
+
+    // Feature Logic (Table, Code, Lists, etc.)
+    function updateGridUI() {
+        const h = document.getElementById('gridHead'), b = document.getElementById('gridBody');
+        h.innerHTML = Array(gridCols).fill(0).map((_,i)=>`<th><input type="text" placeholder="H${i+1}" class="gh"></th>`).join('');
+        b.innerHTML = Array(gridRows).fill(0).map(()=>`<tr>${Array(gridCols).fill(0).map(()=>`<td><input type="text" class="gb"></td>`).join('')}</tr>`).join('');
+    }
+    function adjustGrid(r, c) { gridRows += r; gridCols += c; updateGridUI(); }
+    function resetGrid() { gridRows = 2; gridCols = 2; updateGridUI(); }
+    function insertTableFinal() {
+        const hs = Array.from(document.querySelectorAll('.gh')).map(i => i.value || " ");
+        const bs = Array.from(document.querySelectorAll('.gb')).map(i => i.value || " ");
+        let md = `\n| ${hs.join(' | ')} |\n| ${hs.map(()=>'---').join(' | ')} |\n`;
+        for(let r=0; r<gridRows; r++) md += `| ${bs.slice(r*gridCols, (r+1)*gridCols).join(' | ')} |\n`;
+        insert(md + "\n", ""); closeModals();
+    }
+
+    function insertCodeFinal() { insert(`\n\`\`\`${document.getElementById('codeLangSelect').value}\n${document.getElementById('codeContent').value}\n\`\`\`\n`, ""); closeModals(); }
     function openListModal(type) {
-        document.getElementById('listItemsContainer').innerHTML = '<input type="text" class="list-item-input" placeholder="Item 1" style="width:100%; padding:8px; margin-bottom:8px; border:1px solid #ddd; border-radius:4px;">';
-        document.getElementById('listModal').style.display = 'block'; overlay.style.display = 'block';
-        document.querySelector('.list-item-input').focus();
+        document.getElementById('listItemsContainer').innerHTML = '<input type="text" class="li-in" placeholder="Item 1">';
+        openModal('listModal');
         document.getElementById('listSubmitBtn').onclick = () => {
-            let listMd = "\n\n";
-            document.querySelectorAll('.list-item-input').forEach((input, i) => { if(input.value.trim()) listMd += (type === '1.' ? `${i+1}. ` : (type === '-' ? '- ' : '- [ ] ')) + input.value.trim() + "\n"; });
-            insert(listMd + "\n", ""); closeAllModals();
+            let md = "\n";
+            document.querySelectorAll('.li-in').forEach((input, i) => { if(input.value) md += (type === '1.' ? `${i+1}. ` : (type === '-' ? '- ' : '- [ ] ')) + input.value + "\n"; });
+            insert(md + "\n", ""); closeModals();
         };
     }
-    function addListRow() {
-        const input = document.createElement('input'); input.className = "list-item-input"; input.style.cssText = "width:100%; padding:8px; margin-bottom:8px; border:1px solid #ddd; border-radius:4px;";
-        document.getElementById('listItemsContainer').appendChild(input); input.focus();
+    function addListRow() { const i = document.createElement('input'); i.className = "li-in"; i.placeholder = "Next item"; document.getElementById('listItemsContainer').appendChild(i); i.focus(); }
+
+    function openAnchorModal() {
+        const s = document.getElementById('anchorSelect'); s.innerHTML = "";
+        editor.value.split('\n').forEach(l => { const m = l.match(/^##+ (.*)/); if(m) s.add(new Option(m[1].trim(), getSlug(m[1]))); });
+        openModal('anchorModal');
     }
-    function openHeaderModal() { document.getElementById('headerModal').style.display = 'block'; overlay.style.display = 'block'; document.getElementById('headerText').focus(); }
-    function insertHeaderFinal() { 
-        const level = document.getElementById('headerLevel').value;
-        const text = document.getElementById('headerText').value || "Heading";
-        const md = "\n\n" + "#".repeat(level) + " " + text + "\n\n";
-        insert(md, ""); 
-        closeAllModals(); 
-    }
-    
-    function clearAll() { if(confirm("Wipe everything?")) { titleInput.value = ""; editor.value = ""; handleInput(); } }
-    function copyToClipboard() { navigator.clipboard.writeText((titleInput.value ? `# ${titleInput.value}\n\n` : "") + editor.value); alert("Copied!"); }
-    function downloadMD() {
-        const blob = new Blob([(titleInput.value ? `# ${titleInput.value}\n\n` : "") + editor.value], { type: 'text/markdown' });
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `${titleInput.value.replace(/[^a-z0-9]/gi, '_') || "doc"}.md`; a.click();
+    function insertAnchorFinal() { const s = document.getElementById('anchorSelect'); insert(`[${s.options[s.selectedIndex].text}](#${s.value})`, ""); closeModals(); }
+    function insertTOC() {
+        let md = "## Table of Contents\n";
+        editor.value.split('\n').forEach(l => { const m = l.match(/^##+ (.*)/); if(m) md += `${"  ".repeat(m[0].split('#').length-3)}- [${m[1].trim()}](#${getSlug(m[1])})\n`; });
+        insert("\n" + md + "\n", "");
     }
 
-    initLangs(); saveState(); render();
+    // Utilities
+    function getSlug(t) { return t.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-'); }
+    function deleteBlock(i) { const b = editor.value.split(/\n\n+/); b.splice(i,1); editor.value = b.join('\n\n'); handleInput(); }
+    function toggleDarkMode() { document.body.classList.toggle('dark-mode'); }
+    function toggleLock() { editor.disabled = document.getElementById('lockEditor').checked; }
+    function clearAll() { if(confirm("Clear?")) { titleInput.value = editor.value = ""; handleInput(); } }
+    function copyToClipboard() { navigator.clipboard.writeText((titleInput.value ? `# ${titleInput.value}\n\n` : "") + editor.value); alert("Copied!"); }
+    function downloadMD() {
+        const b = new Blob([(titleInput.value ? `# ${titleInput.value}\n\n` : "") + editor.value], {type:'text/markdown'});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = "doc.md"; a.click();
+    }
+    
+    // Sortable
+    Sortable.create(preview, { handle: '.gui-drag', animation: 150, onEnd: () => {
+        editor.value = Array.from(preview.querySelectorAll('.preview-item')).map(i => i.dataset.raw ? decodeURIComponent(i.dataset.raw) : "").filter(t=>t).join('\n\n');
+        handleInput();
+    }});
+
+    // Init
+    gfm_langs.sort().forEach(l => document.getElementById('codeLangSelect').add(new Option(l, l)));
+    handleInput();
 </script>
 </body>
 </html>
