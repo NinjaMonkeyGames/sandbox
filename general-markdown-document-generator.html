@@ -3,60 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pro Markdown Builder (Optimized)</title>
+    <title>Pro Markdown Builder (Default Dark)</title>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <style>
         :root { 
-            --primary: #2563eb; --bg: #f8fafc; --text: #1e293b; --toolbar-bg: #1e293b;
-            --pane-bg: #ffffff; --label-bg: #e2e8f0; --border: #cbd5e1; --item-bg: #ffffff;
-            --input-bg: #ffffff; --line-numbers-bg: #f1f5f9; --line-numbers-text: #64748b;
-        }
-        body.dark-mode {
-            --bg: #0f172a; --text: #f1f5f9; --toolbar-bg: #020617; --pane-bg: #1e293b; 
-            --label-bg: #334155; --border: #475569; --item-bg: #1e293b; --input-bg: #0f172a;
-            --line-numbers-bg: #1e293b; --line-numbers-text: #94a3b8;
+            --primary: #2563eb; --bg: #0f172a; --text: #f1f5f9; --toolbar-bg: #020617; 
+            --pane-bg: #1e293b; --label-bg: #334155; --border: #475569; 
+            --item-bg: #1e293b; --input-bg: #0f172a; --line-numbers-bg: #1e293b; --line-numbers-text: #94a3b8;
         }
 
-        body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; background: var(--bg); color: var(--text); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        body.light-mode {
+            --bg: #f8fafc; --text: #1e293b; --toolbar-bg: #1e293b; --pane-bg: #ffffff;
+            --label-bg: #e2e8f0; --border: #cbd5e1; --item-bg: #ffffff; --input-bg: #ffffff;
+            --line-numbers-bg: #f1f5f9; --line-numbers-text: #64748b;
+        }
+
+        body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; background: var(--bg); color: var(--text); display: flex; flex-direction: column; height: 100vh; overflow: hidden; transition: background 0.2s; }
         
-        /* Toolbar */
         .toolbar { background: var(--toolbar-bg); padding: 12px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .group { display: flex; gap: 2px; background: #334155; padding: 4px; border-radius: 6px; align-items: center; }
-        .main-title-input { background: #0f172a; color: #38bdf8; border: 1px solid #334155; padding: 6px 12px; border-radius: 4px; font-weight: bold; width: 250px; outline: none; }
+        .main-title-input { background: #0f172a; color: #38bdf8; border: 1px solid #334155; padding: 6px 12px; border-radius: 4px; font-weight: bold; width: 250px; outline: none; text-transform: uppercase; }
         button { border: none; background: #f1f5f9; color: #0f172a; padding: 6px 10px; cursor: pointer; border-radius: 4px; font-weight: 600; font-size: 13px; }
         button:hover { background: var(--primary); color: white; }
         .lock-container { color: white; font-size: 12px; display: flex; align-items: center; gap: 5px; margin-left: 10px; border-left: 1px solid #475569; padding-left: 15px; }
 
-        /* Panes */
         .main { display: flex; flex: 1; overflow: hidden; }
         .pane { flex: 1; display: flex; flex-direction: column; background: var(--pane-bg); border-right: 1px solid var(--border); overflow: hidden; }
         .label { background: var(--label-bg); padding: 6px 15px; font-size: 11px; font-weight: bold; text-transform: uppercase; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; }
 
-        /* Shared Viewport Logic */
         .viewport { display: flex; flex: 1; overflow: hidden; background: var(--input-bg); }
-        .line-numbers { 
-            width: 45px; padding: 20px 0; text-align: right; background: var(--line-numbers-bg); 
-            color: var(--line-numbers-text); font-family: 'Fira Code', monospace; font-size: 14px; 
-            line-height: 1.5; border-right: 2px solid var(--border); overflow: hidden; flex-shrink: 0;
-        }
+        .line-numbers { width: 45px; padding: 20px 0; text-align: right; background: var(--line-numbers-bg); color: var(--line-numbers-text); font-family: 'Fira Code', monospace; font-size: 14px; line-height: 1.5; border-right: 2px solid var(--border); overflow: hidden; flex-shrink: 0; }
         .line-numbers span { display: block; padding-right: 10px; }
 
         .editor-wrapper { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
-        #editor-title-display { padding: 20px 20px 0; font-family: 'Fira Code', monospace; font-size: 24px; font-weight: bold; color: var(--primary); background: var(--input-bg); }
+        #editor-title-display { padding: 20px 20px 0; font-family: 'Fira Code', monospace; font-size: 24px; font-weight: bold; color: var(--primary); background: var(--input-bg); text-transform: uppercase; }
         textarea, .preview { flex: 1; padding: 10px 20px; border: none; outline: none; font-family: 'Fira Code', monospace; font-size: 14px; line-height: 1.5; background: transparent; color: var(--text); overflow-y: auto; }
         
-        /* Preview Items */
+        .preview h1 { text-transform: uppercase; }
         .preview-item { position: relative; margin-bottom: 15px; padding: 15px; border: 1px solid var(--border); border-radius: 8px; background: var(--item-bg); }
         .preview-controls { position: absolute; top: -10px; right: 10px; display: none; gap: 5px; z-index: 20; }
         .preview-item:hover .preview-controls { display: flex; }
-        .gui-btn { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; border-radius: 6px; cursor: pointer; border: 1px solid var(--border); background: var(--label-bg); }
+        .gui-btn { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; border-radius: 6px; cursor: pointer; border: 1px solid var(--border); background: var(--label-bg); color: var(--text); }
 
         .preview pre { background: #1e1e1e; color: #dcdcdc; padding: 15px; border-radius: 6px; overflow-x: auto; }
         .preview table { border-collapse: collapse; width: 100%; margin: 10px 0; }
         .preview th, .preview td { border: 1px solid var(--border); padding: 8px; text-align: left; }
+        .preview hr { border: 0; border-top: 2px solid var(--border); margin: 20px 0; }
 
-        /* Modals */
-        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--item-bg); padding: 25px; border-radius: 12px; z-index: 100; width: 450px; border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--item-bg); padding: 25px; border-radius: 12px; z-index: 100; width: 450px; border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.3); color: var(--text); }
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 99; backdrop-filter: blur(2px); }
         .grid-builder input { width: 100%; border: 1px solid var(--border); padding: 6px; background: var(--input-bg); color: var(--text); box-sizing: border-box; }
         .wide-text, select, .modal input[type="text"] { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 4px; margin-bottom: 15px; background: var(--input-bg); color: var(--text); box-sizing: border-box; }
@@ -92,10 +86,11 @@
         <button onclick="openModal('imageModal')">🖼 Img</button>
         <button onclick="openModal('linkModal')">🔗 Link</button>
         <button onclick="openAnchorModal()">⚓ Anchor</button>
+        <button onclick="insert('\n\n---\n\n', '')" title="Line Break">⁝ Break</button>
         <button onclick="insertTOC()" style="background:#8b5cf6; color:white;">📋 TOC</button>
         <button onclick="insert('\n\n---\n\n[Back to Top](#top)\n\n---\n\n', '')">🔝 Top</button>
     </div>
-    <button onclick="toggleDarkMode()" class="theme-btn" id="themeBtn">🌙 Dark Mode</button>
+    <button onclick="toggleTheme()" class="theme-btn" id="themeBtn">☀️ Light Mode</button>
     <div class="lock-container"><input type="checkbox" id="lockEditor" onchange="toggleLock()"><label for="lockEditor">Lock</label></div>
     <div style="margin-left:auto; display:flex; gap:5px;">
         <button onclick="clearAll()" style="background:#ef4444; color:white;">Clear</button>
@@ -133,7 +128,6 @@
 
     let gridRows = 2, gridCols = 2;
 
-    // Core Logic
     function handleInput() {
         titleDisplay.innerText = titleInput.value.trim() ? "# " + titleInput.value.trim() : "";
         updateLines();
@@ -161,14 +155,19 @@
             if (!block.trim()) return;
             const wrap = document.createElement('div');
             wrap.className = 'preview-item'; wrap.dataset.raw = encodeURIComponent(block);
-            let h = block.replace(/^#+ (.*$)/gm, (m, g1) => `<h2 id="${getSlug(g1)}">${g1}</h2>`)
+            
+            let h = block
+                         .replace(/^# (.*$)/gm, (m, g1) => `<h1 id="${getSlug(g1)}">${g1}</h1>`)
+                         .replace(/^##+ (.*$)/gm, (m, g1) => `<h2 id="${getSlug(g1)}">${g1}</h2>`)
                          .replace(/```(\w*)\n([\s\S]*?)```/gm, '<pre><code>$2</code></pre>')
                          .replace(/^- \[( |x)\] (.*)/gm, '<div>☐ $2</div>')
                          .replace(/^- (.*)/gm, '<li>$1</li>').replace(/^\d+\. (.*)/gm, '<li>$1</li>')
                          .replace(/\|(.+)\|/g, m => m.match(/^[|\s-]+$/) ? '' : '<tr>' + m.split('|').filter(c => c.trim()).map(c => `<td>${c}</td>`).join('') + '</tr>')
                          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\*(.*?)\*/g, '<em>$1</em>').replace(/~~(.*?)~~/g, '<del>$1</del>')
                          .replace(/`([^`]+)`/g, '<code>$1</code>').replace(/!\[(.*?)\]\((.*?)\)/g, '<img src="$2">')
-                         .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>').replace(/\n/g, '<br>');
+                         .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>').replace(/\n/g, '<br>')
+                         .replace(/^---$/gm, '<hr>'); // Line break rendering
+            
             if (h.includes('<li>')) h = `<ul>${h}</ul>`;
             if (h.includes('<tr>')) h = `<table>${h}</table>`;
             wrap.innerHTML = `<div class="preview-controls"><div class="gui-btn gui-drag">⠿</div><div class="gui-btn" style="color:red" onclick="deleteBlock(${idx})">✕</div></div>${h}`;
@@ -176,7 +175,6 @@
         });
     }
 
-    // Modal Helpers
     function openModal(id, callback) { document.getElementById(id).style.display = 'block'; overlay.style.display = 'block'; if(callback) callback(); }
     function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); overlay.style.display = 'none'; }
     function insert(pre, post, content = null) {
@@ -185,7 +183,6 @@
         handleInput();
     }
 
-    // Feature Logic (Table, Code, Lists, etc.)
     function updateGridUI() {
         const h = document.getElementById('gridHead'), b = document.getElementById('gridBody');
         h.innerHTML = Array(gridCols).fill(0).map((_,i)=>`<th><input type="text" placeholder="H${i+1}" class="gh"></th>`).join('');
@@ -225,25 +222,28 @@
         insert("\n" + md + "\n", "");
     }
 
-    // Utilities
     function getSlug(t) { return t.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-'); }
     function deleteBlock(i) { const b = editor.value.split(/\n\n+/); b.splice(i,1); editor.value = b.join('\n\n'); handleInput(); }
-    function toggleDarkMode() { document.body.classList.toggle('dark-mode'); }
+    
+    function toggleTheme() { 
+        document.body.classList.toggle('light-mode');
+        const isLight = document.body.classList.contains('light-mode');
+        document.getElementById('themeBtn').innerText = isLight ? '🌙 Dark Mode' : '☀️ Light Mode';
+    }
+    
     function toggleLock() { editor.disabled = document.getElementById('lockEditor').checked; }
-    function clearAll() { if(confirm("Clear?")) { titleInput.value = editor.value = ""; handleInput(); } }
+    function clearAll() { if(confirm("Clear everything?")) { titleInput.value = editor.value = ""; handleInput(); } }
     function copyToClipboard() { navigator.clipboard.writeText((titleInput.value ? `# ${titleInput.value}\n\n` : "") + editor.value); alert("Copied!"); }
     function downloadMD() {
         const b = new Blob([(titleInput.value ? `# ${titleInput.value}\n\n` : "") + editor.value], {type:'text/markdown'});
         const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = "doc.md"; a.click();
     }
     
-    // Sortable
     Sortable.create(preview, { handle: '.gui-drag', animation: 150, onEnd: () => {
         editor.value = Array.from(preview.querySelectorAll('.preview-item')).map(i => i.dataset.raw ? decodeURIComponent(i.dataset.raw) : "").filter(t=>t).join('\n\n');
         handleInput();
     }});
 
-    // Init
     gfm_langs.sort().forEach(l => document.getElementById('codeLangSelect').add(new Option(l, l)));
     handleInput();
 </script>
