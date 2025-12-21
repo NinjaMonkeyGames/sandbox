@@ -6,10 +6,32 @@
     <title>Pro Markdown Builder</title>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <style>
-        :root { --primary: #2563eb; --bg: #f8fafc; --text: #1e293b; --code-bg: #1e1e1e; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; background: var(--bg); color: var(--text); display: flex; flex-direction: column; height: 100vh; }
+        :root { 
+            --primary: #2563eb; 
+            --bg: #f8fafc; 
+            --text: #1e293b; 
+            --toolbar-bg: #1e293b;
+            --pane-bg: #ffffff;
+            --label-bg: #e2e8f0;
+            --border: #cbd5e1;
+            --item-bg: #ffffff;
+            --input-bg: #ffffff;
+        }
+
+        body.dark-mode {
+            --bg: #0f172a; 
+            --text: #f1f5f9; 
+            --toolbar-bg: #020617; 
+            --pane-bg: #1e293b; 
+            --label-bg: #334155;
+            --border: #475569; 
+            --item-bg: #1e293b; 
+            --input-bg: #0f172a;
+        }
+
+        body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; background: var(--bg); color: var(--text); display: flex; flex-direction: column; height: 100vh; transition: background 0.2s; }
         
-        .toolbar { background: #1e293b; padding: 12px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 10; }
+        .toolbar { background: var(--toolbar-bg); padding: 12px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 10; }
         .group { display: flex; gap: 2px; background: #334155; padding: 4px; border-radius: 6px; align-items: center; }
         
         .main-title-input { background: #0f172a; color: #38bdf8; border: 1px solid #334155; padding: 6px 12px; border-radius: 4px; font-weight: bold; width: 250px; outline: none; }
@@ -17,26 +39,28 @@
         button:hover { background: var(--primary); color: white; }
         .strike-btn { text-decoration: line-through; }
 
+        .theme-btn { background: #475569; color: white; border: 1px solid #64748b; margin-left: 10px; }
+
         .lock-container { color: white; font-size: 12px; display: flex; align-items: center; gap: 5px; margin-left: 10px; border-left: 1px solid #475569; padding-left: 15px; }
 
         .main { display: flex; flex: 1; overflow: hidden; position: relative; }
-        .pane { flex: 1; display: flex; flex-direction: column; }
-        .label { background: #e2e8f0; padding: 6px 15px; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; }
-        textarea { flex: 1; padding: 20px; border: none; resize: none; outline: none; font-family: 'Fira Code', monospace; font-size: 14px; line-height: 1.5; background: #fff; }
-        textarea:disabled { background: #f1f5f9; color: #64748b; cursor: not-allowed; }
+        .pane { flex: 1; display: flex; flex-direction: column; background: var(--pane-bg); }
+        .label { background: var(--label-bg); padding: 6px 15px; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); color: var(--text); }
+        textarea { flex: 1; padding: 20px; border: none; resize: none; outline: none; font-family: 'Fira Code', monospace; font-size: 14px; line-height: 1.5; background: var(--input-bg); color: var(--text); }
+        textarea:disabled { background: var(--bg); color: #64748b; cursor: not-allowed; }
         
-        .preview { flex: 1; padding: 20px; overflow-y: auto; background: #ffffff; border-left: 1px solid #cbd5e1; scroll-behavior: smooth; }
+        .preview { flex: 1; padding: 20px; overflow-y: auto; background: var(--pane-bg); border-left: 1px solid var(--border); scroll-behavior: smooth; }
         
         .preview-item { 
             position: relative; 
             margin-bottom: 15px; 
             padding: 15px; 
-            border: 1px solid transparent; 
+            border: 1px solid var(--border); 
             border-radius: 8px; 
-            background: #fff;
+            background: var(--item-bg);
             transition: all 0.2s ease;
         }
-        .preview-item:hover { border-color: #cbd5e1; background: #fcfdfe; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .preview-item:hover { border-color: var(--primary); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
         
         .preview-controls { 
             position: absolute; 
@@ -52,33 +76,33 @@
             width: 26px; height: 26px; 
             display: flex; align-items: center; justify-content: center; 
             border-radius: 6px; cursor: pointer; 
-            font-size: 14px; border: 1px solid #cbd5e1; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            font-size: 14px; border: 1px solid var(--border); 
+            background: var(--label-bg);
+            color: var(--text);
         }
         .gui-del { background: #ef4444; color: white; border-color: #dc2626; }
-        .gui-drag { background: #f1f5f9; color: #475569; cursor: grab; }
 
         .preview pre { background: #1e1e1e; color: #dcdcdc; padding: 15px; border-radius: 6px; overflow-x: auto; font-family: 'Fira Code', monospace; font-size: 13px; }
         .preview img { max-width: 100%; height: auto; border-radius: 8px; margin: 10px 0; }
-        .preview code { background: #f1f5f9; padding: 2px 5px; border-radius: 4px; font-family: monospace; color: #e11d48; }
+        .preview code { background: var(--label-bg); padding: 2px 5px; border-radius: 4px; font-family: monospace; color: #e11d48; }
         .preview table { border-collapse: collapse; width: 100%; margin: 5px 0; }
-        .preview th, .preview td { border: 1px solid #cbd5e1; padding: 8px; text-align: left; }
-        .preview hr { border: 0; border-top: 2px solid #cbd5e1; margin: 20px 0; }
-        .preview a { color: var(--primary); text-decoration: none; font-weight: bold; }
+        .preview th, .preview td { border: 1px solid var(--border); padding: 8px; text-align: left; }
+        .preview hr { border: 0; border-top: 2px solid var(--border); margin: 20px 0; }
+        .preview a { color: #60a5fa; text-decoration: none; font-weight: bold; }
 
-        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 25px; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); z-index: 100; width: 450px; border: 1px solid #cbd5e1; }
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--item-bg); color: var(--text); padding: 25px; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); z-index: 100; width: 450px; border: 1px solid var(--border); }
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 99; backdrop-filter: blur(2px); }
         
         #tableModal { width: 650px; max-height: 85vh; overflow-y: auto; }
         .grid-builder { border-collapse: collapse; width: 100%; margin: 15px 0; }
-        .grid-builder input { width: 100%; border: 1px solid #ddd; padding: 6px; box-sizing: border-box; font-size: 13px; }
-        .grid-builder th { background: #f1f5f9; padding: 4px; }
+        .grid-builder input { width: 100%; border: 1px solid var(--border); padding: 6px; box-sizing: border-box; font-size: 13px; background: var(--input-bg); color: var(--text); }
+        .grid-builder th { background: var(--label-bg); padding: 4px; }
 
-        .wide-text { width: 100%; min-height: 120px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-        select, input[type="text"] { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 15px; box-sizing: border-box; }
+        .wide-text { width: 100%; min-height: 120px; padding: 10px; border: 1px solid var(--border); border-radius: 4px; box-sizing: border-box; background: var(--input-bg); color: var(--text); }
+        select, input[type="text"] { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 4px; margin-bottom: 15px; box-sizing: border-box; background: var(--input-bg); color: var(--text); }
     </style>
 </head>
-<body>
+<body class="">
 
 <div class="modal-overlay" id="overlay" onclick="closeAllModals()"></div>
 
@@ -171,6 +195,7 @@
         <button onclick="insertTOC()" style="background: #8b5cf6; color: white;" title="Generate Table of Contents">📋 TOC</button>
         <button onclick="insert('\n\n---\n\n[Back to Top](#top)\n\n---\n\n', '')" title="Back to Top Link">🔝 Top</button>
     </div>
+    <button onclick="toggleDarkMode()" class="theme-btn" id="themeBtn">🌙 Dark Mode</button>
     <div class="lock-container"><input type="checkbox" id="lockEditor" onchange="toggleLock()"><label for="lockEditor">Lock</label></div>
     <div style="margin-left:auto; display:flex; gap:5px;">
         <button onclick="clearAll()" style="background: #ef4444; color: white;">Clear</button>
@@ -195,6 +220,15 @@
     const editor = document.getElementById('editor'), preview = document.getElementById('preview'), 
           overlay = document.getElementById('overlay'), titleInput = document.getElementById('mainTitle'),
           stats = document.getElementById('stats');
+
+    // THEME LOGIC
+    function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        localStorage.setItem('builder-theme', isDark ? 'dark' : 'light');
+        document.getElementById('themeBtn').innerText = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+    }
+    if(localStorage.getItem('builder-theme') === 'dark') toggleDarkMode();
 
     // HISTORY STATE
     let historyStack = [];
@@ -231,9 +265,7 @@
         render();
     }
 
-    // Capture Keyboard Shortcuts (Global + Modal)
     window.addEventListener('keydown', (e) => {
-        // 1. History Shortcuts
         if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
             e.preventDefault();
             if (e.shiftKey) redo(); else undo();
@@ -244,20 +276,14 @@
             redo();
             return;
         }
-
-        // 2. Modal Controls
         const activeModal = Array.from(document.querySelectorAll('.modal')).find(m => m.style.display === 'block');
         if (activeModal) {
-            if (e.key === 'Escape') {
-                closeAllModals();
-            }
+            if (e.key === 'Escape') closeAllModals();
             if (e.key === 'Enter') {
                 const isTextarea = e.target.tagName === 'TEXTAREA';
-                // Only prevent default and click if it's not a textarea OR if Ctrl is held in a textarea
                 if (!isTextarea || (isTextarea && (e.ctrlKey || e.metaKey))) {
                     e.preventDefault();
-                    const primaryBtn = activeModal.querySelector('button[style*="var(--primary)"]') || 
-                                     activeModal.querySelector('#listSubmitBtn');
+                    const primaryBtn = activeModal.querySelector('button[style*="var(--primary)"]') || activeModal.querySelector('#listSubmitBtn');
                     if (primaryBtn) primaryBtn.click();
                 }
             }
@@ -415,6 +441,7 @@
         });
     }
 
+    // MODALS
     function openCodeModal() { document.getElementById('codeContent').value = ""; document.getElementById('codeModal').style.display = 'block'; overlay.style.display = 'block'; document.getElementById('codeContent').focus(); }
     function insertCodeFinal() { insert(`\n\n\`\`\`${document.getElementById('codeLangSelect').value}\n${document.getElementById('codeContent').value}\n\`\`\`\n\n`, ""); closeAllModals(); }
     function openLinkModal() { document.getElementById('linkModal').style.display = 'block'; overlay.style.display = 'block'; document.getElementById('linkText').focus(); }
