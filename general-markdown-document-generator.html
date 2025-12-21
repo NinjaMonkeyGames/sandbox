@@ -27,7 +27,6 @@
         
         .preview { flex: 1; padding: 20px; overflow-y: auto; background: #ffffff; border-left: 1px solid #cbd5e1; scroll-behavior: smooth; }
         
-        /* BLOCK STYLES */
         .preview-item { 
             position: relative; 
             margin-bottom: 15px; 
@@ -39,7 +38,6 @@
         }
         .preview-item:hover { border-color: #cbd5e1; background: #fcfdfe; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
         
-        /* GUI CONTROLS */
         .preview-controls { 
             position: absolute; 
             top: -10px; 
@@ -145,7 +143,7 @@
         <button onclick="openLinkModal()">🔗 Link</button>
         <button onclick="openAnchorModal()">⚓ Anchor</button>
         <button onclick="insertTOC()" style="background: #8b5cf6; color: white;" title="Generate Table of Contents">📋 TOC</button>
-        <button onclick="insert('\n\n[Back to Top](#top)\n\n', '')" title="Back to Top Link">🔝 Top</button>
+        <button onclick="insert('\n\n---\n\n[Back to Top](#top)\n\n---\n\n', '')" title="Back to Top Link">🔝 Top</button>
     </div>
     <div class="lock-container"><input type="checkbox" id="lockEditor" onchange="toggleLock()"><label for="lockEditor">Lock</label></div>
     <div style="margin-left:auto; display:flex; gap:5px;">
@@ -247,7 +245,7 @@
         if (titleInput.value.trim()) {
             const h1 = document.createElement('h1');
             h1.innerText = titleInput.value.trim();
-            h1.id = "top"; // Used for 'Back to Top' link
+            h1.id = "top";
             preview.appendChild(h1);
         }
 
