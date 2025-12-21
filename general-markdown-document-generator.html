@@ -63,11 +63,17 @@
         .preview code { background: #f1f5f9; padding: 2px 5px; border-radius: 4px; font-family: monospace; color: #e11d48; }
         .preview table { border-collapse: collapse; width: 100%; margin: 5px 0; }
         .preview th, .preview td { border: 1px solid #cbd5e1; padding: 8px; text-align: left; }
-        .preview hr { border: 0; border-top: 2px solid #e2e8f0; margin: 10px 0; }
+        .preview hr { border: 0; border-top: 2px solid #cbd5e1; margin: 20px 0; }
         .preview a { color: var(--primary); text-decoration: none; font-weight: bold; }
 
         .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 25px; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); z-index: 100; width: 450px; border: 1px solid #cbd5e1; }
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 99; backdrop-filter: blur(2px); }
+        
+        #tableModal { width: 650px; max-height: 85vh; overflow-y: auto; }
+        .grid-builder { border-collapse: collapse; width: 100%; margin: 15px 0; }
+        .grid-builder input { width: 100%; border: 1px solid #ddd; padding: 6px; box-sizing: border-box; font-size: 13px; }
+        .grid-builder th { background: #f1f5f9; padding: 4px; }
+
         .wide-text { width: 100%; min-height: 120px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
         select, input[type="text"] { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 15px; box-sizing: border-box; }
     </style>
@@ -81,6 +87,25 @@
     <select id="codeLangSelect"></select>
     <textarea id="codeContent" class="wide-text" placeholder="Paste code here..."></textarea>
     <div style="text-align:right;"><button onclick="closeAllModals()">Cancel</button> <button onclick="insertCodeFinal()" style="background:var(--primary); color:white">Insert Code</button></div>
+</div>
+
+<div id="tableModal" class="modal">
+    <h3>Interactive Table Builder</h3>
+    <div style="margin-bottom: 10px; display: flex; gap: 8px;">
+        <button onclick="adjustGrid(1,0)">+ Row</button>
+        <button onclick="adjustGrid(0,1)">+ Col</button>
+        <button onclick="resetGrid()" style="background: #ef4444; color:white;">Reset</button>
+    </div>
+    <div style="overflow-x: auto;">
+        <table class="grid-builder">
+            <thead><tr id="gridHead"></tr></thead>
+            <tbody id="gridBody"></tbody>
+        </table>
+    </div>
+    <div style="text-align:right; margin-top:15px;">
+        <button onclick="closeAllModals()">Cancel</button>
+        <button onclick="insertTableFinal()" style="background:var(--primary); color:white">Insert Table</button>
+    </div>
 </div>
 
 <div id="linkModal" class="modal">
@@ -142,6 +167,7 @@
         <button onclick="openImageModal()">🖼 Img</button>
         <button onclick="openLinkModal()">🔗 Link</button>
         <button onclick="openAnchorModal()">⚓ Anchor</button>
+        <button onclick="insert('\n\n---\n\n', '')" title="Section Break">⁝ Break</button>
         <button onclick="insertTOC()" style="background: #8b5cf6; color: white;" title="Generate Table of Contents">📋 TOC</button>
         <button onclick="insert('\n\n---\n\n[Back to Top](#top)\n\n---\n\n', '')" title="Back to Top Link">🔝 Top</button>
     </div>
@@ -169,6 +195,8 @@
     const editor = document.getElementById('editor'), preview = document.getElementById('preview'), 
           overlay = document.getElementById('overlay'), titleInput = document.getElementById('mainTitle'),
           stats = document.getElementById('stats');
+
+    let gridRows = 2, gridCols = 2;
 
     function initLangs() {
         const sel = document.getElementById('codeLangSelect');
@@ -211,18 +239,47 @@
         render();
     }
 
+    // TABLE BUILDER
+    function openTableModal() {
+        document.getElementById('tableModal').style.display = 'block';
+        overlay.style.display = 'block';
+        updateGridUI();
+    }
+    function updateGridUI() {
+        const head = document.getElementById('gridHead');
+        const body = document.getElementById('gridBody');
+        head.innerHTML = ""; body.innerHTML = "";
+        for(let c=0; c<gridCols; c++) {
+            head.innerHTML += `<th><input type="text" placeholder="Header ${c+1}" class="grid-input-h"></th>`;
+        }
+        for(let r=0; r<gridRows; r++) {
+            let rowHtml = "<tr>";
+            for(let c=0; c<gridCols; c++) {
+                rowHtml += `<td><input type="text" class="grid-input-b" placeholder="cell"></td>`;
+            }
+            body.innerHTML += rowHtml + "</tr>";
+        }
+    }
+    function adjustGrid(r, c) { gridRows += r; gridCols += c; updateGridUI(); }
+    function resetGrid() { gridRows = 2; gridCols = 2; updateGridUI(); }
+    function insertTableFinal() {
+        const headers = Array.from(document.querySelectorAll('.grid-input-h')).map(i => i.value || " ");
+        const cells = Array.from(document.querySelectorAll('.grid-input-b')).map(i => i.value || " ");
+        let md = `\n| ${headers.join(' | ')} |\n`;
+        md += `| ${headers.map(() => '---').join(' | ')} |\n`;
+        for(let r=0; r<gridRows; r++) {
+            let rowData = cells.slice(r * gridCols, (r + 1) * gridCols);
+            md += `| ${rowData.join(' | ')} |\n`;
+        }
+        insert(md + "\n", "");
+        closeAllModals();
+    }
+
     function insertTOC() {
-        const rawContent = editor.value;
-        const lines = rawContent.split('\n');
+        const lines = editor.value.split('\n');
         let tocMd = "## Table of Contents\n";
         let found = false;
-        
-        if (titleInput.value.trim()) {
-            const mainTitle = titleInput.value.trim();
-            tocMd += `- [${mainTitle}](#top)\n`;
-            found = true;
-        }
-        
+        if (titleInput.value.trim()) { tocMd += `- [${titleInput.value.trim()}](#top)\n`; found = true; }
         lines.forEach(line => {
             const match = line.match(/^(##|###|####) (.*)/);
             if (match && match[2].trim() !== "Table of Contents") {
@@ -234,8 +291,7 @@
                 found = true;
             }
         });
-        
-        if (!found) return alert("No headings found to generate a TOC!");
+        if (!found) return alert("No headings found!");
         insert(`\n\n${tocMd}\n\n`, "");
     }
 
@@ -247,8 +303,7 @@
 
         if (titleInput.value.trim()) {
             const h1 = document.createElement('h1');
-            h1.innerText = titleInput.value.trim();
-            h1.id = "top";
+            h1.innerText = titleInput.value.trim(); h1.id = "top";
             preview.appendChild(h1);
         }
 
@@ -270,7 +325,7 @@
                 .replace(/```(\w*)\n([\s\S]*?)```/gm, '<pre><code>$2</code></pre>') 
                 .replace(/`([^`]+)`/g, '<code>$1</code>') 
                 .replace(/!\[(.*?)\]\((.*?)\)/g, '<img src="$2">')
-                .replace(/\|(.+)\|/g, (m) => m.includes(':---') ? '' : '<tr>' + m.split('|').filter(c => c.trim() !== "").map(c => `<td>${c}</td>`).join('') + '</tr>')
+                .replace(/\|(.+)\|/g, (m) => m.match(/^[|\s-]+$/) ? '' : '<tr>' + m.split('|').filter(c => c.trim() !== "").map(c => `<td>${c}</td>`).join('') + '</tr>')
                 .replace(/^---$/gm, '<hr>')
                 .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>')
                 .replace(/\n/g, '<br>');
@@ -278,104 +333,55 @@
             if (html.includes('<li>')) html = html.replace(/(<li>[\s\S]*?<\/li>)/g, '<ul>$1</ul>').replace(/<\/ul><br><ul>/g, '').replace(/<\/ul><ul>/g, '');
             if (html.includes('<tr>')) html = html.replace(/(<tr>[\s\S]*?<\/tr>)/g, '<table>$1</table>').replace(/<\/table><table>/g, '');
 
-            wrapper.innerHTML = `
-                <div class="preview-controls">
-                    <div class="gui-btn gui-drag" title="Drag to reorder">⠿</div>
-                    <div class="gui-btn gui-del" onclick="deleteBlock(${index})" title="Delete Block">✕</div>
-                </div>
-                <div class="content">${html}</div>
-            `;
+            wrapper.innerHTML = `<div class="preview-controls"><div class="gui-btn gui-drag">⠿</div><div class="gui-btn gui-del" onclick="deleteBlock(${index})">✕</div></div><div class="content">${html}</div>`;
             preview.appendChild(wrapper);
         });
     }
 
+    // MODAL HELPERS
     function openCodeModal() { document.getElementById('codeContent').value = ""; document.getElementById('codeModal').style.display = 'block'; overlay.style.display = 'block'; }
-    function insertCodeFinal() {
-        const lang = document.getElementById('codeLangSelect').value;
-        const code = document.getElementById('codeContent').value;
-        insert(`\n\n\`\`\`${lang}\n${code}\n\`\`\`\n\n`, "");
-        closeAllModals();
-    }
+    function insertCodeFinal() { insert(`\n\n\`\`\`${document.getElementById('codeLangSelect').value}\n${document.getElementById('codeContent').value}\n\`\`\`\n\n`, ""); closeAllModals(); }
     function openLinkModal() { document.getElementById('linkModal').style.display = 'block'; overlay.style.display = 'block'; }
-    function insertLinkFinal() {
-        const txt = document.getElementById('linkText').value || "link";
-        const url = document.getElementById('linkUrl').value;
-        if(url) insert(`[${txt}](${url})`, "");
-        closeAllModals();
-    }
+    function insertLinkFinal() { const url = document.getElementById('linkUrl').value; if(url) insert(`[${document.getElementById('linkText').value || "link"}](${url})`, ""); closeAllModals(); }
     function openAnchorModal() {
         const select = document.getElementById('anchorSelect'); select.innerHTML = "";
-        const lines = editor.value.split('\n');
-        lines.forEach(line => {
+        editor.value.split('\n').forEach(line => {
             const match = line.match(/^(##|###|####) (.*)/);
-            if(match) {
-                let opt = document.createElement('option');
-                opt.value = getSlug(match[2]); opt.innerText = match[2].trim();
-                select.appendChild(opt);
-            }
+            if(match) { let opt = document.createElement('option'); opt.value = getSlug(match[2]); opt.innerText = match[2].trim(); select.appendChild(opt); }
         });
         document.getElementById('anchorModal').style.display = 'block'; overlay.style.display = 'block';
     }
-    function insertAnchorFinal() {
-        const select = document.getElementById('anchorSelect');
-        insert(`[${select.options[select.selectedIndex].text}](#${select.value})`, "");
-        closeAllModals();
-    }
+    function insertAnchorFinal() { const select = document.getElementById('anchorSelect'); insert(`[${select.options[select.selectedIndex].text}](#${select.value})`, ""); closeAllModals(); }
     function openImageModal() { document.getElementById('imageModal').style.display = 'block'; overlay.style.display = 'block'; }
-    function insertImageFinal() {
-        const alt = document.getElementById('imgAlt').value || "image", url = document.getElementById('imgUrl').value;
-        if(url) insert(`\n\n![${alt}](${url})\n\n`, "");
-        closeAllModals();
-    }
+    function insertImageFinal() { const url = document.getElementById('imgUrl').value; if(url) insert(`\n\n![${document.getElementById('imgAlt').value || "image"}](${url})\n\n`, ""); closeAllModals(); }
     function closeAllModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); overlay.style.display = 'none'; }
     function openParaModal() { document.getElementById('paraTextArea').value = ""; document.getElementById('paraModal').style.display = 'block'; overlay.style.display = 'block'; }
-    function insertParagraphFinal() { const raw = document.getElementById('paraTextArea').value; if(raw) insert(`\n\n${raw}\n\n`, ""); closeAllModals(); }
-
+    function insertParagraphFinal() { insert(`\n\n${document.getElementById('paraTextArea').value}\n\n`, ""); closeAllModals(); }
     function openListModal(type) {
-        document.getElementById('listTitle').innerText = 'Add List Items';
-        document.getElementById('listItemsContainer').innerHTML = '<div style="display:flex; gap:5px; margin-bottom:8px;"><input type="text" class="list-item-input" placeholder="Item 1" style="flex:1; padding:8px; border:1px solid #ddd; border-radius:4px;"></div>';
+        document.getElementById('listItemsContainer').innerHTML = '<input type="text" class="list-item-input" placeholder="Item 1" style="width:100%; padding:8px; margin-bottom:8px; border:1px solid #ddd; border-radius:4px;">';
         document.getElementById('listModal').style.display = 'block'; overlay.style.display = 'block';
         document.getElementById('listSubmitBtn').onclick = () => {
             let listMd = "\n\n";
             document.querySelectorAll('.list-item-input').forEach((input, i) => {
-                if(input.value.trim()) {
-                    let prefix = (type === '1.' ? `${i+1}. ` : (type === '-' ? '- ' : '- [ ] '));
-                    listMd += prefix + input.value.trim() + "\n";
-                }
+                if(input.value.trim()) listMd += (type === '1.' ? `${i+1}. ` : (type === '-' ? '- ' : '- [ ] ')) + input.value.trim() + "\n";
             });
             insert(listMd + "\n", ""); closeAllModals();
         };
     }
     function addListRow() {
-        const div = document.createElement('div'); div.style.cssText = "display:flex; gap:5px; margin-bottom:8px;";
-        div.innerHTML = `<input type="text" class="list-item-input" style="flex:1; padding:8px; border:1px solid #ddd; border-radius:4px;">`;
-        document.getElementById('listItemsContainer').appendChild(div); div.firstChild.focus();
+        const input = document.createElement('input'); input.className = "list-item-input"; input.style.cssText = "width:100%; padding:8px; margin-bottom:8px; border:1px solid #ddd; border-radius:4px;";
+        document.getElementById('listItemsContainer').appendChild(input); input.focus();
     }
     function openHeaderModal() { document.getElementById('headerModal').style.display = 'block'; overlay.style.display = 'block'; }
-    function insertHeaderFinal() { const l = document.getElementById('headerLevel').value, t = document.getElementById('headerText').value; if(t) insert("\n\n" + "#".repeat(l) + " " + t + "\n\n", ""); closeAllModals(); }
-
-    function openTableModal() {
-        const r = prompt("Rows?", "2"), c = prompt("Cols?", "2");
-        if(r && c) {
-            let md = "\n\n";
-            for(let i=0; i<r; i++) {
-                md += "|" + " cell |".repeat(c) + "\n";
-                if(i===0) md += "|" + " :--- |".repeat(c) + "\n";
-            }
-            insert(md + "\n", "");
-        }
-    }
-
+    function insertHeaderFinal() { const t = document.getElementById('headerText').value; if(t) insert("\n\n" + "#".repeat(document.getElementById('headerLevel').value) + " " + t + "\n\n", ""); closeAllModals(); }
     function clearAll() { if(confirm("Wipe everything?")) { titleInput.value = ""; editor.value = ""; render(); } }
     function copyToClipboard() { navigator.clipboard.writeText((titleInput.value ? `# ${titleInput.value}\n\n` : "") + editor.value); alert("Copied!"); }
     function downloadMD() {
-        const name = titleInput.value.trim().replace(/[^a-z0-9]/gi, '_') || "document";
         const blob = new Blob([(titleInput.value ? `# ${titleInput.value}\n\n` : "") + editor.value], { type: 'text/markdown' });
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `${name}.md`; a.click();
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `${titleInput.value.replace(/[^a-z0-9]/gi, '_') || "doc"}.md`; a.click();
     }
 
-    initLangs();
-    render();
+    initLangs(); render();
 </script>
 </body>
 </html>
