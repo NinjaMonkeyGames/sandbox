@@ -214,24 +214,29 @@
     function insertTOC() {
         const rawContent = editor.value;
         const lines = rawContent.split('\n');
-        let tocMd = "### Table of Contents\n";
+        let tocMd = "## Table of Contents\n";
         let found = false;
+        
         if (titleInput.value.trim()) {
             const mainTitle = titleInput.value.trim();
             tocMd += `- [${mainTitle}](#top)\n`;
             found = true;
         }
+        
         lines.forEach(line => {
+            // Match H2, H3, H4
             const match = line.match(/^(##|###|####) (.*)/);
-            if (match) {
+            if (match && match[2].trim() !== "Table of Contents") {
                 const level = match[1].length;
                 const title = match[2].trim();
                 const slug = getSlug(title);
+                // Indent: H2=0, H3=2 spaces, H4=4 spaces
                 const indent = "  ".repeat(level - 2);
                 tocMd += `${indent}- [${title}](#${slug})\n`;
                 found = true;
             }
         });
+        
         if (!found) return alert("No headings found to generate a TOC!");
         insert(`\n\n${tocMd}\n\n`, "");
     }
