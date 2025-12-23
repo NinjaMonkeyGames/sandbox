@@ -1,0 +1,28 @@
+name: Smoke Tests Utility Workflow
+
+on:
+  workflow_call:
+
+jobs:
+  run_smoke_tests:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # <-- This is the key for full history
+        
+      - name: 🔒 Grant Execute Permission to Script
+        run: chmod +x ./duplicate-commit-title.sh
+        
+      - name: 💨 Run Duplicate Commit Title Check Script
+        run: |
+          echo "################################################"
+          echo "## SMOKE TESTS WORKFLOW CALLED SUCCESSFULLY! ##"
+          echo "################################################"
+          echo "Executing script: duplicate-commit-title.sh"
+          
+          # The script is now executable
+          ./duplicate-commit-title.sh
+          ./check-developer-asset-entry.sh

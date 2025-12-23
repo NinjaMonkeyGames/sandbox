@@ -24,6 +24,7 @@ const LOWER_CASE = 'lower-case';
 const SNAKE_CASE = 'snake-case';
 const SENTENCE_CASE = 'sentence-case';
 
+
 // Special strings
 const SIGNED_OFF_BY = 'Signed-off-by';
 
@@ -35,7 +36,6 @@ export default {
   rules: {
     // Custom rules
     'signed-off-by-regex': [ERROR, ALWAYS],             // Require a "Signed-off-by" line in commit messages
-
     // Conventional commit rules
 
     // Header rules

@@ -1,26 +1,39 @@
-# .github/workflows/staging.yaml (Logic for the develop Branch)
 name: Develop Branch Staging CI/CD Workflow
 
 on:
   workflow_call:
+    secrets:
+      GPG_PRIVATE_KEY:
+        required: false
+      GPG_PASSPHRASE:
+        required: false
 
 jobs:
-  # Job 1 & 2: Mandatory Quality Checks
+  # Job 1: Commit Lint Check
   call_commitlint:
     name: ⚙️ Commit Lint Check
     uses: ./.github/workflows/commitlint.yaml
+    secrets: inherit
 
+  # Job 2: Markdown Lint Check
   call_markdownlint:
     name: 📄 Markdown Lint Check
     uses: ./.github/workflows/markdownlint.yaml
+    secrets: inherit
+      
+  # Job 3: NEW JOB - Smoke Tests Call
+  call_smoke_tests:
+    name: 💨 Run Smoke Tests
+    uses: ./.github/workflows/smoke-tests.yaml
+    secrets: inherit
 
-  # Job 3: Core Environment Steps
+  # Job 4: Core Environment Steps
   staging_deploy:
     name: Staging Deployment Steps
     runs-on: ubuntu-latest
     environment: staging
-    # Ensures this job waits for both linting jobs to complete successfully
-    needs: [call_commitlint, call_markdownlint]
+    # NOW DEPENDS on all three quality/test jobs
+    needs: [call_commitlint, call_markdownlint, call_smoke_tests]
 
     steps:
       - name: Checkout Code
@@ -29,9 +42,9 @@ jobs:
       - name: 📦 Report Successful Staging Call
         run: |
           echo "###################################################"
-          echo "## STAGING WORKFLOW (Develop Branch) CALLED! ##"
+          echo "## STAGING WORKFLOW (Develop Branch) CALLED!     ##"
           echo "###################################################"
-          echo "All linting checks passed. Executing full integration tests and deploying to STAGING."
+          echo "All linting and smoke tests passed. Executing full integration tests and deploying to STAGING."
 
       - name: Placeholder for Staging Deployment Steps
         run: |
@@ -39,3 +52,12 @@ jobs:
           # ./scripts/run-integration-tests.sh
           echo "Deploying built assets to Staging Server..."
           # ./scripts/deploy-staging.sh
+
+  # Job 5: Call Release Engine (Validation)
+  call_release_engine:
+    name: 🔍 Validate Release Syntax (Staging)
+    needs: [staging_deploy]
+    uses: ./.github/workflows/semantic-release.yaml
+    with:
+      environment: staging
+    secrets: inherit

@@ -1,0 +1,65 @@
+name: Release Engine
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+    # Declaring these ensures the engine can access inherited secrets
+    secrets:
+      GPG_PRIVATE_KEY:
+        required: true
+      GPG_PASSPHRASE:
+        required: true
+
+jobs:
+  execute_release:
+    name: 🚀 Semantic Release (${{ inputs.environment }})
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Critical for commit analysis
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      # 1. Import the GPG Key
+      - name: Import GPG key
+        id: import-gpg
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          git_config_global: true
+          git_user_signingkey: true
+          git_commit_gpgsign: true
+
+      # 2. Force Git Identity to match the Key
+      # GitHub requires the Committer Email to match the GPG Key Email for "Verification"
+      - name: Configure Git Identity
+        run: |
+          git config --global user.name "${{ steps.import-gpg.outputs.name }}"
+          git config --global user.email "${{ steps.import-gpg.outputs.email }}"
+          git config --global user.signingkey "${{ steps.import-gpg.outputs.keyid }}"
+
+      # 3. Run Semantic Release
+      - name: Run Semantic Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }} 
+        run: npx semantic-release

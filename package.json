@@ -1,6 +1,14 @@
 {
+  "name": "sandbox",
+  "version": "0.1.0",
   "devDependencies": {
     "@commitlint/config-conventional": "^20.2.0",
-    "commitlint": "^20.2.0"
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/exec": "^7.1.0",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^12.0.2",
+    "commitlint": "^20.2.0",
+    "git-flow": "^0.2.0",
+    "semantic-release": "^25.0.2"
   }
 }
