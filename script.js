@@ -8,6 +8,23 @@ const editor = document.getElementById('editor'),
       titleDisplay = document.getElementById('editor-title-display'),
       stats = document.getElementById('stats');
 
+// Initialize SortableJS with Pinning Support
+const sortable = new Sortable(preview, {
+    handle: '.gui-drag',
+    filter: '.pinned', 
+    preventOnFilter: true,
+    animation: 150,
+    onMove: function (evt) {
+        return !evt.related.classList.contains('pinned');
+    }
+});
+
+function togglePin(btn) {
+    const item = btn.closest('.preview-item');
+    item.classList.toggle('pinned');
+    btn.innerText = item.classList.contains('pinned') ? "📍" : "📌";
+}
+
 function closeAllModals() {
     document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
     overlay.style.display = 'none';
@@ -88,20 +105,40 @@ function insertExampleFinal() {
 }
 
 function openGlossaryModal() { document.getElementById('glossaryModal').style.display = 'block'; overlay.style.display = 'block'; }
+
+// FIXED: Glossary inserts link exactly at cursor
 function insertGlossaryFinal() {
     const term = document.getElementById('glossaryTerm').value.trim();
     const desc = document.getElementById('glossaryDesc').value.trim();
+    if (!term || !desc) return;
+
+    const start = editor.selectionStart;
+    const end = editor.selectionEnd;
     const slug = getSlug(term);
     const linkMd = `[${term}](#${slug})`;
-    let content = editor.value;
     const gHeader = "## Glossary";
     const row = `| ${term} | ${desc} |\n`;
+    
+    let content = editor.value;
+
+    // 1. Append/Update Table at the bottom
     if (content.includes(gHeader)) {
-        editor.value = content.trimEnd() + "\n" + row;
+        content = content.trimEnd() + "\n" + row;
     } else {
-        editor.value = content.trimEnd() + "\n\n---\n\n" + gHeader + "\n| Term | Description |\n| --- | --- |\n" + row;
+        content = content.trimEnd() + "\n\n---\n\n" + gHeader + "\n| Term | Description |\n| --- | --- |\n" + row;
     }
-    insert(linkMd, ""); closeAllModals();
+
+    // 2. Insert Link at original selection
+    const before = content.substring(0, start);
+    const after = content.substring(end);
+    editor.value = before + linkMd + after;
+    
+    // 3. Restore focus and cursor position
+    editor.focus();
+    editor.selectionStart = editor.selectionEnd = start + linkMd.length;
+
+    handleInput();
+    closeAllModals();
 }
 
 function openAssetModal() { document.getElementById('assetModal').style.display = 'block'; overlay.style.display = 'block'; }
@@ -203,7 +240,11 @@ function insertAnchorFinal() { insert(`[Link](#${document.getElementById('anchor
 
 function openListModal(type) {
     document.getElementById('listItemsContainer').innerHTML = "";
-    document.getElementById('listTitle').innerText = (type === 'checkbox') ? "Add Checklist" : "Add List Items";
+    let title = "Add List Items";
+    if(type === 'checkbox') title = "Add Checklist";
+    if(type === 'ordered') title = "Add Numbered List";
+    
+    document.getElementById('listTitle').innerText = title;
     document.getElementById('listSubmitBtn').onclick = () => insertListFinal(type);
     addListRow();
     document.getElementById('listModal').style.display = 'block'; overlay.style.display = 'block';
@@ -217,9 +258,12 @@ function addListRow() {
 
 function insertListFinal(type) {
     let md = "\n";
-    document.querySelectorAll('.list-item-input').forEach(i => {
-        if(type === 'checkbox') md += `- [ ] ${i.value}\n`;
-        else md += `- ${i.value}\n`;
+    document.querySelectorAll('.list-item-input').forEach((i, idx) => {
+        const val = i.value.trim();
+        if(!val) return;
+        if(type === 'checkbox') md += `- [ ] ${val}\n`;
+        else if(type === 'ordered') md += `${idx + 1}. ${val}\n`;
+        else md += `- ${val}\n`;
     });
     insert(md, ""); closeAllModals();
 }
@@ -243,18 +287,26 @@ function render() {
         const div = document.createElement('div');
         div.className = 'preview-item';
         div.dataset.raw = encodeURIComponent(block);
-        div.innerHTML = `<div class="preview-controls"><div class="gui-btn gui-drag">☰</div><div class="gui-btn gui-del" onclick="deleteBlock(${index})">✕</div></div>`;
+        
+        // Pinned Button added to controls
+        div.innerHTML = `<div class="preview-controls">
+            <div class="gui-btn gui-pin" onclick="togglePin(this)">📌</div>
+            <div class="gui-btn gui-drag">☰</div>
+            <div class="gui-btn gui-del" onclick="deleteBlock(${index})">✕</div>
+        </div>`;
         
         let html = block
-            .replace(/^(#{1,6})\s+(.*$)/gim, (match, hashes, text) => {
-                const level = hashes.length;
-                return `<h${level} id="${getSlug(text)}">${text}</h${level}>`;
-            })
+            .replace(/^(#{1,6})\s+(.*$)/gim, (match, hashes, text) => `<h${hashes.length} id="${getSlug(text)}">${text}</h${hashes.length}>`)
             .replace(/!\[(.*?)\]\((.*?)\)/gim, '<img alt="$1" src="$2">')
             .replace(/\[(.*?)\]\((.*?)\)/gim, (match, text, url) => {
                 if (url.startsWith('#')) return `<a onclick="document.getElementById('${url.substring(1)}')?.scrollIntoView({behavior:'smooth'})">${text}</a>`;
                 return `<a href="${url}" target="_blank">${text}</a>`;
             })
+            // Ordered List Support
+            .replace(/^\d+\.\s+(.*)$/gim, '<ol><li>$1</li></ol>')
+            // Unordered/Checklist Support
+            .replace(/^- \[( |x)\]\s+(.*)$/gim, '<ul><li><input type="checkbox" ${match.includes("[x]") ? "checked" : ""}> $2</li></ul>')
+            .replace(/^- \s+(.*)$/gim, '<ul><li>$1</li></ul>')
             .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
             .replace(/\*(.*?)\*/gim, '<em>$1</em>')
             .replace(/_(.*?)_/gim, '<em>$1</em>')
@@ -262,7 +314,10 @@ function render() {
             .replace(/\|(.+)\|/g, (m) => m.match(/^[|\s-]+$/) ? '' : '<tr>' + m.split('|').filter(c => c.trim() !== "").map(c => `<td>${c}</td>`).join('') + '</tr>')
             .replace(/\n/g, '<br>');
 
+        // Concatenate adjacent list items
+        html = html.replace(/<\/ul><ul>/g, '').replace(/<\/ol><ol>/g, '');
         if (html.includes('<tr>')) html = `<table>${html}</table>`.replace(/<br>|<table><\/table>/g, '');
+        
         const span = document.createElement('span'); span.innerHTML = html;
         div.appendChild(span); preview.appendChild(div);
     });

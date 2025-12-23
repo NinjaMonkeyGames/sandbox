@@ -221,6 +221,17 @@ textarea:disabled {
     transition: all 0.2s ease; 
 }
 
+/* Pinned state styling */
+.preview-item.pinned {
+    border: 2px solid #f59e0b;
+    background: var(--line-numbers-bg);
+}
+
+.preview-item.pinned .gui-drag {
+    cursor: not-allowed;
+    opacity: 0.3;
+}
+
 .preview-item:hover { 
     border-color: var(--primary); 
     box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); 
@@ -235,7 +246,8 @@ textarea:disabled {
     z-index: 20; 
 }
 
-.preview-item:hover .preview-controls { display: flex; }
+.preview-item:hover .preview-controls,
+.preview-item.pinned .preview-controls { display: flex; }
 
 .gui-btn { 
     width: 26px; 
@@ -252,6 +264,9 @@ textarea:disabled {
 }
 
 .gui-del { background: #ef4444; color: white; border-color: #dc2626; }
+
+.gui-pin { background: #6366f1; color: white; }
+.preview-item.pinned .gui-pin { background: #f59e0b; }
 
 .preview pre { 
     background: #1e1e1e; 
@@ -283,6 +298,10 @@ textarea:disabled {
 .preview th, .preview td { border: 1px solid var(--border); padding: 8px; text-align: left; }
 .preview hr { border: 0; border-top: 2px solid var(--border); margin: 20px 0; }
 .preview a { color: var(--primary); text-decoration: underline; cursor: pointer; font-weight: bold; }
+
+/* List rendering styles */
+.preview ul, .preview ol { padding-left: 25px; margin: 5px 0; }
+.preview li { margin-bottom: 3px; }
 
 .modal { 
     display: none; 
