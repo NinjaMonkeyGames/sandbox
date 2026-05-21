@@ -5,8 +5,8 @@ on:
     branches:
       - master
       - develop
-      - 'release/*'
-      - 'feature/*'
+      - 'release/**'
+      - 'feature/**'
 
 jobs:
   # 1. Detect the environment based on your branching strategy
@@ -22,9 +22,9 @@ jobs:
             echo "env=production" >> $GITHUB_OUTPUT
           elif [[ "${{ github.ref_name }}" == "develop" ]]; then
             echo "env=development" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.ref_name }}" == release/* ]]; then
+          elif [[ "${{ github.ref_name }}" == release/** ]]; then
             echo "env=staging" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.ref_name }}" == feature/* ]]; then
+          elif [[ "${{ github.ref_name }}" == feature/** ]]; then
             echo "env=preview" >> $GITHUB_OUTPUT
           else
             echo "env=unknown" >> $GITHUB_OUTPUT
