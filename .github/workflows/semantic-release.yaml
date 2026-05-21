@@ -43,10 +43,10 @@ jobs:
           cache: 'npm'
 
       - name: Install Semantic Release & Plugins
-        # Added @semantic-release/changelog, @semantic-release/npm (required to run your local configuration), 
-        # and conventional-changelog-conventionalcommits for your preset.
+              # Installing locally ensures node_modules resolves properly for release.config.js
         run: |
-          npm install -g semantic-release \
+          npm install --no-save \
+            semantic-release \
             @semantic-release/commit-analyzer \
             @semantic-release/release-notes-generator \
             conventional-changelog-conventionalcommits \
