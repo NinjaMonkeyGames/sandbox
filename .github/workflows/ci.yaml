@@ -57,20 +57,20 @@ jobs:
 
   development-call:
     needs: detect-env
-    if: needs.detect-env.outputs.env_name == 'development'
-    uses: ./.github/workflows/development.yaml
+    if: needs.detect-env.outputs.env_name == 'preview'
+    uses: ./.github/workflows/preview.yaml
     secrets: inherit
 
   staging-call:
     needs: detect-env
-    if: needs.detect-env.outputs.env_name == 'staging'
-    uses: ./.github/workflows/staging.yaml
+    if: needs.detect-env.outputs.env_name == 'development'
+    uses: ./.github/workflows/development.yaml
     secrets: inherit
 
   release-call:
     needs: detect-env
-    if: needs.detect-env.outputs.env_name == 'release'
-    uses: ./.github/workflows/release.yaml
+    if: needs.detect-env.outputs.env_name == 'staging'
+    uses: ./.github/workflows/staging.yaml
     secrets: inherit
 
   production-call:

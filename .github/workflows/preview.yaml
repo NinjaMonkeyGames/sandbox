@@ -1,4 +1,4 @@
-name: Release Deployment
+name: Preview Deployment
 
 on:
   workflow_call:
@@ -19,11 +19,11 @@ jobs:
     secrets: inherit
 
   # 2. Deployment Job (Wait for linting to pass)
-  deploy-release:
-    name: Execute Release Build
+  deploy-development:
+    name: Execute Preview Build
     needs: [commit-lint, markdown-lint, es-lint]
     runs-on: ubuntu-latest
-    environment: staging
+    environment: preview
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v6
@@ -31,7 +31,7 @@ jobs:
       - name: Deployment Simulation
         run: |
           echo "-------------------------------------------------------"
-          echo "🚀 STARTING RELEASE DEPLOYMENT"
+          echo "🚀 STARTING DEVELOPMENT DEPLOYMENT"
           echo "-------------------------------------------------------"
-          echo "✅ Release deployment marked as COMPLETE."
+          echo "✅ Development deployment marked as COMPLETE."
           echo "-------------------------------------------------------"
