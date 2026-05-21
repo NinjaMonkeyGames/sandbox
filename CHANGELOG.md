@@ -1,3 +1,35 @@
+## [1.3.0](https://github.com/NinjaMonkeyGames/sandbox/compare/v1.2.0...v1.3.0) (2026-05-21)
+
+### ⚠ Details
+
+* **core:** Files:
+
+- All
+
+Description:
+
+CI wip testing.
+* **core:** Files:
+
+- All
+
+Description:
+
+CI wip testing.
+* **core:** Files:
+
+- All
+
+Description:
+
+CI wip testing.
+
+### feat
+
+* **core:** wip ci config ([](https://github.com/NinjaMonkeyGames/sandbox/commit/e6a23efdffd7923fc0e0b41f33a6a9f2582bfe65)), closes [#13](https://github.com/NinjaMonkeyGames/sandbox/issues/13)
+* **core:** wip ci config ([](https://github.com/NinjaMonkeyGames/sandbox/commit/fae7b93650c9745a01dbb998907020179f992ce3)), closes [#13](https://github.com/NinjaMonkeyGames/sandbox/issues/13)
+* **core:** wip ci config ([](https://github.com/NinjaMonkeyGames/sandbox/commit/40e4a1c74e5c2aacba1686b35341e128a4291875)), closes [#13](https://github.com/NinjaMonkeyGames/sandbox/issues/13)
+
 ## [1.2.0](https://github.com/NinjaMonkeyGames/sandbox/compare/v1.1.0...v1.2.0) (2026-05-21)
 
 ### ⚠ Details
