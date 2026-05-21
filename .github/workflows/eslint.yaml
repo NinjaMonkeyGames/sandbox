@@ -1,0 +1,37 @@
+name: ESLint Utility Workflow
+
+on:
+  workflow_call:
+
+jobs:
+  eslint_lint_check:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v6
+        
+      - name: Setup Node.js
+        # Required to run the eslint package
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          
+      - name: Install ESLint
+        # Install ESLint locally so the next step can find it
+        run: npm install eslint
+        
+      - name: 🔍 Check ESLint Version
+        # This new step confirms the installed version for debugging/confirmation
+        run: npx eslint --version
+        
+      - name: 📄 Run ESLint Check with Custom Config (Direct CLI Execution)
+        # Use npx to execute the locally installed ESLint, passing your config file
+        run: npx eslint . --config .config/eslint.config.js
+        
+      - name: Report Successful ESLint Execution
+        run: |
+          echo "###################################################"
+          echo "## ESLINT WORKFLOW EXECUTED SUCCESSFULLY! ##"
+          echo "###################################################"
+          echo "Checked files using configuration: .config/eslint.config.js via direct CLI execution."
