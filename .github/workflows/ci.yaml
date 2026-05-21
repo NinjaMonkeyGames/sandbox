@@ -1,0 +1,80 @@
+name: CI Controller
+
+on:
+  push:
+    branches:
+      - 'feature/**'
+  pull_request:
+    branches:
+      - 'develop'
+      - 'release'
+      - 'master'
+  workflow_dispatch:
+    inputs:
+      force_env:
+        description: 'Manually override and pick an environment'
+        required: false
+        type: choice
+        options:
+          - development
+          - staging
+          - release
+          - production
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  detect-env:
+    runs-on: ubuntu-latest
+    outputs:
+      env_name: ${{ steps.branch-check.outputs.env }}
+    steps:
+      - id: branch-check
+        shell: bash
+        run: |
+          if [[ "${{ github.event.inputs.force_env }}" != "" ]]; then
+            ENV="${{ github.event.inputs.force_env }}"
+          elif [[ $GITHUB_REF_NAME == feature/* ]]; then
+            ENV="preview"
+          elif [[ $GITHUB_REF_NAME == "develop" ]]; then
+            ENV="development"
+          elif [[ $GITHUB_REF_NAME == "release" ]]; then
+            ENV="staging"
+          elif [[ $GITHUB_REF_NAME == "master" ]]; then
+            ENV="production"
+          else
+            echo "::error::Branch $GITHUB_REF_NAME is not mapped to an environment."
+            exit 1
+          fi
+          
+          echo "env=$ENV" >> $GITHUB_OUTPUT
+
+  # -------------------------------------------------------------------------
+  # Reusable Workflow Calls
+  # -------------------------------------------------------------------------
+
+  development-call:
+    needs: detect-env
+    if: needs.detect-env.outputs.env_name == 'preview'
+    uses: ./.github/workflows/preview.yaml
+    secrets: inherit
+
+  staging-call:
+    needs: detect-env
+    if: needs.detect-env.outputs.env_name == 'development'
+    uses: ./.github/workflows/development.yaml
+    secrets: inherit
+
+  release-call:
+    needs: detect-env
+    if: needs.detect-env.outputs.env_name == 'staging'
+    uses: ./.github/workflows/staging.yaml
+    secrets: inherit
+
+  production-call:
+    needs: detect-env
+    if: needs.detect-env.outputs.env_name == 'production'
+    uses: ./.github/workflows/production.yaml
+    secrets: inherit
