@@ -43,15 +43,20 @@ jobs:
           cache: 'npm'
 
       - name: Install Semantic Release & Plugins
-        # Removed @semantic-release/npm entirely
+        # Added @semantic-release/changelog, @semantic-release/npm (required to run your local configuration), 
+        # and conventional-changelog-conventionalcommits for your preset.
         run: |
           npm install -g semantic-release \
             @semantic-release/commit-analyzer \
             @semantic-release/release-notes-generator \
-            @semantic-release/github \
-            @semantic-release/git
+            conventional-changelog-conventionalcommits \
+            @semantic-release/changelog \
+            @semantic-release/npm \
+            @semantic-release/git \
+            @semantic-release/github
 
       - name: Configure SSH Signing Key
+        # Crucial because your @semantic-release/git configuration pushes package.json and CHANGELOG.md modifications back to GitHub
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_SIGNING_KEY }}" > ~/.ssh/id_ed25519
@@ -61,11 +66,5 @@ jobs:
       - name: 🚀 Run Semantic Release
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
-        # We explicitly pass the plugin array as valid JSON format to the CLI. 
-        # This prevents semantic-release from defaulting back to npm verification steps.
-        run: |
-          npx semantic-release --plugins '[
-            "@semantic-release/commit-analyzer",
-            "@semantic-release/release-notes-generator",
-            "@semantic-release/github"
-          ]'
+        # Point directly to your custom configuration file path using --extends
+        run: npx semantic-release --extends ./.config/release.config.js
