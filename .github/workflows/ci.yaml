@@ -1,80 +1,56 @@
-name: CI Controller
+name: Environment Deployment Router
 
 on:
   push:
     branches:
-      - 'feature/**'
-  pull_request:
-    branches:
-      - 'develop'
-      - 'release'
-      - 'master'
-  workflow_dispatch:
-    inputs:
-      force_env:
-        description: 'Manually override and pick an environment'
-        required: false
-        type: choice
-        options:
-          - development
-          - staging
-          - release
-          - production
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+      - master
+      - develop
+      - 'release/*'
+      - 'feature/*'
 
 jobs:
-  detect-env:
+  # 1. Detect the environment based on your branching strategy
+  detect-environment:
     runs-on: ubuntu-latest
     outputs:
-      env_name: ${{ steps.branch-check.outputs.env }}
+      env: ${{ steps.branch-check.outputs.env }}
     steps:
-      - id: branch-check
-        shell: bash
+      - name: Check branch and set environment
+        id: branch-check
         run: |
-          if [[ "${{ github.event.inputs.force_env }}" != "" ]]; then
-            ENV="${{ github.event.inputs.force_env }}"
-          elif [[ $GITHUB_REF_NAME == feature/* ]]; then
-            ENV="preview"
-          elif [[ $GITHUB_REF_NAME == "develop" ]]; then
-            ENV="development"
-          elif [[ $GITHUB_REF_NAME == "release" ]]; then
-            ENV="staging"
-          elif [[ $GITHUB_REF_NAME == "master" ]]; then
-            ENV="production"
+          if [[ "${{ github.ref_name }}" == "master" ]]; then
+            echo "env=production" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref_name }}" == "develop" ]]; then
+            echo "env=development" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref_name }}" == release/* ]]; then
+            echo "env=staging" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref_name }}" == feature/* ]]; then
+            echo "env=preview" >> $GITHUB_OUTPUT
           else
-            echo "::error::Branch $GITHUB_REF_NAME is not mapped to an environment."
-            exit 1
+            echo "env=unknown" >> $GITHUB_OUTPUT
           fi
-          
-          echo "env=$ENV" >> $GITHUB_OUTPUT
 
-  # -------------------------------------------------------------------------
-  # Reusable Workflow Calls (Aligned & Fixed)
-  # -------------------------------------------------------------------------
-
-  preview-call:
-    needs: detect-env
-    if: needs.detect-env.outputs.env_name == 'preview'
+  # 2. Call the respective reusable workflows
+  call-preview:
+    needs: detect-environment
+    if: needs.detect-environment.outputs.env == 'preview'
     uses: ./.github/workflows/preview.yaml
     secrets: inherit
 
-  development-call:
-    needs: detect-env
-    if: needs.detect-env.outputs.env_name == 'development'
+  call-development:
+    needs: detect-environment
+    if: needs.detect-environment.outputs.env == 'development'
     uses: ./.github/workflows/development.yaml
     secrets: inherit
 
-  staging-call:
-    needs: detect-env
-    if: needs.detect-env.outputs.env_name == 'staging'
+  call-staging:
+    needs: detect-environment
+    if: needs.detect-environment.outputs.env == 'staging'
     uses: ./.github/workflows/staging.yaml
     secrets: inherit
 
-  production-call:
-    needs: detect-env
-    if: needs.detect-env.outputs.env_name == 'production'
+  call-production:
+    needs: detect-environment
+    if: needs.detect-environment.outputs.env == 'production'
     uses: ./.github/workflows/production.yaml
     secrets: inherit
