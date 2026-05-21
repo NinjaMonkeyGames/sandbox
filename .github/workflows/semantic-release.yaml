@@ -40,10 +40,10 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: '24'
-          cache: 'npm' # Optional, optimizes run-time if package-lock exists
+          cache: 'npm'
 
       - name: Install Semantic Release & Plugins
-        # Installs semantic-release alongside standard conventional commits and GitHub release tooling
+        # Removed @semantic-release/npm entirely
         run: |
           npm install -g semantic-release \
             @semantic-release/commit-analyzer \
@@ -52,7 +52,6 @@ jobs:
             @semantic-release/git
 
       - name: Configure SSH Signing Key
-        # If your release process commits things back to the repository (like version bumps or changelogs)
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_SIGNING_KEY }}" > ~/.ssh/id_ed25519
@@ -62,4 +61,11 @@ jobs:
       - name: 🚀 Run Semantic Release
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
-        run: npx semantic-release
+        # We explicitly pass the plugin array as valid JSON format to the CLI. 
+        # This prevents semantic-release from defaulting back to npm verification steps.
+        run: |
+          npx semantic-release --plugins '[
+            "@semantic-release/commit-analyzer",
+            "@semantic-release/release-notes-generator",
+            "@semantic-release/github"
+          ]'
