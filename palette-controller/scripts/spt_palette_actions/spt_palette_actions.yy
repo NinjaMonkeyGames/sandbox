@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"spt_palette_actions",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"spt_palette_actions",
+  "parent":{
+    "name":"palette-controller",
+    "path":"palette-controller.yyp",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}
