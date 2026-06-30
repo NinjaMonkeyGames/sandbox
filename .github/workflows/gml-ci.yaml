@@ -8,15 +8,15 @@ on:
 jobs:
   run-gm-cli:
     runs-on: ubuntu-latest
-    # This pulls your custom image from Docker Hub
     container:
       image: monkeyknuckles/gm-cli:latest
-      # If your Docker Hub repository is private, you would add 
-      # credentials here using 'options' or 'credentials'
-
+      # Set the environment variable for the entire container
+      env:
+        DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: 1
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run GameMaker CLI
+      - name: Run GameMaker CLI for Project A
+        working-directory: ./palette-controller
         run: gm-cli run
