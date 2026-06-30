@@ -1,0 +1,22 @@
+name: GM CLI Run
+
+on:
+  push:
+    branches:
+      - 'feature/**'
+
+jobs:
+  run-gm-cli:
+    runs-on: ubuntu-latest
+    # This pulls your custom image from Docker Hub
+    container:
+      image: monkeyknuckles/gm-cli:latest
+      # If your Docker Hub repository is private, you would add 
+      # credentials here using 'options' or 'credentials'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run GameMaker CLI
+        run: gm-cli run
