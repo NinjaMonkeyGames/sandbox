@@ -1,6 +1,12 @@
 {
-  "dependencies": 
-  {
-    "markdownlint-cli2": "^0.22.1"
-  }
+  "devDependencies": {
+    "@commitlint/config-conventional": "^20.3.0",
+    "commitlint": "^20.4.3",
+    "cspell": "^9.4.0",
+    "markdownlint-cli2": "^0.21.0",
+    "npm": "^11.15.0"
+  },
+  "name": "markdownlint-cli2-ci-workflow-docker-container",
+  "type": "module",
+  "version": "0.1.0"
 }

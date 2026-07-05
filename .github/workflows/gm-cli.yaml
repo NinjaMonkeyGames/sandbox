@@ -1,0 +1,9 @@
+# gm-cli.yaml
+gmCli:
+  endpoint: "http://localhost:8080"
+  auth:
+    token: "${GM_CLI_TOKEN}"
+
+project:
+  root: "/app"     # folder containing your .yyp
+  packageOutput: "./dist"
