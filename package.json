@@ -1,8 +1,6 @@
 {
-  "dependencies": {
+  "dependencies": 
+  {
     "markdownlint-cli2": "^0.22.1"
-  },
-  "devDependencies": {
-    "@gamemaker/gm-cli": "^2.2.0"
   }
 }

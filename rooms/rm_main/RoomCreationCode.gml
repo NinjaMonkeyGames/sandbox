@@ -1,1 +1,0 @@
-instance_create_layer(0, 0, "lyr_gui", obj_palette_controller); // Load palette controller object
