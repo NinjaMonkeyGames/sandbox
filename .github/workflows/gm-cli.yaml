@@ -20,4 +20,4 @@ jobs:
             -v "${{ github.workspace }}:/work" \
             -w /work \
             monkeyknuckles/gm-cli:latest \
-            gm-cli compile
+            gm-cli run 
