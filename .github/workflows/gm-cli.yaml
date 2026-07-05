@@ -1,9 +1,23 @@
-# gm-cli.yaml
-gmCli:
-  endpoint: "http://localhost:8080"
-  auth:
-    token: "${GM_CLI_TOKEN}"
+name: gm-cli feature push
 
-project:
-  root: "/app"     # folder containing your .yyp
-  packageOutput: "./dist"
+on:
+  push:
+    branches:
+      - "feature/**"
+
+jobs:
+  gm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build gm-cli image
+        run: docker build -t gm-cli-runner:latest .
+
+      - name: Compile with gm-cli (monkeyknuckles/gm-cli)
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/work" \
+            -w /work \
+            monkeyknuckles/gm-cli:latest \
+            gm-cli compile
