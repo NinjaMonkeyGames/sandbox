@@ -2,7 +2,6 @@ name: Run gm-cli on Feature Push
 
 on:
   push:
-    # This pattern matches any branch that starts with 'feature/'
     branches:
       - 'feature/**'
 
@@ -11,6 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: monkeyknuckles/gm-cli:latest
+    # This sets the working directory for all steps in this job
+    defaults:
+      run:
+        working-directory: /grid-utility
     steps:
       - name: Checkout Code
         uses: actions/checkout@v6
