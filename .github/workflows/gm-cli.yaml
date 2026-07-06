@@ -1,10 +1,7 @@
 name: gm-cli
 
 on:
-  push:
-    branches:
-      - 'feature/**'
-
+  workflow_call:
 jobs:
   build-test:
     runs-on: ubuntu-latest
