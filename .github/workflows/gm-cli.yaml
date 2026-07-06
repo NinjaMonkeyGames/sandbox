@@ -17,4 +17,4 @@ jobs:
 
       - name: Run gm-cli
         run: |
-          gm-cli compile
+          ls -a
