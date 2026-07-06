@@ -1,20 +1,24 @@
-name: Run gm-cli on Feature Push
+name: gm-cli
 
 on:
-  push:
-    # This pattern matches any branch that starts with 'feature/'
-    branches:
-      - 'feature/**'
+  workflow_call:
 
 jobs:
-  run-gm:
+  build-test:
     runs-on: ubuntu-latest
-    container:
-      image: monkeyknuckles/gm-cli:latest
+    
     steps:
       - name: Checkout Code
         uses: actions/checkout@v6
-
-      - name: Run gm-cli
+        
+      - name: 📄 Run gm-cli
+        # Use npx to execute the locally installed package, passing your config file
+        run: gm-cli compile
+        
+      - name: Report Successful GameMaker Build Client Execution
         run: |
-          gm-cli compile
+          echo "###################################################"
+          echo "## GM-CLI WORKFLOW EXECUTED SUCCESSFULLY! ##"
+          echo "###################################################"
+
+          
