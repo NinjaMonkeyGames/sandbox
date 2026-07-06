@@ -2,6 +2,7 @@ name: Run gm-cli on Feature Push
 
 on:
   push:
+    # This pattern matches any branch that starts with 'feature/'
     branches:
       - 'feature/**'
 
@@ -13,10 +14,6 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v6
-
-      - name: Prepare Workspace
-        run: |
-          cp -a /gm-files/. .
 
       - name: Run gm-cli
         run: |
