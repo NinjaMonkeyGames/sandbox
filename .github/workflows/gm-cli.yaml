@@ -2,17 +2,17 @@ name: gm-cli
 
 on:
   workflow_call:
+  push:
+    branches:
+      - 'feature/**'
 
 jobs:
   build-test:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v6
-        
-      - name: Run gm-cli
-        # Use npx to execute the locally installed package, passing your config file
-        run: gm-cli compile
 
-          
+      - name: Run gm-cli
+        run: gm-cli compile

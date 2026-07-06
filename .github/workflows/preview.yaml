@@ -14,14 +14,10 @@ jobs:
     uses: ./.github/workflows/markdownlint.yaml
     secrets: inherit
 
-  build-test:
-    uses: ./.github/workflows/gm-cli.yaml
-    secrets: inherit
-
   # 2. Deployment Job (Wait for linting to pass)
   deploy-development:
     name: Execute Preview Build
-    needs: [commit-lint, markdown-lint, build-test]
+    needs: [commit-lint, markdown-lint]
     runs-on: ubuntu-latest
     environment: preview
     steps:
