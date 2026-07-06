@@ -1,7 +1,6 @@
 name: gm-cli
 
 on:
-  workflow_call:
   push:
     branches:
       - 'feature/**'
@@ -9,10 +8,10 @@ on:
 jobs:
   build-test:
     runs-on: ubuntu-latest
-
+    container:
+      image: monkeyknuckles/gm-cli
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
 
       - name: Run gm-cli
         run: gm-cli compile
