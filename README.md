@@ -100,6 +100,7 @@ Tools versions used by CI and by extension the Dockerfile.
 | Markdownlint                          | 0.40.0                            |
 | Commitlint                            | 20.4.3                            |
 | Commitlint config-conventional        | 20.3.0                            |
+| gm-cli                                | 2.2.0                             |
 
 ### SUPPORTING TOOLS
 
