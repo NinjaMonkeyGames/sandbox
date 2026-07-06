@@ -1,23 +1,20 @@
-name: gm-cli feature push
+name: Run gm-cli on Feature Push
 
 on:
   push:
+    # This pattern matches any branch that starts with 'feature/'
     branches:
-      - "feature/**"
+      - 'feature/**'
 
 jobs:
-  gm:
+  run-gm:
     runs-on: ubuntu-latest
+    container:
+      image: monkeyknuckles/gm-cli:latest
     steps:
-      - uses: actions/checkout@v6
+      - name: Checkout Code
+        uses: actions/checkout@v6
 
-      - name: Build gm-cli image
-        run: docker build -t gm-cli-runner:latest .
-
-      - name: Compile with gm-cli (monkeyknuckles/gm-cli)
+      - name: Run gm-cli
         run: |
-          docker run --rm \
-            -v "${{ github.workspace }}:/work" \
-            -w /work \
-            monkeyknuckles/gm-cli:latest \
-            gm-cli run
+          gm-cli compile
