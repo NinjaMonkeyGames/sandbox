@@ -8,8 +8,5 @@
   },
   "name": "markdownlint-cli2-ci-workflow-docker-container",
   "type": "module",
-  "version": "0.1.0",
-  "dependencies": {
-    "@gamemaker/gm-cli": "^2.2.0"
-  }
+  "version": "0.1.0"
 }

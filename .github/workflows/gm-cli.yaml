@@ -9,7 +9,7 @@ jobs:
   gm:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Build gm-cli image
         run: docker build -t gm-cli-runner:latest .
@@ -20,4 +20,4 @@ jobs:
             -v "${{ github.workspace }}:/work" \
             -w /work \
             monkeyknuckles/gm-cli:latest \
-            gm-cli compile
+            gm-cli compile 
