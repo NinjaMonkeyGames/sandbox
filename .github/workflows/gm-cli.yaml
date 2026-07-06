@@ -11,4 +11,6 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Run gm-cli
+        # This tells the runner to execute the command inside /grid-utility
+        working-directory: /grid-utility
         run: gm-cli compile
