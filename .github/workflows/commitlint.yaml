@@ -1,3 +1,5 @@
+# Ensures commit messages are conventional commit compliant
+
 name: Commit Lint Utility Workflow
 
 on:

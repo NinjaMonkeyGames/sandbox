@@ -1,3 +1,5 @@
+# CI controller manages which jobs are run in which environment
+
 name: Environment Deployment Router
 
 on:

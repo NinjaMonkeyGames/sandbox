@@ -1,3 +1,5 @@
+# Test if GameMaker Project can be compiled without error.
+
 name: gm-cli
 
 on:
@@ -10,18 +12,6 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Debug Environment
-        run: |
-          echo "--- Current Directory ---"
-          pwd
-          echo "--- Contents of Current Directory ---"
-          ls -F
-          echo "--- Searching for grid-utility-professional ---"
-          find . -maxdepth 2 -name "grid-utility-professional" -type d
-          echo "--- PATH check for gm-cli ---"
-          which gm-cli || echo "gm-cli not found in PATH"
-
       - name: Run gm-cli
-        # This runs the command inside the sub-folder automatically
         working-directory: ./grid-utility-professional
         run: npx gm-cli compile

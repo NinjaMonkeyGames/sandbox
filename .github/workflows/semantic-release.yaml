@@ -1,3 +1,5 @@
+# Bump version by running semantic release
+
 name: Semantic Release Utility Workflow
 
 on:
