@@ -24,8 +24,9 @@ jobs:
           chmod +x /usr/sbin/invoke-rc.d
           
           # 2. Update and install packages
+          # Added linuxdeploy and patchelf
           apt-get update
-          apt-get install -y unzip xvfb
+          apt-get install -y unzip xvfb linuxdeploy patchelf
 
       - name: Run gm-cli
         working-directory: ./grid-utility-professional
