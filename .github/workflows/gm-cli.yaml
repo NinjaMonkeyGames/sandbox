@@ -22,4 +22,6 @@ jobs:
           which gm-cli || echo "gm-cli not found in PATH"
 
       - name: Run gm-cli
-        run: gm-cli compile
+        # This runs the command inside the sub-folder automatically
+        working-directory: ./grid-utility-professional
+        run: npx gm-cli compile
