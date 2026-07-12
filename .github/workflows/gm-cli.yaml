@@ -1,4 +1,3 @@
-# Test if GameMaker Project can be compiled without error.
 name: gm-cli
 
 on:
@@ -23,12 +22,14 @@ jobs:
           echo "exit 0" >> /usr/sbin/invoke-rc.d
           chmod +x /usr/sbin/invoke-rc.d
           
-          # 2. Update and install packages
-          # Added linuxdeploy and patchelf
+          # 2. Update and install core packages
           apt-get update
-          apt-get install -y unzip xvfb linuxdeploy patchelf
+          apt-get install -y --no-install-recommends unzip xvfb curl patchelf
+          
+          # 3. Download linuxdeploy manually
+          curl -L https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage -o /usr/local/bin/linuxdeploy
+          chmod +x /usr/local/bin/linuxdeploy
 
       - name: Run gm-cli
         working-directory: ./grid-utility-professional
-        # Wrapped in xvfb-run to provide a virtual display for the GameMaker CLI
         run: xvfb-run --auto-servernum --server-args="-screen 0 1024x768x24" npx gm-cli run
