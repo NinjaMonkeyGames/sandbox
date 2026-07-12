@@ -1,7 +1,7 @@
 {
-  "devDependencies": 
-  {
+  "devDependencies": {
     "@commitlint/config-conventional": "^20.3.0",
+    "@gamemaker/gm-cli": "^2.2.0",
     "commitlint": "^21.2.1",
     "cspell": "^10.0.1",
     "markdownlint": "^0.41.0",
@@ -10,5 +10,8 @@
   },
   "name": "grid-utility-professional",
   "type": "module",
-  "version": "0.1.0"
+  "version": "0.1.0",
+  "dependencies": {
+    "ci": "^2.3.0"
+  }
 }
