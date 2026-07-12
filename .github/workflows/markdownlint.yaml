@@ -25,9 +25,8 @@ jobs:
         # This new step confirms the installed version for debugging/confirmation
         run: npx markdownlint-cli2 --version
         
-      - name: 📄 Run Markdown Lint Check with Custom Config (Direct CLI Execution)
-        # Use npx to execute the locally installed package, passing your config file
-        run: npx markdownlint-cli2 --config .config/.markdownlint-cli2.jsonc .
+      - name: 📄 Run Markdown Lint Check
+        run: ./node_modules/.bin/markdownlint-cli2 --config .config/.markdownlint-cli2.jsonc .
         
       - name: Report Successful Markdown Lint Execution
         run: |

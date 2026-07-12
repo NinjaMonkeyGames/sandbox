@@ -28,11 +28,8 @@ jobs:
         # This new step confirms the installed version for debugging/confirmation
         run: npx commitlint --version
         
-      - name: 📝 Run Commit Lint Check with Custom Config
-        # This command runs commitlint against the last commit using your commitlint.config.js.
-        # It uses 'HEAD^1' to 'HEAD' to check the commit that triggered the workflow (or just 'HEAD' for the last commit).
-        # We assume linting the last commit message is sufficient for a push.
-        run: git log -1 --pretty=%B | npx commitlint --config .config/commitlint.config.js 
+      - name: 📝 Run Commit Lint Check
+        run: git log -1 --pretty=%B | ./node_modules/.bin/commitlint --config .config/commitlint.config.js
         
       - name: Report Successful Commit Lint Execution
         run: |
