@@ -16,9 +16,7 @@
   "version": "0.2",
   "words": [
     "allman",
-    "buildx",
     "commitlint",
-    "cooldown",
     "cves",
     "davidanson",
     "dbaeumer",
@@ -33,7 +31,6 @@
     "linters",
     "LMDE",
     "monkeyknuckles",
-    "tsrc",
     "yzhang"
   ]
 }
