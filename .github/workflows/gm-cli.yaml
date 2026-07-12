@@ -17,6 +17,13 @@ jobs:
           apt-get update
           apt-get install -y unzip xvfb
 
+
+      - name: Install dependencies
+        run: |
+          apt-get update
+          # Install only the essentials to avoid x11-common configuration bloat
+          apt-get install -y --no-install-recommends unzip xvfb
+
       - name: Run gm-cli
         working-directory: ./grid-utility-professional
         # Wrapped in xvfb-run to provide a virtual display for the GameMaker CLI
