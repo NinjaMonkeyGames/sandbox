@@ -11,6 +11,9 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Run gm-cli
+        run: ls -a
+
+      - name: Run gm-cli
         run: cd ../grid-utility-professional
 
       - name: Run gm-cli
