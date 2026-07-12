@@ -1,9 +1,9 @@
 # Test if GameMaker Project can be compiled without error.
-
 name: gm-cli
 
 on:
   workflow_call:
+
 jobs:
   build-test:
     runs-on: ubuntu-latest
@@ -14,16 +14,15 @@ jobs:
 
       - name: Install dependencies
         run: |
+          # Create a dummy update-rc.d file to bypass the post-install error 
+          # in stripped-down container environments
+          echo "#!/bin/sh" > /usr/sbin/update-rc.d
+          echo "exit 0" >> /usr/sbin/update-rc.d
+          chmod +x /usr/sbin/update-rc.d
+          
+          # Update and install required packages
           apt-get update
           apt-get install -y unzip xvfb
-
-
-      - name: Install dependencies
-        run: |
-          apt-get update
-          apt-get install -y unzip xvfb || true
-          # Attempt to fix broken installs if they occur
-          apt-get install -f -y
 
       - name: Run gm-cli
         working-directory: ./grid-utility-professional
