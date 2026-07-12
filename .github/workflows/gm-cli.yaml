@@ -11,29 +11,27 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Install dependencies
-        run: |
-          # 1. Create dummy files to bypass service management errors
-          # Ensure directories exist first
-          mkdir -p /usr/sbin
-          echo "#!/bin/sh" > /usr/sbin/update-rc.d
-          echo "exit 0" >> /usr/sbin/update-rc.d
-          chmod +x /usr/sbin/update-rc.d
-          
-          echo "#!/bin/sh" > /usr/sbin/invoke-rc.d
-          echo "exit 0" >> /usr/sbin/invoke-rc.d
-          chmod +x /usr/sbin/invoke-rc.d
-          
-          # 2. Update and install core packages
-          apt-get update
-          apt-get install -y --no-install-recommends unzip xvfb curl patchelf
-          
-          # 3. Download linuxdeploy to a guaranteed location
-          # Create bin directory just in case it's missing
-          mkdir -p /usr/local/bin
-          curl -L https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage -o /usr/local/bin/linuxdeploy
-          chmod +x /usr/local/bin/linuxdeploy
+        name: gm-cli
 
-            - name: Run gm-cli
-              working-directory: ./grid-utility-professional
-              run: xvfb-run --auto-servernum --server-args="-screen 0 1024x768x24" npx gm-cli run
+        on:
+          workflow_call:
+
+        jobs:
+          build-test:
+            runs-on: ubuntu-latest
+            container:
+              image: monkeyknuckles/gm-cli
+            steps:
+              - uses: actions/checkout@v6
+
+              - name: Install dependencies
+                run: |
+                  apt-get update
+                  # --no-install-recommends: keeps it lean
+                  # --no-triggers: skips the post-install scripts that crash on missing rc services
+                  apt-get install -y --no-install-recommends --no-triggers unzip xvfb
+                  
+              - name: Run gm-cli
+                working-directory: ./grid-utility-professional
+                # Wrapped in xvfb-run
+                run: xvfb-run --auto-servernum --server-args="-screen 0 1024x768x24" npx gm-cli run
