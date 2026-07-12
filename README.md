@@ -52,7 +52,7 @@ This project is for anyone who has a use for the code in this project.
 
 ## QUICKSTART
 
-Simply create a new palette instance with the following `example = new palette(_palette_data);`. See `DEVELOPER.md` for
+Simply create a new palette instance with the following `example = new grid(_grid_data);`. See `DEVELOPER.md` for
 details.
 
 ## ENVIRONMENT DEPENDENCY MANIFESTO

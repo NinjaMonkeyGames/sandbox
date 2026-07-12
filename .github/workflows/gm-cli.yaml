@@ -10,5 +10,8 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - name: Run cd
+        run: cd grid-utility-professional
+
       - name: Run gm-cli
         run: gm-cli compile
