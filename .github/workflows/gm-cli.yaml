@@ -10,14 +10,16 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Run gm-cli
-        run: ls -a
-
-      - name: Run gm-cli
-        run: cd /grid-utility-professional
-
-      - name: Run gm-cli
-        run: ls -a
+      - name: Debug Environment
+        run: |
+          echo "--- Current Directory ---"
+          pwd
+          echo "--- Contents of Current Directory ---"
+          ls -F
+          echo "--- Searching for grid-utility-professional ---"
+          find . -maxdepth 2 -name "grid-utility-professional" -type d
+          echo "--- PATH check for gm-cli ---"
+          which gm-cli || echo "gm-cli not found in PATH"
 
       - name: Run gm-cli
         run: gm-cli compile
