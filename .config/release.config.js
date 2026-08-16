@@ -3,14 +3,14 @@ module.exports = {
   plugins: [
     '@semantic-release/commit-analyzer',
     '@semantic-release/release-notes-generator',
-    '@semantic-release/npm',
     [
-      '@semantic-release/github',
+      '@semantic-release/npm',
       {
-        failComment: false,
-        failTitle: false,
-        labels: false
+        pkgRoot: '.',
+        npmPublish: true,
+        provenance: true
       }
-    ]
+    ],
+    '@semantic-release/github'
   ]
 };
