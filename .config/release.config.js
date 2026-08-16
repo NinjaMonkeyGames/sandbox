@@ -1,28 +1,19 @@
-/**
- * @type {import('semantic-release').GlobalConfig}
- */
+// release.config.js
 module.exports = {
   branches: [
     'master',
-    'main'
+    {
+      name: 'release/**',
+      prerelease: 'staging',   // publishes versions like 1.2.0-staging.1
+      channel: 'staging'       // npm dist-tag: npm install pkg@staging
+    }
   ],
   plugins: [
     '@semantic-release/commit-analyzer',
     '@semantic-release/release-notes-generator',
-    [
-      '@semantic-release/npm',
-      {
-        pkgRoot: '.',
-        npmPublish: true
-      }
-    ],
-    [
-      '@semantic-release/github',
-      {
-        failComment: false,
-        failTitle: false,
-        labels: false
-      }
-    ]
+    '@semantic-release/changelog',
+    '@semantic-release/npm',
+    '@semantic-release/github',
+    '@semantic-release/git'
   ]
 };
