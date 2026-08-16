@@ -1,13 +1,12 @@
 module.exports = {
   branches: [
-    'master', // or 'master'
-    'release/**',
+    'master',
     {
-      name: 'beta',
-      prerelease: true
+      name: 'release/**',
+      prerelease: 'rc' // Generates version tags like 1.0.0-rc.1 on NPM
     },
     {
-      name: 'rc',
+      name: 'beta',
       prerelease: true
     }
   ],
@@ -15,20 +14,8 @@ module.exports = {
     '@semantic-release/commit-analyzer',
     '@semantic-release/release-notes-generator',
     '@semantic-release/changelog',
-    [
-      '@semantic-release/npm',
-      {
-        npmPublish: true,
-        pkgRoot: '.'
-      }
-    ],
-    [
-      '@semantic-release/git',
-      {
-        assets: ['package.json', 'package-lock.json', 'CHANGELOG.md'],
-        message: 'chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}'
-      }
-    ],
+    '@semantic-release/npm',
+    '@semantic-release/git',
     '@semantic-release/github'
   ]
 };

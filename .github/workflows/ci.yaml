@@ -93,7 +93,7 @@ jobs:
       - name: Pack NPM Package (Dry-Run Verification)
         run: npm pack --dry-run
 
-  # ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
   # 3. Staging Release (Pushes to release/**)
   # ---------------------------------------------------------------------------
   staging-release:
@@ -140,7 +140,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ steps.nmg_bot_token.outputs.token }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npx semantic-release
+        # Pass current branch explicitly to prevent detached HEAD override
+        run: npx semantic-release --branches "${{ github.ref_name }}"
 
   # ---------------------------------------------------------------------------
   # 4. Production Release (Runs AFTER Merge directly on master)
