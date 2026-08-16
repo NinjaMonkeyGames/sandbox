@@ -13,9 +13,7 @@ module.exports = {
       '@semantic-release/npm',
       {
         pkgRoot: '.',
-        npmPublish: true,
-        provenance: true,
-        npmToken: false // CRITICAL: Forces semantic-release to bypass the NPM_TOKEN check and rely on OIDC
+        npmPublish: true
       }
     ],
     [
