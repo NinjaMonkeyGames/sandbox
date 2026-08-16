@@ -1,6 +1,6 @@
 {
-  "name": "gm-lint",
-  "version": "1.2.0",
+  "name": "@ninjamonkeygames/sandbox",
+  "version": "1.0.0",
   "type": "module",
   "main": "./src/index.js",
   "bin": {
