@@ -2,8 +2,8 @@ module.exports = {
   branches: [
     'master',
     {
-      name: 'release/v1.0.0',
-      prerelease: 'rc' // Generates v1.0.0-rc.1, rc.2, etc. to avoid tag collision
+      name: 'release/**',
+      prerelease: 'rc'
     }
   ],
   plugins: [
@@ -12,8 +12,13 @@ module.exports = {
     [
       '@semantic-release/npm',
       {
-        npmPublish: true,
-        pkgRoot: '.'
+        npmPublish: false // Bumps package.json version without running standard npm publish
+      }
+    ],
+    [
+      '@semantic-release/exec',
+      {
+        publishCmd: 'npm stage publish --tag ${nextRelease.channel || "latest"}'
       }
     ]
   ]
