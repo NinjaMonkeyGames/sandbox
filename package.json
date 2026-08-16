@@ -4,7 +4,7 @@
   "type": "module",
   "main": "./src/index.js",
   "bin": {
-    "gm-lint": "./bin/gm-lint.js"
+    "gm-lint": "./bin/index.js"
   },
   "files": [
     "bin",
