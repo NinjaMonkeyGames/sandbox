@@ -1,3 +1,10 @@
+# [1.0.0-dev.3](https://github.com/NinjaMonkeyGames/sandbox/compare/v1.0.0-dev.2...v1.0.0-dev.3) (2026-08-16)
+
+
+### Features
+
+* **core:** ci test ([8aaded8](https://github.com/NinjaMonkeyGames/sandbox/commit/8aaded83f8140a2ce886db7f04d9852c78c6eb3d)), closes [#1](https://github.com/NinjaMonkeyGames/sandbox/issues/1)
+
 # [1.0.0-dev.2](https://github.com/NinjaMonkeyGames/sandbox/compare/v1.0.0-dev.1...v1.0.0-dev.2) (2026-08-16)
 
 

@@ -1,9 +1,9 @@
 {
   "name": "gm-lint",
-  "version": "1.0.0-dev.2",
+  "version": "1.0.0-dev.3",
   "type": "module",
   "main": "./src/index.js",
-"bin": {
+  "bin": {
     "gm-lint": "./bin/index.js"
   },
   "files": [
