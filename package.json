@@ -3,7 +3,7 @@
   "version": "1.0.0-dev.1",
   "type": "module",
   "main": "./src/index.js",
-  "bin": {
+"bin": {
     "gm-lint": "./bin/index.js"
   },
   "files": [
