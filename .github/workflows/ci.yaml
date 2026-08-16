@@ -136,11 +136,10 @@ jobs:
       - name: ESLint
         run: npx eslint . --config eslint.config.js
 
-      - name: Semantic Release (Staging Publish to NPM)
+      - name: Publish Staged Package to NPM
         env:
-          GITHUB_TOKEN: ${{ steps.nmg_bot_token.outputs.token }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npx semantic-release
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --tag staging
 
   # ---------------------------------------------------------------------------
   # 4. Production Release (Runs AFTER Merge directly on master)
