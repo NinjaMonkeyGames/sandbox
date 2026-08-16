@@ -13,7 +13,7 @@ jobs:
       contents: write
       issues: write
       pull-requests: write
-      id-token: write # Required for OIDC / Trusted Publishing
+      id-token: write
 
     steps:
       - name: Checkout
@@ -24,7 +24,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
 
       - name: Install Dependencies
         run: npm ci
