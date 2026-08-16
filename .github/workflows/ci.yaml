@@ -21,10 +21,10 @@ on:
 
 jobs:
   # ---------------------------------------------------------------------------
-  # 1. Preview Checks & Feature Branch Publish
+  # 1. Preview / Feature Branch Checks & Dev Publish
   # ---------------------------------------------------------------------------
   preview-checks:
-    name: Preview - Lint & Feature Publish
+    name: Feature - Lint & Dev Release
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/feature/')
     runs-on: ubuntu-latest
     environment: preview
@@ -42,13 +42,13 @@ jobs:
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
       - name: Checkout Code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ steps.nmg_bot_token.outputs.token }}
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: 24
           registry-url: 'https://registry.npmjs.org'
@@ -63,19 +63,63 @@ jobs:
       - name: ESLint
         run: npx eslint . --config eslint.config.js
 
-      - name: Semantic Release (Feature Sandbox)
+      - name: Semantic Release (Dev Tag Publish)
         env:
           GH_TOKEN: ${{ steps.nmg_bot_token.outputs.token }}
           GITHUB_TOKEN: ${{ steps.nmg_bot_token.outputs.token }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npx semantic-release --extends ./.config/release.config.js
-        
+        run: npx semantic-release --extends ${{ github.workspace }}/.config/release.config.js
+
+  # ---------------------------------------------------------------------------
+  # 2. PR & Merge Queue Checks
+  # ---------------------------------------------------------------------------
+  pr-checks:
+    name: Checks & Verifications
+    if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Commitlint (Web UI PR Title & Body)
+        if: github.event_name == 'pull_request'
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          printf "%s\n\n%s" "$PR_TITLE" "$PR_BODY" > /tmp/PR_COMMIT_MSG
+          npx commitlint --config .config/commitlint.config.js --edit /tmp/PR_COMMIT_MSG
+
+      - name: Commitlint (Merge Queue Commit)
+        if: github.event_name == 'merge_group'
+        run: npx commitlint --config .config/commitlint.config.js --last
+
+      - name: Markdownlint
+        run: npx markdownlint-cli2 --config .config/.markdownlint-cli2.json "**/*.md"
+
+      - name: ESLint
+        run: npx eslint . --config eslint.config.js
+
+      - name: Pack NPM Package (Dry-Run Verification)
+        run: npm pack --dry-run
+
   # ---------------------------------------------------------------------------
   # 3. Staging Release (Pushes to release/**)
   # ---------------------------------------------------------------------------
   staging-release:
-    name: Staging - Release Candidate & Publish
+    name: Staging - RC Release & Publish
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release/')
     runs-on: ubuntu-latest
     environment: staging
@@ -93,13 +137,13 @@ jobs:
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
       - name: Checkout Code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ steps.nmg_bot_token.outputs.token }}
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: 24
           registry-url: 'https://registry.npmjs.org'
@@ -114,16 +158,19 @@ jobs:
       - name: ESLint
         run: npx eslint . --config eslint.config.js
 
-      - name: Publish Staged Package to NPM
+      - name: Semantic Release (Staging Channel Publish)
         env:
+          GH_TOKEN: ${{ steps.nmg_bot_token.outputs.token }}
+          GITHUB_TOKEN: ${{ steps.nmg_bot_token.outputs.token }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npm publish --tag staging
+        run: npx semantic-release --extends ${{ github.workspace }}/.config/release.config.js
 
- # ---------------------------------------------------------------------------
+  # ---------------------------------------------------------------------------
   # 4. Production Release (Runs AFTER Merge directly on master)
   # ---------------------------------------------------------------------------
   production-release:
-    name: Production - Verification & Live NPM Publish
+    name: Production - Full Live NPM Publish
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     environment: production
@@ -141,13 +188,13 @@ jobs:
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
       - name: Checkout Code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ steps.nmg_bot_token.outputs.token }}
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: 24
           registry-url: 'https://registry.npmjs.org'
@@ -162,10 +209,10 @@ jobs:
       - name: ESLint
         run: npx eslint . --config eslint.config.js
 
-      - name: Semantic Release (Live Publish to NPM)
+      - name: Semantic Release (Production Live Publish)
         env:
           GH_TOKEN: ${{ steps.nmg_bot_token.outputs.token }}
           GITHUB_TOKEN: ${{ steps.nmg_bot_token.outputs.token }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npx semantic-release --extends ./.config/release.config.js
+        run: npx semantic-release --extends ${{ github.workspace }}/.config/release.config.js
