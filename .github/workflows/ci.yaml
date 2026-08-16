@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - 'feature/**'
+      - 'release/**'
       - 'master'
   pull_request:
     branches:
@@ -52,7 +53,7 @@ jobs:
   # 2. PR & Merge Queue Checks
   # ---------------------------------------------------------------------------
   pr-checks:
-    name: Production - Checks, Release & Publish
+    name: Checks & Verifications
     if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
     runs-on: ubuntu-latest
     steps:
@@ -90,14 +91,61 @@ jobs:
         run: npx eslint . --config eslint.config.js
 
       - name: Pack NPM Package (Dry-Run Verification)
-        if: github.base_ref == 'master' || github.event.merge_group.base_ref == 'refs/heads/master'
         run: npm pack --dry-run
 
   # ---------------------------------------------------------------------------
-  # 3. Production Release (Runs AFTER Merge directly on master)
+  # 3. Staging Release (Pushes to release/**)
+  # ---------------------------------------------------------------------------
+  staging-release:
+    name: Staging - Release Candidate & Publish
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release/')
+    runs-on: ubuntu-latest
+    environment: staging
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
+    steps:
+      - name: Generate nmg-bot Token
+        id: nmg_bot_token
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Checkout Code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          token: ${{ steps.nmg_bot_token.outputs.token }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Markdownlint
+        run: npx markdownlint-cli2 --config .config/.markdownlint-cli2.json "**/*.md"
+
+      - name: ESLint
+        run: npx eslint . --config eslint.config.js
+
+      - name: Publish Staged Package to NPM
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --tag staging
+
+  # ---------------------------------------------------------------------------
+  # 4. Production Release (Runs AFTER Merge directly on master)
   # ---------------------------------------------------------------------------
   production-release:
-    name: Production - Semantic Release
+    name: Production - Verification & Semantic Release
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     environment: production
@@ -129,6 +177,15 @@ jobs:
 
       - name: Install Dependencies
         run: npm ci
+
+      - name: Markdownlint
+        run: npx markdownlint-cli2 --config .config/.markdownlint-cli2.json "**/*.md"
+
+      - name: ESLint
+        run: npx eslint . --config eslint.config.js
+
+      - name: Pack NPM Package (Dry-Run Verification)
+        run: npm pack --dry-run
 
       - name: Semantic Release
         env:
