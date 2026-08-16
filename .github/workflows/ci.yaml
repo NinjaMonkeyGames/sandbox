@@ -141,11 +141,11 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --tag staging
 
-  # ---------------------------------------------------------------------------
+ # ---------------------------------------------------------------------------
   # 4. Production Release (Runs AFTER Merge directly on master)
   # ---------------------------------------------------------------------------
   production-release:
-    name: Production - Verification & Semantic Release
+    name: Production - Verification & Live NPM Publish
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     environment: production
@@ -184,12 +184,10 @@ jobs:
       - name: ESLint
         run: npx eslint . --config eslint.config.js
 
-      - name: Pack NPM Package (Dry-Run Verification)
-        run: npm pack --dry-run
-
-      - name: Semantic Release
+      - name: Semantic Release (Live Publish to NPM)
         env:
           GH_TOKEN: ${{ steps.nmg_bot_token.outputs.token }}
           GITHUB_TOKEN: ${{ steps.nmg_bot_token.outputs.token }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npx semantic-release --extends ./.config/release.config.js
