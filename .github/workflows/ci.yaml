@@ -1,4 +1,4 @@
-name: Release
+name: CI & Release
 
 on:
   push:
@@ -10,15 +10,14 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    environment: production
     permissions:
       contents: write
       issues: write
       pull-requests: write
-      id-token: write # Required for npm OIDC Trusted Publishing
+      id-token: write # CRITICAL: Enables GitHub OIDC token generation for npm
 
     steps:
-      - name: Checkout
+      - name: Checkout Code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -27,11 +26,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Install Dependencies
         run: npm ci
 
-      - name: Semantic Release
+      - name: Run Semantic Release
+        run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release
+          # Notice: NPM_TOKEN is omitted to force OIDC authentication
