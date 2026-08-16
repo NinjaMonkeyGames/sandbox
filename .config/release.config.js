@@ -14,7 +14,8 @@ module.exports = {
       {
         pkgRoot: '.',
         npmPublish: true,
-        provenance: true // Tells semantic-release to attach OIDC provenance tokens
+        provenance: true,
+        npmToken: false // CRITICAL: Forces semantic-release to bypass the NPM_TOKEN check and rely on OIDC
       }
     ],
     [
@@ -22,7 +23,7 @@ module.exports = {
       {
         failComment: false,
         failTitle: false,
-        labels: false // Prevents label missing errors
+        labels: false
       }
     ]
   ]
