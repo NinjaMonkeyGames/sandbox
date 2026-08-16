@@ -3,10 +3,11 @@ name: CI & Release
 on:
   push:
     branches:
-      - master
+      - main
+      - 'feature/**'
   pull_request:
     branches:
-      - master
+      - main
 
 jobs:
   test:
@@ -34,7 +35,8 @@ jobs:
   release:
     name: Release
     needs: test
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # Run release on pushes to main OR feature branches
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/feature/'))
     runs-on: ubuntu-latest
     permissions:
       contents: write     # Required to create GitHub releases & push git tags
