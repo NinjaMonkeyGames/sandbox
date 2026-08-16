@@ -1,9 +1,10 @@
 module.exports = {
   branches: [
     'master',
+    'release/**',
     {
-      name: 'release/**',
-      prerelease: 'rc' // Generates version tags like 1.0.0-rc.1 on NPM
+      name: 'release/v1.0.0',
+      prerelease: 'rc' // Generates tags like v1.0.0-rc.1, v1.0.0-rc.2
     },
     {
       name: 'beta',
