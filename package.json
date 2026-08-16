@@ -1,0 +1,41 @@
+{
+  "name": "@ninjamonkeygames/sandbox",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./src/index.js",
+  "bin": {
+    "gm-lint": "./bin/index.js"
+  },
+  "files": [
+    "bin",
+    "src"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "eslint-plugin-jsdoc": "^63.3.3"
+  },
+  "devDependencies": {
+    "@commitlint/config-conventional": "^20.3.0",
+    "@eslint/js": "^10.0.1",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^12.0.9",
+    "@semantic-release/npm": "^13.1.5",
+    "@typescript-eslint/eslint-plugin": "^8.67.0",
+    "ci": "^2.3.0",
+    "commitlint": "^21.2.1",
+    "cspell": "^10.0.1",
+    "eslint": "^10.8.1",
+    "eslint-plugin-json-schema-validator": "^6.3.1",
+    "eslint-plugin-jsonc": "^3.4.1",
+    "globals": "^17.11.0",
+    "jsonc-eslint-parser": "^3.3.0",
+    "markdownlint": "^0.41.0",
+    "markdownlint-cli2": "^0.23.0",
+    "npm": "^11.18.0",
+    "semantic-release": "^25.0.9",
+    "typescript-eslint": "^8.67.0"
+  }
+}
