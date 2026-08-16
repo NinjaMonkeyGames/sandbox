@@ -1,3 +1,15 @@
+# 1.0.0-dev.1 (2026-08-16)
+
+
+### Features
+
+* **core:** ci test ([52c7b27](https://github.com/NinjaMonkeyGames/sandbox/commit/52c7b271d9c5d0df961e08ba9e3c1517c63d9c55)), closes [#1](https://github.com/NinjaMonkeyGames/sandbox/issues/1)
+* **core:** ci test ([5680e39](https://github.com/NinjaMonkeyGames/sandbox/commit/5680e395096846f356c02d96191c0fb9ae90645c)), closes [#1](https://github.com/NinjaMonkeyGames/sandbox/issues/1)
+* **core:** ci test ([5eb6e1b](https://github.com/NinjaMonkeyGames/sandbox/commit/5eb6e1b9562fc383a990a86177966d5d4ec0da28)), closes [#1](https://github.com/NinjaMonkeyGames/sandbox/issues/1)
+* **core:** ci test ([e355b5e](https://github.com/NinjaMonkeyGames/sandbox/commit/e355b5e5374ead25652dfa94db79c46d287c2629)), closes [#1](https://github.com/NinjaMonkeyGames/sandbox/issues/1)
+* **core:** ci test ([f2ea8ab](https://github.com/NinjaMonkeyGames/sandbox/commit/f2ea8abbe83619cc698e5f81511cd9d6a4a63785)), closes [#1](https://github.com/NinjaMonkeyGames/sandbox/issues/1)
+* **core:** ci test ([ae8c569](https://github.com/NinjaMonkeyGames/sandbox/commit/ae8c569573b18d277dc71838a230f7a9f9f3ba8c)), closes [#1](https://github.com/NinjaMonkeyGames/sandbox/issues/1)
+
 ## [1.1.0](https://github.com/NinjaMonkeyGames/sandbox/compare/v1.0.0...v1.1.0) (2026-08-15)
 
 ### ⚠ Details
