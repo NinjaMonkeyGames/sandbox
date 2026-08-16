@@ -1,3 +1,35 @@
+## [1.1.0](https://github.com/NinjaMonkeyGames/sandbox/compare/v1.0.0...v1.1.0) (2026-08-16)
+
+### ⚠ Details
+
+* **core:** Files:
+
+- N/A
+
+Description:
+
+CI test.
+* **core:** Files:
+
+- N/A
+
+Description:
+
+CI test.
+* **core:** Files:
+
+- N/A
+
+Description:
+
+CI test.
+
+### feat
+
+* **core:** ci test ([](https://github.com/NinjaMonkeyGames/sandbox/commit/96d3aa30daf679aeda8d2466c79962f556441a45)), closes [#1](https://github.com/NinjaMonkeyGames/sandbox/issues/1)
+* **core:** ci test ([](https://github.com/NinjaMonkeyGames/sandbox/commit/e355b5e5374ead25652dfa94db79c46d287c2629)), closes [#1](https://github.com/NinjaMonkeyGames/sandbox/issues/1)
+* **core:** ci test ([](https://github.com/NinjaMonkeyGames/sandbox/commit/f2ea8abbe83619cc698e5f81511cd9d6a4a63785)), closes [#1](https://github.com/NinjaMonkeyGames/sandbox/issues/1)
+
 ## 1.0.0 (2026-08-16)
 
 ### ⚠ Details
