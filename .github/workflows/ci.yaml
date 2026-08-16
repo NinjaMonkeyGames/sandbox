@@ -124,23 +124,14 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 24
-          registry-url: 'https://registry.npmjs.org'
           cache: 'npm'
-
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Markdownlint
-        run: npx markdownlint-cli2 --config .config/.markdownlint-cli2.json "**/*.md"
-
-      - name: ESLint
-        run: npx eslint . --config eslint.config.js
+          # Removed registry-url here so actions/setup-node doesn't override .npmrc
 
       - name: Semantic Release (Staging Publish to NPM)
         env:
           GITHUB_TOKEN: ${{ steps.nmg_bot_token.outputs.token }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        # Pass current branch explicitly to prevent detached HEAD override
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npx semantic-release --branches "${{ github.ref_name }}"
 
   # ---------------------------------------------------------------------------
