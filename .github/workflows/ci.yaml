@@ -11,21 +11,21 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     permissions:
-      contents: write      # Needed to commit tags and release assets to GitHub
-      issues: write        # Needed for semantic-release to open failure/release issues
-      pull-requests: write # Needed to comment on PRs
-      id-token: write      # CRITICAL: Required for npm OIDC Trusted Publishing
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write # Required for npm OIDC Trusted Publishing
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 22
 
       - name: Install Dependencies
         run: npm ci
