@@ -1,28 +1,86 @@
-# [1.0.0-dev.3](https://github.com/NinjaMonkeyGames/sandbox/compare/v1.0.0-dev.2...v1.0.0-dev.3) (2026-08-16)
+## [1.2.0](https://github.com/NinjaMonkeyGames/sandbox/compare/v1.1.0...v1.2.0) (2026-08-16)
 
+### ⚠ Details
 
-### Features
+* **core:** Files:
 
-* **core:** ci test ([8aaded8](https://github.com/NinjaMonkeyGames/sandbox/commit/8aaded83f8140a2ce886db7f04d9852c78c6eb3d)), closes [#1](https://github.com/NinjaMonkeyGames/sandbox/issues/1)
+- N/A
 
-# [1.0.0-dev.2](https://github.com/NinjaMonkeyGames/sandbox/compare/v1.0.0-dev.1...v1.0.0-dev.2) (2026-08-16)
+Description:
 
+CI test.
+* **core:** Files:
 
-### Features
+- N/A
 
-* **core:** ci test ([21ee0e6](https://github.com/NinjaMonkeyGames/sandbox/commit/21ee0e6ce7b1b4877d41489c99d9d1d477358484)), closes [#1](https://github.com/NinjaMonkeyGames/sandbox/issues/1)
+Description:
 
-# 1.0.0-dev.1 (2026-08-16)
+CI test.
 
+### feat
 
-### Features
+* **core:** ci test ([](https://github.com/NinjaMonkeyGames/sandbox/commit/7cab36478030d6bdc2a713782e84cffe2524854d)), closes [#1](https://github.com/NinjaMonkeyGames/sandbox/issues/1)
+* **core:** ci test ([](https://github.com/NinjaMonkeyGames/sandbox/commit/5eb6e1b9562fc383a990a86177966d5d4ec0da28)), closes [#1](https://github.com/NinjaMonkeyGames/sandbox/issues/1)
 
-* **core:** ci test ([52c7b27](https://github.com/NinjaMonkeyGames/sandbox/commit/52c7b271d9c5d0df961e08ba9e3c1517c63d9c55)), closes [#1](https://github.com/NinjaMonkeyGames/sandbox/issues/1)
-* **core:** ci test ([5680e39](https://github.com/NinjaMonkeyGames/sandbox/commit/5680e395096846f356c02d96191c0fb9ae90645c)), closes [#1](https://github.com/NinjaMonkeyGames/sandbox/issues/1)
-* **core:** ci test ([5eb6e1b](https://github.com/NinjaMonkeyGames/sandbox/commit/5eb6e1b9562fc383a990a86177966d5d4ec0da28)), closes [#1](https://github.com/NinjaMonkeyGames/sandbox/issues/1)
-* **core:** ci test ([e355b5e](https://github.com/NinjaMonkeyGames/sandbox/commit/e355b5e5374ead25652dfa94db79c46d287c2629)), closes [#1](https://github.com/NinjaMonkeyGames/sandbox/issues/1)
-* **core:** ci test ([f2ea8ab](https://github.com/NinjaMonkeyGames/sandbox/commit/f2ea8abbe83619cc698e5f81511cd9d6a4a63785)), closes [#1](https://github.com/NinjaMonkeyGames/sandbox/issues/1)
-* **core:** ci test ([ae8c569](https://github.com/NinjaMonkeyGames/sandbox/commit/ae8c569573b18d277dc71838a230f7a9f9f3ba8c)), closes [#1](https://github.com/NinjaMonkeyGames/sandbox/issues/1)
+## [1.1.0](https://github.com/NinjaMonkeyGames/sandbox/compare/v1.0.0...v1.1.0) (2026-08-16)
+
+### ⚠ Details
+
+* **core:** Files:
+
+- N/A
+
+Description:
+
+CI test.
+* **core:** Files:
+
+- N/A
+
+Description:
+
+CI test.
+* **core:** Files:
+
+- N/A
+
+Description:
+
+CI test.
+
+### feat
+
+* **core:** ci test ([](https://github.com/NinjaMonkeyGames/sandbox/commit/96d3aa30daf679aeda8d2466c79962f556441a45)), closes [#1](https://github.com/NinjaMonkeyGames/sandbox/issues/1)
+* **core:** ci test ([](https://github.com/NinjaMonkeyGames/sandbox/commit/e355b5e5374ead25652dfa94db79c46d287c2629)), closes [#1](https://github.com/NinjaMonkeyGames/sandbox/issues/1)
+* **core:** ci test ([](https://github.com/NinjaMonkeyGames/sandbox/commit/f2ea8abbe83619cc698e5f81511cd9d6a4a63785)), closes [#1](https://github.com/NinjaMonkeyGames/sandbox/issues/1)
+
+## 1.0.0 (2026-08-16)
+
+### ⚠ Details
+
+* **core:** feat(core): ci test
+
+Files:
+
+- N/A
+
+Description:
+
+CI test.
+* **core:** Files:
+
+- N/A
+
+Description:
+
+CI test.
+
+### feat
+
+* **core:** ci test ([](https://github.com/NinjaMonkeyGames/sandbox/commit/d7bdd5da45d92fd658da87dea91e9e08ff73c613)), closes [#1](https://github.com/NinjaMonkeyGames/sandbox/issues/1)
+* **core:** ci test ([](https://github.com/NinjaMonkeyGames/sandbox/commit/ae8c569573b18d277dc71838a230f7a9f9f3ba8c)), closes [#1](https://github.com/NinjaMonkeyGames/sandbox/issues/1)
+
+* Initial commit ([](https://github.com/NinjaMonkeyGames/sandbox/commit/8dea29eba8b4eb10152b6b386a7f1f03a2a3ed45))
 
 ## [1.1.0](https://github.com/NinjaMonkeyGames/sandbox/compare/v1.0.0...v1.1.0) (2026-08-15)
 
