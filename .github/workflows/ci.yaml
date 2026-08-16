@@ -21,78 +21,56 @@ on:
 
 jobs:
   # ---------------------------------------------------------------------------
-  # 1. Preview Checks (Pushes to feature/**)
+  # 1. Preview Checks & Feature Branch Publish
   # ---------------------------------------------------------------------------
   preview-checks:
-    name: Preview - Lint Checks
+    name: Preview - Lint & Feature Publish
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/feature/')
     runs-on: ubuntu-latest
     environment: preview
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
     steps:
+      - name: Generate nmg-bot Token
+        id: nmg_bot_token
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
+          token: ${{ steps.nmg_bot_token.outputs.token }}
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 24
+          registry-url: 'https://registry.npmjs.org'
           cache: 'npm'
 
       - name: Install Dependencies
         run: npm ci
 
-      - name: Commitlint (Latest Branch Commit)
+      - name: Commitlint
         run: npx commitlint --config .config/commitlint.config.js --last
 
       - name: ESLint
         run: npx eslint . --config eslint.config.js
 
-  # ---------------------------------------------------------------------------
-  # 2. PR & Merge Queue Checks
-  # ---------------------------------------------------------------------------
-  pr-checks:
-    name: Checks & Verifications
-    if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: 'npm'
-
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Commitlint (Web UI PR Title & Body)
-        if: github.event_name == 'pull_request'
+      - name: Semantic Release (Feature Sandbox)
         env:
-          PR_TITLE: ${{ github.event.pull_request.title }}
-          PR_BODY: ${{ github.event.pull_request.body }}
-        run: |
-          printf "%s\n\n%s" "$PR_TITLE" "$PR_BODY" > /tmp/PR_COMMIT_MSG
-          npx commitlint --config .config/commitlint.config.js --edit /tmp/PR_COMMIT_MSG
-
-      - name: Commitlint (Merge Queue Commit)
-        if: github.event_name == 'merge_group'
-        run: npx commitlint --config .config/commitlint.config.js --last
-
-      - name: Markdownlint
-        run: npx markdownlint-cli2 --config .config/.markdownlint-cli2.json "**/*.md"
-
-      - name: ESLint
-        run: npx eslint . --config eslint.config.js
-
-      - name: Pack NPM Package (Dry-Run Verification)
-        run: npm pack --dry-run
-
+          GH_TOKEN: ${{ steps.nmg_bot_token.outputs.token }}
+          GITHUB_TOKEN: ${{ steps.nmg_bot_token.outputs.token }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npx semantic-release --extends ./.config/release.config.js
+        
   # ---------------------------------------------------------------------------
   # 3. Staging Release (Pushes to release/**)
   # ---------------------------------------------------------------------------
