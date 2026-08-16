@@ -1,5 +1,5 @@
 module.exports = {
-  branches: ['master'],
+  branches: ['master', 'main'],
   plugins: [
     '@semantic-release/commit-analyzer',
     '@semantic-release/release-notes-generator',
@@ -8,7 +8,8 @@ module.exports = {
       '@semantic-release/github',
       {
         failComment: false,
-        failTitle: false
+        failTitle: false,
+        labels: false
       }
     ]
   ]
