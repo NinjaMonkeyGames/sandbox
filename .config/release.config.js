@@ -1,66 +1,31 @@
-export default 
-{
-  branches: 
-  [
-    'master',
-    { name: 'develop', prerelease: 'beta' },
-    { name: 'release', prerelease: 'rc' },
-  ],
+/**
+ * @type {import('semantic-release').GlobalConfig}
+ */
+export default {
+  branches: ['master'],
   plugins: [
-    // 1. Analyze commits (Needs @semantic-release/commit-analyzer)
     '@semantic-release/commit-analyzer',
-    // 2. Generate Release Notes (Needs @semantic-release/release-notes-generator)
+    '@semantic-release/release-notes-generator',
     [
-      '@semantic-release/release-notes-generator',
+      '@semantic-release/changelog',
       {
-        preset: 'conventionalcommits',
-        parserOpts: {
-          noteKeywords: ['BREAKING CHANGE', 'BREAKING CHANGES', 'IMPORTANT'],
-        },
-        writerOpts: {
-          transform: (commit) =>
-          {
-            if (commit.committerDate && !(commit.committerDate instanceof Date))
-            {
-              commit.committerDate = new Date(commit.committerDate);
-            }
-            const newCommit = {
-              ...commit,
-              subject: commit.subject,
-              body: commit.body,
-              footer: commit.footer,
-            };
-            if (commit.body)
-            {
-              newCommit.notes = (newCommit.notes || []).concat({
-                title: 'Details',
-                text: commit.body,
-              });
-            }
-            return newCommit;
-          },
-        },
+        changelogFile: 'CHANGELOG.md',
       },
     ],
-    // 3. Update Changelog (Needs @semantic-release/changelog)
-    '@semantic-release/changelog',
-    // 4. Update package.json version (Needs @semantic-release/npm)
     [
       '@semantic-release/npm',
       {
         npmPublish: true,
-        updatePackageJson: true,
+        pkgRoot: '.',
       },
     ],
-    // 5. Commit changes back to Git (Needs @semantic-release/git)
+    '@semantic-release/github',
     [
       '@semantic-release/git',
       {
-        assets: ['package.json', 'CHANGELOG.md'],
-        message: 'chore(release): ${nextRelease.version} [skip ci]',
+        assets: ['CHANGELOG.md', 'package.json'],
+        message: 'chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}',
       },
     ],
-    // 6. Create GitHub Release (Needs @semantic-release/github)
-    '@semantic-release/github', 
   ],
 };
