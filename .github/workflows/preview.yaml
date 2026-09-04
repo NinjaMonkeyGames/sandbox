@@ -1,0 +1,36 @@
+# Reusable workflow: the set of checks every feature/* branch must pass
+# (the "preview" gate — see CONTRIBUTING.md / detect-environment.yaml).
+# Called from deploy.yaml when the resolved environment is "preview".
+#
+# Add more jobs here as the preview gate grows (tests, build, lint, etc).
+
+name: Preview Checks
+
+on:
+  workflow_call:
+
+jobs:
+  commitlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      # Installs from package-lock.json so commitlint-github-action picks
+      # up the repo's own pinned commitlint + config-conventional versions
+      # (node_modules present) instead of resolving/installing its own -
+      # keeping this in sync with your local install and pr-title-lint.yaml.
+      - name: Install commitlint
+        run: npm ci
+
+      # Lints every commit message pushed on this branch against
+      # commitlint.config.js (Conventional Commits). Note: this checks the
+      # branch's raw commits, not the eventual squash-merge commit message
+      # - that's linted separately (see pr-title-lint.yaml) against the PR's
+      # title + body, since that's what actually lands on develop.
+      - uses: wagoid/commitlint-github-action@v6
