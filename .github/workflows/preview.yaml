@@ -35,6 +35,9 @@ jobs:
       - name: Install commitlint
         run: npm ci
 
+      - name: Print commitlint version
+        run: npx commitlint --version
+
       # Lints only the most recent commit (HEAD) against
       # .config/commitlint.config.mjs (Conventional Commits). --last means
       # each push is checked commit-by-commit as it lands, rather than
