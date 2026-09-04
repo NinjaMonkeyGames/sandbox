@@ -1,5 +1,5 @@
 # Lints the pull request's title + body together as a single Conventional
-# Commit message, reusing the *same* commitlint.config.mjs (and its custom
+# Commit message, reusing the *same* .config/commitlint.config.mjs (and its custom
 # signed-off-by-regex plugin) that lints individual commits in
 # preview.yaml. One set of rules, checked in both places - not a separate
 # tool with its own duplicated type/scope list.
@@ -48,5 +48,5 @@ jobs:
           BODY: ${{ github.event.pull_request.body }}
         run: printf '%s\n\n%s\n' "$TITLE" "$BODY" > pr-message.txt
 
-      - name: Lint against commitlint.config.mjs
-        run: npx commitlint --config commitlint.config.mjs < pr-message.txt
+      - name: Lint against .config/commitlint.config.mjs
+        run: npx commitlint --config .config/commitlint.config.mjs < pr-message.txt

@@ -35,20 +35,22 @@ jobs:
         run: git fetch origin develop
 
       # Lints every commit that exists on this branch but not yet on
-      # develop, against commitlint.config.mjs (Conventional Commits).
+      # develop, against .config/commitlint.config.mjs (Conventional
+      # Commits).
       #
       # This previously used wagoid/commitlint-github-action, which
-      # reported "Lint free!" regardless of commit content - its own
-      # commit-range detection wasn't resolving anything to check (no
-      # visible activity in its log between invocation and result), so it
-      # was silently linting zero commits. Using the commitlint CLI
-      # directly with an explicit --from/--to range removes that ambiguity
-      # entirely and matches the working pattern already used in
-      # pr-title-lint.yaml.
+      # reported "Lint free!" regardless of commit content. Root cause: the
+      # config path was wrong (pointed at repo root, but the file actually
+      # lives in .config/), so the action silently fell back to bare
+      # @commitlint/config-conventional defaults - which a plain "feat: add
+      # x" satisfies with no scope/body/signoff required. Using the
+      # commitlint CLI directly surfaces a loud, explicit error on a wrong
+      # config path instead of silently discarding your custom rules, and
+      # matches the working pattern already used in pr-title-lint.yaml.
       #
       # Note: this checks the branch's raw commits, not the eventual
       # squash-merge commit message - that's linted separately (see
       # pr-title-lint.yaml) against the PR's title + body, since that's
       # what actually lands on develop.
       - name: Lint commits against develop
-        run: npx commitlint --config ./commitlint.config.mjs --from origin/develop --to HEAD
+        run: npx commitlint --config ./.config/commitlint.config.mjs --from origin/develop --to HEAD
