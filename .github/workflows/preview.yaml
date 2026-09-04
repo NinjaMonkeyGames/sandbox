@@ -33,4 +33,12 @@ jobs:
       # branch's raw commits, not the eventual squash-merge commit message
       # - that's linted separately (see pr-title-lint.yaml) against the PR's
       # title + body, since that's what actually lands on develop.
+      #
+      # configFile is set explicitly - the action's own default
+      # (./commitlint.config.mjs) doesn't match our actual filename
+      # (commitlint.config.js), and relying on that mismatched default to
+      # coincidentally still find the right config via fallback discovery
+      # isn't something to depend on.
       - uses: wagoid/commitlint-github-action@v6
+        with:
+          configFile: ./commitlint.config.js
