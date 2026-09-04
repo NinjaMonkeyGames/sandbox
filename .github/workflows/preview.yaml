@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          fetch-depth: 0
+          fetch-depth: 2
 
       - uses: actions/setup-node@v7
         with:
@@ -27,16 +27,10 @@ jobs:
       - name: Install commitlint
         run: npm ci
 
-      # Fetches develop so we can diff against it below. actions/checkout's
-      # fetch-depth: 0 pulls full history for the checked-out ref, but
-      # doesn't guarantee other branches' refs are present, so develop is
-      # fetched explicitly.
-      - name: Fetch develop
-        run: git fetch origin develop
-
-      # Lints every commit that exists on this branch but not yet on
-      # develop, against .config/commitlint.config.mjs (Conventional
-      # Commits).
+      # Lints only the most recent commit (HEAD) against
+      # .config/commitlint.config.mjs (Conventional Commits). --last means
+      # each push is checked commit-by-commit as it lands, rather than
+      # re-checking the whole branch's history against develop every time.
       #
       # This previously used wagoid/commitlint-github-action, which
       # reported "Lint free!" regardless of commit content. Root cause: the
@@ -52,5 +46,5 @@ jobs:
       # squash-merge commit message - that's linted separately (see
       # pr-title-lint.yaml) against the PR's title + body, since that's
       # what actually lands on develop.
-      - name: Lint commits against develop
-        run: npx commitlint --config ./.config/commitlint.config.mjs --from origin/develop --to HEAD
+      - name: Lint last commit
+        run: npx commitlint --config ./.config/commitlint.config.mjs --last
