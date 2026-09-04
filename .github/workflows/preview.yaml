@@ -34,11 +34,11 @@ jobs:
       # - that's linted separately (see pr-title-lint.yaml) against the PR's
       # title + body, since that's what actually lands on develop.
       #
-      # configFile is set explicitly - the action's own default
-      # (./commitlint.config.mjs) doesn't match our actual filename
-      # (commitlint.config.js), and relying on that mismatched default to
-      # coincidentally still find the right config via fallback discovery
-      # isn't something to depend on.
+      # configFile is set explicitly. Note: this action requires .mjs
+      # specifically - passing a .js file fails with "'.js' extension is
+      # not allowed for the `configFile`, please use .mjs instead", so
+      # commitlint.config.js was renamed to commitlint.config.mjs (same
+      # ESM content, just the extension the action requires).
       - uses: wagoid/commitlint-github-action@v6
         with:
-          configFile: ./commitlint.config.js
+          configFile: ./commitlint.config.mjs
