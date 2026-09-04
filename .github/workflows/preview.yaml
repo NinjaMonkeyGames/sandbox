@@ -12,6 +12,14 @@ on:
 jobs:
   commitlint:
     runs-on: ubuntu-latest
+    # Declaring this environment is what makes GitHub record an actual
+    # "preview" Deployment for this commit - required for a "Require
+    # deployments to succeed: preview" branch protection rule to have
+    # anything to check against. Without this, no job anywhere ever
+    # creates a "preview" deployment (deploy.yaml's deploy job explicitly
+    # skips itself when the environment is "preview"), so that rule would
+    # fail on every PR, always, regardless of whether checks pass.
+    environment: preview
     steps:
       - uses: actions/checkout@v7
         with:
