@@ -21,24 +21,34 @@ jobs:
         with:
           node-version: 24
 
-      # Installs from package-lock.json so commitlint-github-action picks
-      # up the repo's own pinned commitlint + config-conventional versions
-      # (node_modules present) instead of resolving/installing its own -
-      # keeping this in sync with your local install and pr-title-lint.yaml.
+      # Installs from package-lock.json so commitlint uses the repo's own
+      # pinned commitlint + config-conventional versions, matching your
+      # local install and pr-title-lint.yaml.
       - name: Install commitlint
         run: npm ci
 
-      # Lints every commit message pushed on this branch against
-      # commitlint.config.js (Conventional Commits). Note: this checks the
-      # branch's raw commits, not the eventual squash-merge commit message
-      # - that's linted separately (see pr-title-lint.yaml) against the PR's
-      # title + body, since that's what actually lands on develop.
+      # Fetches develop so we can diff against it below. actions/checkout's
+      # fetch-depth: 0 pulls full history for the checked-out ref, but
+      # doesn't guarantee other branches' refs are present, so develop is
+      # fetched explicitly.
+      - name: Fetch develop
+        run: git fetch origin develop
+
+      # Lints every commit that exists on this branch but not yet on
+      # develop, against commitlint.config.mjs (Conventional Commits).
       #
-      # configFile is set explicitly. Note: this action requires .mjs
-      # specifically - passing a .js file fails with "'.js' extension is
-      # not allowed for the `configFile`, please use .mjs instead", so
-      # commitlint.config.js was renamed to commitlint.config.mjs (same
-      # ESM content, just the extension the action requires).
-      - uses: wagoid/commitlint-github-action@v6
-        with:
-          configFile: ./commitlint.config.mjs
+      # This previously used wagoid/commitlint-github-action, which
+      # reported "Lint free!" regardless of commit content - its own
+      # commit-range detection wasn't resolving anything to check (no
+      # visible activity in its log between invocation and result), so it
+      # was silently linting zero commits. Using the commitlint CLI
+      # directly with an explicit --from/--to range removes that ambiguity
+      # entirely and matches the working pattern already used in
+      # pr-title-lint.yaml.
+      #
+      # Note: this checks the branch's raw commits, not the eventual
+      # squash-merge commit message - that's linted separately (see
+      # pr-title-lint.yaml) against the PR's title + body, since that's
+      # what actually lands on develop.
+      - name: Lint commits against develop
+        run: npx commitlint --config ./commitlint.config.mjs --from origin/develop --to HEAD
