@@ -48,5 +48,10 @@ jobs:
           BODY: ${{ github.event.pull_request.body }}
         run: printf '%s\n\n%s\n' "$TITLE" "$BODY" > pr-message.txt
 
+      # --edit tells commitlint to lint this file's raw content directly
+      # (the same mode used for commit-msg git hooks), instead of its
+      # default "derive commits from git" behavior - which, with no
+      # --edit/--from/--last given, was silently ignoring pr-message.txt
+      # and linting the branch's last commit instead.
       - name: Lint against .config/commitlint.config.mjs
-        run: npx commitlint --config .config/commitlint.config.mjs < pr-message.txt
+        run: npx commitlint --config .config/commitlint.config.mjs --edit pr-message.txt
