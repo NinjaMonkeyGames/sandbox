@@ -3,11 +3,30 @@
 # Called from deploy.yaml when the resolved environment is "preview".
 #
 # Add more jobs here as the preview gate grows (tests, build, lint, etc).
+#
+# merge_group support: also triggers directly (independent of deploy.yaml)
+# when develop's Merge Queue processes a PR. Note this will report under
+# a DIFFERENT check name than the "preview / commitlint" one produced via
+# deploy.yaml's workflow_call - that naming comes specifically from being
+# called as deploy.yaml's "preview" job, which a direct merge_group
+# trigger bypasses. Rather than guess at the exact resulting name, verify
+# it once triggered live and add it to develop's required-checks list as
+# its own additional entry - it doesn't need to match the existing name.
+#
+# Like pr-title-lint.yaml, this deliberately does NOT try to replicate
+# any branch-specific logic from the merge_group event - these checks
+# aren't integration-sensitive (a commit message or markdown file's
+# validity doesn't change based on what else is in the queue), so they
+# were already conclusively answered by the push-triggered run. The
+# merge_group run is a documented no-op reporting success, not a guess
+# about the event's schema.
 
 name: Preview Checks
 
 on:
   workflow_call:
+  merge_group:
+    types: [checks_requested]
 
 jobs:
   commitlint:
@@ -19,13 +38,25 @@ jobs:
     # creates a "preview" deployment (deploy.yaml's deploy job explicitly
     # skips itself when the environment is "preview"), so that rule would
     # fail on every PR, always, regardless of whether checks pass.
+    #
+    # NOTE: as of writing, "Require deployments to succeed: preview" was
+    # tried and removed - it breaks GitHub's auto-merge feature outright.
+    # See CONTRIBUTING.md. environment: preview is left in place since it
+    # doesn't hurt anything and would matter again if that rule were ever
+    # reintroduced some other way.
     environment: preview
     steps:
+      - name: No-op for merge_group (see file header comment)
+        if: github.event_name == 'merge_group'
+        run: echo "Not integration-sensitive; already verified by the push-triggered run. Nothing to re-check here."
+
       - uses: actions/checkout@v7
+        if: github.event_name == 'workflow_call'
         with:
           fetch-depth: 2
 
       - uses: actions/setup-node@v7
+        if: github.event_name == 'workflow_call'
         with:
           node-version: 24
 
@@ -33,9 +64,11 @@ jobs:
       # pinned commitlint + config-conventional versions, matching your
       # local install and pr-title-lint.yaml.
       - name: Install commitlint
+        if: github.event_name == 'workflow_call'
         run: npm ci
 
       - name: Print commitlint version
+        if: github.event_name == 'workflow_call'
         run: npx commitlint --version
 
       # Lints only the most recent commit (HEAD) against
@@ -58,6 +91,7 @@ jobs:
       # pr-title-lint.yaml) against the PR's title + body, since that's
       # what actually lands on develop.
       - name: Lint last commit
+        if: github.event_name == 'workflow_call'
         run: npx commitlint --config ./.config/commitlint.config.mjs --last
 
   markdownlint:
@@ -66,11 +100,17 @@ jobs:
     # reasoning applies to every job in this file.
     environment: preview
     steps:
+      - name: No-op for merge_group (see file header comment)
+        if: github.event_name == 'merge_group'
+        run: echo "Not integration-sensitive; already verified by the push-triggered run. Nothing to re-check here."
+
       - uses: actions/checkout@v7
+        if: github.event_name == 'workflow_call'
         with:
           fetch-depth: 1
 
       - uses: actions/setup-node@v7
+        if: github.event_name == 'workflow_call'
         with:
           node-version: 24
 
@@ -79,13 +119,16 @@ jobs:
       # package.json for this to use a pinned version rather than npx
       # fetching whatever's latest on the registry at run time.
       - name: Install markdownlint
+        if: github.event_name == 'workflow_call'
         run: npm ci
 
       - name: Print markdownlint version
+        if: github.event_name == 'workflow_call'
         run: npx markdownlint-cli2 --version
 
       # config is set explicitly since .markdownlint-cli2.jsonc lives in
       # .config/, not the repo root where markdownlint-cli2 looks by
       # default.
       - name: Lint markdown files
+        if: github.event_name == 'workflow_call'
         run: npx markdownlint-cli2 --config ./.config/.markdownlint-cli2.jsonc "**/*.md"
