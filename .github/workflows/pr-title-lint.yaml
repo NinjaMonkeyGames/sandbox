@@ -1,67 +1,134 @@
-# Lints the pull request's title + body together as a single Conventional
-# Commit message, reusing the *same* .config/commitlint.config.mjs (and its custom
-# signed-off-by-regex plugin) that lints individual commits in
-# preview.yaml. One set of rules, checked in both places - not a separate
-# tool with its own duplicated type/scope list.
+# Reusable workflow: the set of checks every feature/* branch must pass
+# (the "preview" gate — see CONTRIBUTING.md / detect-environment.yaml).
+# Called from deploy.yaml when the resolved environment is "preview".
 #
-# Why title+body, not title alone: feature/* -> develop PRs are
-# squash-merged (see CONTRIBUTING.md), so none of the branch's individual
-# commits survive into develop's history - only the squash commit does.
-# Checking signed-off-by (or any body/footer rule) against commits that are
-# about to be discarded is redundant; the check has to run against what
-# will actually persist, which is the PR's title and body.
+# Add more jobs here as the preview gate grows (tests, build, lint, etc).
 #
-# IMPORTANT: for a valid Signed-off-by line to actually carry into
-# develop's history (not just pass this check), the repo's squash-merge
-# default commit message must include the PR description:
-#   Settings > General > Pull Requests > Allow squash merging >
-#   Default commit message > "Pull request title and description"
-# Otherwise GitHub's default squash message drops the body, and this
-# check would be validating text that never reaches history.
+# merge_group support: also triggers directly (independent of deploy.yaml)
+# when develop's Merge Queue processes a PR. Note this will report under
+# a DIFFERENT check name than the "preview / commitlint" one produced via
+# deploy.yaml's workflow_call - that naming comes specifically from being
+# called as deploy.yaml's "preview" job, which a direct merge_group
+# trigger bypasses. Rather than guess at the exact resulting name, verify
+# it once triggered live and add it to develop's required-checks list as
+# its own additional entry - it doesn't need to match the existing name.
 #
-# Scoped to feature/* source branches only (see the job's `if:`) - any
-# other PR into develop (release/*, hotfix/*, or the master-sync PR from
-# sync-master-to-develop.yaml) uses a regular merge commit, where the PR
-# title has no bearing on the resulting commit message at all. Linting
-# it there would be checking something that was never going to matter.
+# Like pr-title-lint.yaml, this deliberately does NOT try to replicate
+# any branch-specific logic from the merge_group event - these checks
+# aren't integration-sensitive (a commit message or markdown file's
+# validity doesn't change based on what else is in the queue), so they
+# were already conclusively answered by the push-triggered run. The
+# merge_group run is a documented no-op reporting success, not a guess
+# about the event's schema.
 
-name: Lint PR Message
+name: Preview Checks
 
 on:
-  pull_request:
-    types: [opened, edited, synchronize, reopened]
-    branches:
-      - develop
+  workflow_call:
+  merge_group:
+    types: [checks_requested]
 
 jobs:
-  lint-pr-message:
-    if: startsWith(github.head_ref, 'feature/')
+  commitlint:
     runs-on: ubuntu-latest
+    # Declaring this environment is what makes GitHub record an actual
+    # "preview" Deployment for this commit - required for a "Require
+    # deployments to succeed: preview" branch protection rule to have
+    # anything to check against. Without this, no job anywhere ever
+    # creates a "preview" deployment (deploy.yaml's deploy job explicitly
+    # skips itself when the environment is "preview"), so that rule would
+    # fail on every PR, always, regardless of whether checks pass.
+    #
+    # NOTE: as of writing, "Require deployments to succeed: preview" was
+    # tried and removed - it breaks GitHub's auto-merge feature outright.
+    # See CONTRIBUTING.md. environment: preview is left in place since it
+    # doesn't hurt anything and would matter again if that rule were ever
+    # reintroduced some other way.
+    environment: preview
     steps:
+      - name: No-op for merge_group (see file header comment)
+        if: github.event_name == 'merge_group'
+        run: echo "Not integration-sensitive; already verified by the push-triggered run. Nothing to re-check here."
+
       - uses: actions/checkout@v7
+        if: github.event_name == 'workflow_call'
+        with:
+          fetch-depth: 2
 
       - uses: actions/setup-node@v7
+        if: github.event_name == 'workflow_call'
         with:
           node-version: 24
 
+      # Installs from package-lock.json so commitlint uses the repo's own
+      # pinned commitlint + config-conventional versions, matching your
+      # local install and pr-title-lint.yaml.
       - name: Install commitlint
+        if: github.event_name == 'workflow_call'
         run: npm ci
 
       - name: Print commitlint version
+        if: github.event_name == 'workflow_call'
         run: npx commitlint --version
 
-      # Title and body are passed via env, not interpolated directly into
-      # the script, since PR title/body is untrusted user input.
-      - name: Assemble title + body as one message
-        env:
-          TITLE: ${{ github.event.pull_request.title }}
-          BODY: ${{ github.event.pull_request.body }}
-        run: printf '%s\n\n%s\n' "$TITLE" "$BODY" > pr-message.txt
+      # Lints only the most recent commit (HEAD) against
+      # .config/commitlint.config.mjs (Conventional Commits). --last means
+      # each push is checked commit-by-commit as it lands, rather than
+      # re-checking the whole branch's history against develop every time.
+      #
+      # This previously used wagoid/commitlint-github-action, which
+      # reported "Lint free!" regardless of commit content. Root cause: the
+      # config path was wrong (pointed at repo root, but the file actually
+      # lives in .config/), so the action silently fell back to bare
+      # @commitlint/config-conventional defaults - which a plain "feat: add
+      # x" satisfies with no scope/body/signoff required. Using the
+      # commitlint CLI directly surfaces a loud, explicit error on a wrong
+      # config path instead of silently discarding your custom rules, and
+      # matches the working pattern already used in pr-title-lint.yaml.
+      #
+      # Note: this checks the branch's raw commits, not the eventual
+      # squash-merge commit message - that's linted separately (see
+      # pr-title-lint.yaml) against the PR's title + body, since that's
+      # what actually lands on develop.
+      - name: Lint last commit
+        if: github.event_name == 'workflow_call'
+        run: npx commitlint --config ./.config/commitlint.config.mjs --last
 
-      # --edit tells commitlint to lint this file's raw content directly
-      # (the same mode used for commit-msg git hooks), instead of its
-      # default "derive commits from git" behaviour - which, with no
-      # --edit/--from/--last given, was silently ignoring pr-message.txt
-      # and linting the branch's last commit instead.
-      - name: Lint against .config/commitlint.config.mjs
-        run: npx commitlint --config .config/commitlint.config.mjs --edit pr-message.txt
+  markdownlint:
+    runs-on: ubuntu-latest
+    # See the note on commitlint's environment: preview above - same
+    # reasoning applies to every job in this file.
+    environment: preview
+    steps:
+      - name: No-op for merge_group (see file header comment)
+        if: github.event_name == 'merge_group'
+        run: echo "Not integration-sensitive; already verified by the push-triggered run. Nothing to re-check here."
+
+      - uses: actions/checkout@v7
+        if: github.event_name == 'workflow_call'
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v7
+        if: github.event_name == 'workflow_call'
+        with:
+          node-version: 24
+
+      # Installs from package-lock.json, same reasoning as commitlint:
+      # markdownlint-cli2 needs to actually be a devDependency in
+      # package.json for this to use a pinned version rather than npx
+      # fetching whatever's latest on the registry at run time.
+      - name: Install markdownlint
+        if: github.event_name == 'workflow_call'
+        run: npm ci
+
+      - name: Print markdownlint version
+        if: github.event_name == 'workflow_call'
+        run: npx markdownlint-cli2 --version
+
+      # config is set explicitly since .markdownlint-cli2.jsonc lives in
+      # .config/, not the repo root where markdownlint-cli2 looks by
+      # default.
+      - name: Lint markdown files
+        if: github.event_name == 'workflow_call'
+        run: npx markdownlint-cli2 --config ./.config/.markdownlint-cli2.jsonc "**/*.md"
