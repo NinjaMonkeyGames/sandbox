@@ -18,6 +18,12 @@
 #   Default commit message > "Pull request title and description"
 # Otherwise GitHub's default squash message drops the body, and this
 # check would be validating text that never reaches history.
+#
+# Scoped to feature/* source branches only (see the job's `if:`) - any
+# other PR into develop (release/*, hotfix/*, or the master-sync PR from
+# sync-master-to-develop.yaml) uses a regular merge commit, where the PR
+# title has no bearing on the resulting commit message at all. Linting
+# it there would be checking something that was never going to matter.
 
 name: Lint PR Message
 
@@ -29,6 +35,7 @@ on:
 
 jobs:
   lint-pr-message:
+    if: startsWith(github.head_ref, 'feature/')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
