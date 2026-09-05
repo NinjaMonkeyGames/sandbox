@@ -1,25 +1,33 @@
-# PULL REQUEST TEMPLATE
+feat(core): 
 
-## Description
+Files:
 
-Fixes #[issue_number]
+- test
+
+Description:
 
 ## Type of Change
 
-- [ ] Bug fix (non-breaking change which fixes an issue)
-- [ ] New feature (non-breaking change which adds functionality)
-- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
-- [ ] Documentation update
-- [ ] Refactoring (no functional changes, no api changes)
+- [ ] Bug fix (non-breaking change which fixes an issue).
+- [ ] New feature (non-breaking change which adds functionality).
+- [ ] Breaking change (fix or feature that would cause existing
+      functionality to not work as expected).
+- [ ] Documentation update.
+- [ ] Refactoring (no functional changes, no api changes).
 
 ## Checklist
 
-- [ ] My code follows the style guidelines of this project
-- [ ] I have performed a self-review of my own code
-- [ ] I have commented my code, particularly in hard-to-understand areas
-- [ ] I have made corresponding changes to the documentation
-- [ ] If I have used AI its only been for small discrete units of code you can personally understand and justify.
-- [ ] My changes generate no new warnings
-- [ ] Any dependent changes have been merged and published in downstream modules
+- [ ] My code follows the style guidelines of this project.
+- [ ] I have performed a self-review of my own code.
+- [ ] I have commented my code, particularly in hard-to-understand
+areas.
+- [ ] I have made corresponding changes to the documentation.
+- [ ] If I have used AI its only been for small discrete units of code
+      you can personally understand and justify.
+- [ ] My changes generate no new warnings.
+- [ ] Any dependent changes have been merged and published in
+      downstream modules.
 
-## Screenshots/Video (if applicable)
+References #1
+
+Signed-off-by: Daniel Mallett <daniel.mallett@ninjamonkeygames.com>
