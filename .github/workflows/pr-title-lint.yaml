@@ -53,7 +53,7 @@ jobs:
 
       # --edit tells commitlint to lint this file's raw content directly
       # (the same mode used for commit-msg git hooks), instead of its
-      # default "derive commits from git" behavior - which, with no
+      # default "derive commits from git" behaviour - which, with no
       # --edit/--from/--last given, was silently ignoring pr-message.txt
       # and linting the branch's last commit instead.
       - name: Lint against .config/commitlint.config.mjs

@@ -1,4 +1,4 @@
-feat(core): 
+feat(core): example text
 
 Files:
 
