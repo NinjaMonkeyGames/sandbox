@@ -238,7 +238,7 @@ Pushing to a `feature/*` branch, and opening a `feature/*` → `develop`
 pull request, each trigger automated checks:
 
 | Check                    | Runs on                               | What it checks                                    |
-|--------------------------|----------------------------------------|--------------------------------------------------|
+|--------------------------|---------------------------------------|---------------------------------------------------|
 | `preview / commitlint`   | Push to `feature/*`                   | Latest commit message; see [requirements][cm]     |
 | `preview / markdownlint` | Push to `feature/*`                   | Every Markdown file in the repository             |
 | `lint-pr-message`        | `feature/*` → `develop` pull requests | PR title and body become the squash commit        |
