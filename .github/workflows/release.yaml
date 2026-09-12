@@ -1,56 +1,17 @@
-# Runs semantic-release on every push to master, develop, or release/*:
-# it analyses commits since the last release on that branch, computes
-# the next version, and - if one is warranted - tags the commit,
-# commits the version bump + changelog back to the branch, and publishes
-# a GitHub Release, all in this one run.
+# Runs semantic-release on push to master/develop/release/*:
+#   master     -> stable release
+#   develop    -> beta prerelease
+#   release/*  -> rc prerelease
+# Config: .config/release.config.js (loaded via --extends, since
+# semantic-release only auto-finds config at the repo root).
 #
-#   master     -> stable release (v1.2.3)
-#   develop    -> beta prerelease (v1.3.0-beta.1)
-#   release/*  -> rc prerelease (v1.3.0-rc.1)
+# Runs as nmg-bot (GitHub App token) because it needs actual write
+# access: semantic-release's own auth check pushes a probe commit, and
+# @semantic-release/git pushes the version bump + changelog for real.
+# nmg-bot must be a bypass actor on master/develop's "require PR" rule.
 #
-# Config lives in .config/release.config.js, matching every other
-# tool's config in this repo - loaded via --extends below, since
-# semantic-release's own config resolution only searches the project
-# root by default. See that file for the branch/prerelease config and
-# why release/* is a glob there, not the literal branch name "release".
-#
-# fetch-depth: 0 (full history) - commit-analyzer walks every commit
-# since the last release tag to decide the next version; a shallow
-# checkout would silently under-count commits.
-#
-# Runs as nmg-bot, not plain GITHUB_TOKEN - two separate reasons now:
-#
-# 1. semantic-release's own core, independent of which plugins are
-#    configured, unconditionally runs
-#      git push --dry-run --no-verify -- <repo-url> HEAD:<branch>
-#    as a write-access sanity check before doing anything else (see
-#    node_modules/semantic-release/lib/git.js's verifyAuth). That's a
-#    real push attempt branch protection evaluates like any other - on
-#    master and develop ("no direct pushes, require PR"), it blocks a
-#    token without bypass. release/* branches aren't PR-protected in
-#    this repo (CONTRIBUTING.md: fixes while stabilizing go on as
-#    direct commits), so this specific check isn't the blocker there -
-#    but reason 2 still applies to every branch.
-#
-# 2. @semantic-release/git (see release.config.mjs) commits the version
-#    bump + CHANGELOG.md back to whichever branch released, which is an
-#    actual push needing write access regardless of branch protection.
-#
-# nmg-bot needs to be a bypass actor on master's AND develop's "require
-# pull request" rule for this to work - confirm that's in place before
-# relying on this.
-#
-# Publishing the release fires GitHub's `release: published` event,
-# which is what deploy.yaml's production deploy is triggered by (only
-# for the master/stable case - prereleases from develop/release/* don't
-# resolve to "production" in detect-environment.yaml, so they don't
-# trigger a deploy).
-#
-# The version-bump commit's message includes "[skip ci]" - GitHub
-# Actions natively skips triggering any workflow run for a push whose
-# message contains that, so this doesn't loop back into itself (or into
-# preview.yaml's checks, which would otherwise run against a bot commit
-# that never went through review).
+# master/develop also require signed commits, with no bypass for that
+# rule - the GPG import step below signs the version-bump commit.
 
 name: Release
 
@@ -61,14 +22,8 @@ on:
       - develop
       - 'release/**'
 
-# Serializes release runs per branch instead of letting them race: two
-# near-simultaneous pushes to the same branch (e.g. a feature merge and
-# sync-master-to-develop.yaml's auto-sync landing seconds apart) each
-# trigger their own run, and without this they'd execute concurrently -
-# risking two @semantic-release/git pushes (version bump + CHANGELOG)
-# racing each other on the same branch. cancel-in-progress: false so the
-# second run queues and still runs (picking up whatever's left to
-# release) rather than getting killed outright.
+# Prevents two releases on the same branch racing (e.g. a merge and
+# sync-master-to-develop.yaml landing seconds apart).
 concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: false
@@ -92,9 +47,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Print semantic-release version
-        run: npx semantic-release --version
-
       - name: Mint nmg-bot installation token
         id: app-token
         uses: actions/create-github-app-token@v3
@@ -102,12 +54,23 @@ jobs:
           client-id: ${{ secrets.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
-      # Same reasoning as release-please.yaml's github-release job: a
-      # freshly minted installation token can 401/be rejected on its
-      # first real use, before it's propagated across GitHub's databases
-      # (https://github.com/octokit/auth-app.js/issues/65).
+      # A freshly minted token can be rejected on first use before it
+      # propagates.
       - name: Wait for installation token to propagate
         run: sleep 5
+
+      # Signs the version-bump commit so it satisfies master/develop's
+      # "require signed commits" rule.
+      - name: Import nmg-bot GPG key
+        id: import_gpg
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.GPG_BOT }}
+          passphrase: ${{ secrets.GPG_BOT }}
+          git_user_signingkey: true
+          git_commit_gpgsign: true
+          git_tag_gpgsign: true
+          git_config_global: true
 
       - name: Release
         env:
