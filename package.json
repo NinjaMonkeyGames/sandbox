@@ -38,5 +38,8 @@
     "npm": "^11.19.1",
     "semantic-release": "^25.0.9",
     "shellcheck": "^1.1.0"
-  }
+  },
+  "overrides": {
+  "conventional-changelog-writer": "^9.0.0"
+}
 }
