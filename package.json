@@ -8,13 +8,13 @@
     "ci",
     "workflow"
   ],
-  "homepage": "https://github.com/NinjaMonkeyGames/gamemaker-project-template#readme",
+  "homepage": "https://github.com/NinjaMonkeyGames/sandbox#readme",
   "bugs": {
-    "url": "https://github.com/NinjaMonkeyGames/gamemaker-project-template/issues"
+    "url": "https://github.com/NinjaMonkeyGames/sandbox/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/NinjaMonkeyGames/gamemaker-project-template.git"
+    "url": "git+https://github.com/NinjaMonkeyGames/sandbox.git"
   },
   "license": "GPL-3.0",
   "author": "NinjaMonkeyGames",
