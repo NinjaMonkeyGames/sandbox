@@ -1,0 +1,67 @@
+# Example caller workflow: runs whenever master, develop, release/*,
+# hotfix/*, or feature/* is pushed to, targeting the environment resolved
+# by detect-environment.yaml.
+#
+# feature/* branches resolve to "preview", which is a job set (see
+# preview.yaml), not a deploy - so it's called as its own reusable
+# workflow rather than going through the generic "deploy" job below.
+#
+# release/* and hotfix/* BOTH also trigger the preview job, even though
+# they resolve to the "staging" environment, not "preview". Reasoning:
+# a hotfix branches straight from master and skips develop entirely, so
+# its commits never went through the feature/* -> preview pipeline at
+# all; a release branch's constituent feature commits mostly did (as
+# feature/* branches, before being squashed into develop), but any commit
+# made DIRECTLY on the release branch itself (version bumps, last-minute
+# bug fixes - exactly what CONTRIBUTING.md says belongs there) never did
+# either. Without this, commitlint/cspell/markdownlint/gm-cli-tests would
+# never run against release/* or hotfix/* pushes at all.
+#
+# This isn't optional: master's own branch protection requires
+# preview / commitlint, preview / cspell, preview / markdownlint, and
+# preview / gm-cli-tests to pass for BOTH release/* and hotfix/* merges.
+# Before this fix, neither covered environment resolved to "preview", so
+# the preview job was skipped outright on every release/hotfix push -
+# every release/hotfix -> master PR sat permanently on "Expected -
+# waiting for status to be reported", since the checks that produce them
+# literally never ran.
+#
+# The actual deploy steps in "deploy" are placeholders - replace the
+# "TODO" step with whatever this project really does (build + push an
+# image, run a deploy script, sync to a host, etc).
+
+name: Deploy
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+      - 'release/**'
+      - 'hotfix/**'
+      - 'feature/**'
+
+jobs:
+  detect-env:
+    uses: ./.github/workflows/detect-environment.yaml
+
+  preview:
+    needs: detect-env
+    if: needs.detect-env.outputs.environment == 'preview' || needs.detect-env.outputs.environment == 'staging'
+    uses: ./.github/workflows/preview.yaml
+
+  deploy:
+    needs: detect-env
+    if: needs.detect-env.outputs.environment != 'none' && needs.detect-env.outputs.environment != 'preview'
+    runs-on: ubuntu-latest
+    # Ties into GitHub's own Environments feature (Settings > Environments):
+    # add required reviewers or environment-scoped secrets per environment
+    # there, e.g. require manual approval before anything reaches
+    # "production".
+    environment: ${{ needs.detect-env.outputs.environment }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Deploy to ${{ needs.detect-env.outputs.environment }}
+        run: |
+          echo "TODO: replace with real deploy steps for '${{ needs.detect-env.outputs.environment }}'"
